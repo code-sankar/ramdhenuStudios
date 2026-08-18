@@ -1,10 +1,51 @@
 <!doctype html>
-<html lang="en">
+<html lang="en" class="dark">
   <head>
     <meta charset="UTF-8" />
-    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>frontend</title>
+    <meta name="theme-color" content="#04060D" />
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+
+    <title>Ramdhenu Studios — Digital Growth Partner for Local Businesses</title>
+    <meta
+      name="description"
+      content="Ramdhenu Studios is a digital growth agency helping local businesses build a powerful online presence — websites, photography, social media, Google Business and paid advertising under one team."
+    />
+    <meta name="author" content="Ramdhenu Studios" />
+
+    <!-- Open Graph / social -->
+    <meta property="og:type" content="website" />
+    <meta property="og:title" content="Ramdhenu Studios — A step towards digital presence" />
+    <meta
+      property="og:description"
+      content="We help local businesses build a powerful online presence, attract the right audience and turn visibility into real enquiries and customers."
+    />
+    <meta property="og:image" content="/og-image.png" />
+    <meta name="twitter:card" content="summary_large_image" />
+
+    <!-- Type system: Archivo (display + UI), Instrument Serif (editorial
+         accent), JetBrains Mono (labels). Self-hosted from /public/fonts —
+         see src/fonts.css. Only the Latin faces used above the fold are
+         preloaded. -->
+    <link
+      rel="preload"
+      as="font"
+      type="font/woff2"
+      href="/fonts/archivo-normal-latin.woff2"
+      crossorigin
+    />
+    <link
+      rel="preload"
+      as="font"
+      type="font/woff2"
+      href="/fonts/jetbrains-mono-normal-latin.woff2"
+      crossorigin
+    />
+
+    <!-- Paint the brand ground before React mounts so there is never a white flash -->
+    <style>
+      html { background-color: #04060d; color-scheme: dark; }
+    </style>
   </head>
   <body>
     <div id="root"></div>
