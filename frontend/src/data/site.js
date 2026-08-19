@@ -102,9 +102,9 @@ export const socials = [
  *     YouTube until a visitor presses play. A local still keeps that true.
  */
 export const aboutVideo = {
-  id: null,
+  id: "Iy-dJwHVX84",
   title: "Ramdhenu — who we are",
-  poster: null,
+  poster: "https://i.scdn.co/image/ab67616d0000b273d28d2ebdedb220e479743797",
   caption: "A short introduction to the team, how we work, and who we build for.",
 };
 
