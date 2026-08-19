@@ -6,7 +6,8 @@
  * without pulling a router in for two documents.
  *
  * ⚠️  These are plain-language starting points written to describe what this
- *     site actually does (one enquiry form, no tracking, no cookies). Have
+ *     site actually does (one enquiry form, no tracking, no cookies, and a
+ *     YouTube embed that stays inert until pressed). Have
  *     them reviewed before launch, and update them the moment analytics, a
  *     CRM or any third-party embed is added.
  */
@@ -24,6 +25,10 @@ export const privacy = {
     {
       heading: "How we use it",
       body: "Solely to reply to your enquiry and, if you become a client, to deliver the work. We do not sell, rent or share your details with anyone else, and we do not add you to a mailing list unless you ask us to.",
+    },
+    {
+      heading: "The video on this page",
+      body: "Our introduction video is hosted on YouTube, but nothing is requested from YouTube — and no cookie is set — unless you press play. The still image you see before that is served from this site. Once you start the video, YouTube receives your request and its own privacy terms apply; we use their no-cookie player, which limits what it stores.",
     },
     {
       heading: "Where it goes",

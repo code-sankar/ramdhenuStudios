@@ -62,6 +62,14 @@ const motifs = {
       <path d="M34 100h30M136 100h30" />
     </>
   ),
+  video: (
+    <>
+      <rect x="34" y="26" width="132" height="88" rx="2" />
+      <path d="M34 42h132M34 98h132" />
+      <path d="M50 26v16M66 26v16M82 26v16M98 26v16M114 26v16M130 26v16M146 26v16" />
+      <path d="M50 98v16M66 98v16M82 98v16M98 98v16M114 98v16M130 98v16M146 98v16" />
+    </>
+  ),
   branding: (
     <>
       <rect x="60" y="20" width="80" height="100" rx="2" />
@@ -111,7 +119,7 @@ export default function Plate({ motif, label, tone = "paper" }) {
         strokeWidth="1.35"
         strokeLinecap="round"
         strokeLinejoin="round"
-        className="relative h-auto w-[84%]"
+        className="relative h-auto w-[84%] max-w-[360px]"
       >
         {motifs[motif] ?? motifs.web}
       </svg>
