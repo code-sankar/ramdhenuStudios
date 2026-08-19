@@ -34,9 +34,14 @@ export const contact = {
   email: "hello@ramdhenu.studio",
   emailHref: "mailto:hello@ramdhenu.studio",
   phone: "+91 6002830014 || +91 9395805628",
-  phoneHref: "tel:+919876543210",
-  /** Country code + number, digits only — this is what wa.me expects. */
-  whatsappNumber: "91 6002830014",
+  phoneHref: "tel:+916002830014",
+  /**
+   * Country code + number, DIGITS ONLY — no +, no spaces, no dashes.
+   * wa.me percent-encodes anything else into the path and the link dies with
+   * "phone number shared via url is invalid", so "91 9395805628" does not work
+   * where "919395805628" does.
+   */
+  whatsappNumber: "919395805628",
   studio: "Dibrugarh, Assam, India",
   city: "Dibrugarh",
   region: "Assam",
