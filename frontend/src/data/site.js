@@ -70,6 +70,7 @@ export const nav = [
   { label: "Services", id: "services" },
   { label: "About", id: "about" },
   { label: "Testimonials", id: "testimonials" },
+  { label: "FAQ", id: "faq" },
   { label: "Contact", id: "contact" },
 ];
 
