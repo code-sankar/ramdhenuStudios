@@ -80,7 +80,7 @@ export default function Header({ showAvailability = true }) {
         <div
           id="primary-nav"
           data-open={open}
-          className="nav-links flex items-center gap-4 max-md:order-4 max-md:mt-3 max-md:hidden max-md:w-full max-md:flex-col max-md:items-start max-md:border-t max-md:border-line max-md:pt-3 max-md:data-[open=true]:flex md:justify-center"
+          className="flex items-center gap-4 max-md:order-4 max-md:mt-3 max-md:hidden max-md:w-full max-md:flex-col max-md:items-start max-md:border-t max-md:border-line max-md:pt-3 max-md:data-[open=true]:flex md:justify-center"
         >
           {nav.map((item) => (
             <a

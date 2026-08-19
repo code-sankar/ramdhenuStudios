@@ -64,15 +64,6 @@ h3 {
   transform: translateY(0);
 }
 
-/* The eyebrow that opens each section index. */
-.kicker {
-  margin: 0;
-  font-size: 12px;
-  letter-spacing: 0.12em;
-  text-transform: uppercase;
-  color: var(--color-accent-700);
-}
-
 /* BRAND MARK — the artwork is white-on-transparent and used as a mask, so it
    takes the colour of whatever it sits on. See components/Logo.jsx. */
 .logo {
