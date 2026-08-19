@@ -84,10 +84,10 @@ export const services = [
       },
     ],
     project: {
-      name: "Greenwood Resort",
-      tags: ["Web Development", "Hospitality"],
+      name: "M Fitness",
+      tags: ["Web Development", "Fitness", "Landing Page"],
       motif: "web",
-      image: null,
+      image: "https://res.cloudinary.com/dx7b8hfwm/image/upload/v1787157619/Screenshot_2026-08-19_220941_dripzc.png",
       desc: "A booking-focused website with room galleries, enquiry tracking and a fast mobile experience for travellers planning on the move.",
     },
   },

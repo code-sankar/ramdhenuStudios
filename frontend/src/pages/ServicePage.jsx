@@ -211,7 +211,7 @@ export default function ServicePage() {
             <div className="flex flex-wrap gap-[clamp(24px,4vw,56px)]">
               <Blueprint
                 className={`relative block aspect-4/3 min-w-[240px] flex-[0_1_clamp(260px,34vw,460px)] ${
-                  service.project.image ? "duotone" : ""
+                  service.project.image ? "" : ""
                 }`}
               >
                 {service.project.image ? (

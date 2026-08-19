@@ -105,7 +105,7 @@ export default function Footer() {
       </div>
 
       {/* The wordmark, cropped by the page edge. */}
-      <div className="pointer-events-none h-[clamp(60px,10vw,150px)] w-full overflow-hidden" aria-hidden="true">
+      <div className="pointer-events-none h-[clamp(80px,15vw,300px)] w-full overflow-hidden" aria-hidden="true">
         <span className="block translate-y-[18%] text-center font-display text-[clamp(90px,16vw,260px)] leading-none tracking-[-0.02em] text-mute-200">
           {brand.wordmark}
         </span>
