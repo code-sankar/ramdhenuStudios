@@ -53,12 +53,6 @@ export default function Hero({ showAvailability = true }) {
           <span className="block">A Step</span>
           <span className="block">Towards Digital</span>
           <span className="flex items-center gap-[clamp(14px,2vw,34px)]">
-            <Blueprint
-              reversed
-              className="relative inline-block h-[clamp(54px,8.2vw,128px)] w-[clamp(54px,8.2vw,128px)] flex-none"
-            >
-              <Logo className="absolute inset-[12%] h-auto w-auto" />
-            </Blueprint>
             Presence
           </span>
         </h1>
