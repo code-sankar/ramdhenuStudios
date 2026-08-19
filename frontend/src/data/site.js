@@ -33,12 +33,12 @@ export const brand = {
 export const contact = {
   email: "hello@ramdhenu.studio",
   emailHref: "mailto:hello@ramdhenu.studio",
-  phone: "+91 98765 43210",
+  phone: "+91 6002830014 || +91 9395805628",
   phoneHref: "tel:+919876543210",
   /** Country code + number, digits only — this is what wa.me expects. */
-  whatsappNumber: "919876543210",
-  studio: "Guwahati, Assam, India",
-  city: "Guwahati",
+  whatsappNumber: "91 6002830014",
+  studio: "Dibrugarh, Assam, India",
+  city: "Dibrugarh",
   region: "Assam",
   country: "IN",
   hours: "Mon – Sat · 10:00 – 19:00",
