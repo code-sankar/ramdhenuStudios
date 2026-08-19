@@ -42,6 +42,14 @@ export default function Testimonials({ autoplay = true }) {
       onBlurCapture={() => setPaused(false)}
     >
       <div className="shell">
+        <Reveal>
+          <p className="section-index">
+            <span className="section-index__num">03</span>
+            <span className="section-index__rule" aria-hidden="true" />
+            <span className="kicker">In their words</span>
+          </p>
+        </Reveal>
+
         <Reveal className="testi__head">
           <h2 className="section-title testi__title">What Our Clients Say</h2>
           <div className="testi__controls">

@@ -133,10 +133,11 @@ public/                   favicons + share card, opaque steel tile
 After replacing a source file, regenerate the derivatives:
 
 ```bash
-npm i -D playwright
 node scripts/generate-brand-assets.mjs   # logo assets + favicons
 node scripts/generate-og-image.mjs       # social share card
 ```
+
+(Both drive headless Chromium; `playwright` is already a devDependency.)
 
 Originals live in `src/assets/brand/` rather than `public/` deliberately —
 anything in `public/` is copied verbatim into the build, so the 2.2 MB of

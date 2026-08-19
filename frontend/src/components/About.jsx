@@ -1,36 +1,53 @@
 import Reveal from "./Reveal";
-import { stats } from "../data/site";
+import { industries, stats } from "../data/site";
 
 /**
- * ABOUT — the positioning statement, then the capability facts.
+ * ABOUT — the positioning claim, then the facts behind it.
  *
- * The second half of the headline drops to muted so the sentence reads as a
- * claim followed by its qualification, which is the system's way of carrying
- * emphasis without introducing a second colour.
+ * The claim and its qualification used to run at the same display size, which
+ * put five lines of grey under one line of black and read as a wall. They are
+ * split into two columns now: the claim keeps the display scale, the
+ * qualification drops to body copy where it belongs.
  */
 export default function About() {
   return (
     <section id="about" className="section section--paper">
       <div className="shell">
         <Reveal>
-          <span className="kicker">Who we are</span>
-          <h2 className="section-title about__title">
-            We help local businesses turn attention into customers.{" "}
-            <span className="text-muted">
-              No jargon, no bloat — one team covering the website, the visuals and the
-              campaigns that bring people through the door.
-            </span>
-          </h2>
+          <p className="section-index">
+            <span className="section-index__num">01</span>
+            <span className="section-index__rule" aria-hidden="true" />
+            <span className="kicker">Who we are</span>
+          </p>
         </Reveal>
 
-        <Reveal delay={0.08}>
+        <div className="about__grid">
+          <Reveal>
+            <h2 className="section-title about__title">
+              We help local businesses turn attention into customers.
+            </h2>
+          </Reveal>
+
+          <Reveal delay={0.08} className="about__aside">
+            <p className="about__body">
+              No jargon, no bloat — one team covering the website, the visuals and the
+              campaigns that bring people through the door.
+            </p>
+            <ul className="about__industries">
+              {industries.slice(0, 6).map((item) => (
+                <li key={item}>{item}</li>
+              ))}
+              <li className="about__industries-more">+ more</li>
+            </ul>
+          </Reveal>
+        </div>
+
+        <Reveal delay={0.12}>
           <dl className="stats">
             {stats.map((stat) => (
-              <div key={stat.label}>
+              <div className="stat" key={stat.label}>
                 <dt className="stat__value">{stat.value}</dt>
-                <dd className="stat__label text-muted" style={{ margin: 0 }}>
-                  {stat.label}
-                </dd>
+                <dd className="stat__label text-muted">{stat.label}</dd>
               </div>
             ))}
           </dl>

@@ -19,8 +19,15 @@ export default function Services() {
   return (
     <section id="services" className="section section--surface">
       <div className="shell">
+        <Reveal>
+          <p className="section-index">
+            <span className="section-index__num">02</span>
+            <span className="section-index__rule" aria-hidden="true" />
+            <span className="kicker">What we do</span>
+          </p>
+        </Reveal>
+
         <Reveal className="services__head">
-          <span className="kicker">What we do</span>
           <h2 className="section-title services__title">Our Services &amp; Work</h2>
           <p className="text-muted" style={{ fontSize: 16, margin: 0 }}>
             Six disciplines, one team. Select a service to see it in action.
