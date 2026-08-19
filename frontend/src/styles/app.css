@@ -9,6 +9,23 @@
    than reimplemented.
    ========================================================================== */
 
+/* THE SPECTRUM — "Ramdhenu" is Assamese for rainbow, so the brand has a claim
+   on colour the Industry system otherwise forbids. It is honoured as a
+   signature, never as a field: a 2px rule at three structural moments in the
+   page and nowhere else. Precision is what keeps it from reading as decoration. */
+:root {
+  --spectrum: linear-gradient(
+    90deg,
+    #7b2ff7 0%,
+    #4361ee 18%,
+    #12b6d8 37%,
+    #22c55e 55%,
+    #a3e635 69%,
+    #f4c020 84%,
+    #fb7c2d 100%
+  );
+}
+
 html {
   scroll-behavior: smooth;
   scroll-padding-top: 84px;
@@ -92,7 +109,7 @@ h3 {
 
 /* Vertical rhythm. Sections alternate paper / surface / steel. */
 .section {
-  padding-block: clamp(72px, 9vw, 140px);
+  padding-block: clamp(64px, 7.4vw, 108px);
 }
 .section--paper {
   background: var(--color-bg);
@@ -142,6 +159,26 @@ h3 {
 /* --------------------------------------------------------------------------
    HEADER
    -------------------------------------------------------------------------- */
+/* Signature 2 of 3 — the spectrum as the header's base rule. */
+.header::after {
+  content: "";
+  position: absolute;
+  inset-inline: 0;
+  bottom: -1px;
+  height: 2px;
+  background: var(--spectrum);
+  opacity: 0;
+  transition: opacity 300ms ease;
+}
+.header[data-scrolled="true"]::after {
+  opacity: 1;
+}
+/* Opaque once the page moves, so the aurora never tints the bar. */
+.header[data-scrolled="true"] {
+  background: var(--color-bg);
+  backdrop-filter: none;
+}
+
 .header {
   position: sticky;
   top: 0;
@@ -220,166 +257,348 @@ h3 {
   padding: clamp(80px, 13vh, 140px) 0 clamp(40px, 6vh, 64px);
   box-sizing: border-box;
 }
-/* SPECTRAL AURORA — a single blurred band of the full spectrum blooming up
-   from the base of the steel field. The vertical mask fades it to nothing as
-   it rises; the element runs off the bottom edge so its blurred foot stays
-   saturated to the very bottom rather than fading out. It sits behind the
-   copy (z-index 0; .hero__inner is z-index 1). */
+/* THE AURORA — the spectrum blooming up out of the steel field.
+   "Ramdhenu" is Assamese for rainbow, so this is the brand's own colour, and
+   the hero is the one place it is allowed to bloom rather than rule.
+
+   Two things keep it from washing the page out:
+   • A steel scrim (.hero__veil) sits between the bloom and the copy, so the
+     lede and the buttons always have ground to read against.
+   • The header goes opaque on scroll (see .header[data-scrolled]) — a
+     translucent bar passing over this would pick up a pastel tint. */
 .hero__aurora {
   position: absolute;
   left: 0;
   right: 0;
   bottom: -44px;
-  height: 44%;
+  height: 46%;
+  z-index: 0;
+  pointer-events: none;
+  background: var(--spectrum);
+  -webkit-mask-image: linear-gradient(to top, #000 2%, rgba(0, 0, 0, 0.5) 34%, transparent 84%);
+  mask-image: linear-gradient(to top, #000 2%, rgba(0, 0, 0, 0.5) 34%, transparent 84%);
+  filter: blur(56px) saturate(1.08);
+  opacity: 0.92;
+}
+
+/* The scrim. Weighted to the left, where the headline and lede sit, and
+   clearing to nothing on the right so the bloom stays saturated there. */
+.hero__veil {
+  position: absolute;
+  inset: 0;
   z-index: 0;
   pointer-events: none;
   background: linear-gradient(
-    90deg,
-    #7b2ff7 0%,
-    #4361ee 19%,
-    #12b6d8 38%,
-    #22c55e 56%,
-    #a3e635 69%,
-    #f4c020 83%,
-    #fb7c2d 100%
-  );
-  -webkit-mask-image: linear-gradient(to top, #000 4%, rgba(0, 0, 0, 0.55) 32%, transparent 82%);
-  mask-image: linear-gradient(to top, #000 4%, rgba(0, 0, 0, 0.55) 32%, transparent 82%);
-  filter: blur(54px) saturate(1.04);
-  opacity: 0.9;
+      100deg,
+      color-mix(in srgb, var(--color-accent-900) 82%, transparent) 0%,
+      color-mix(in srgb, var(--color-accent-900) 46%, transparent) 46%,
+      transparent 78%
+    ),
+    linear-gradient(to top, color-mix(in srgb, var(--color-accent-900) 42%, transparent) 0%, transparent 40%);
 }
+
+.hero__grid {
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  pointer-events: none;
+  background-image:
+    linear-gradient(to right, color-mix(in srgb, var(--color-bg) 6%, transparent) 1px, transparent 1px),
+    linear-gradient(to bottom, color-mix(in srgb, var(--color-bg) 6%, transparent) 1px, transparent 1px);
+  background-size: 92px 92px;
+  -webkit-mask-image: radial-gradient(120% 85% at 15% 20%, #000 10%, transparent 78%);
+  mask-image: radial-gradient(120% 85% at 15% 20%, #000 10%, transparent 78%);
+}
+
+/* Signature 1 of 3 — the spectrum closing the hero field. */
+.hero::after {
+  content: "";
+  position: absolute;
+  inset-inline: 0;
+  bottom: 0;
+  height: 2px;
+  z-index: 2;
+  background: var(--spectrum);
+}
+
 .hero__inner {
   position: relative;
   z-index: 1;
   display: flex;
   flex-direction: column;
-  gap: clamp(28px, 4vw, 44px);
+  gap: clamp(30px, 4.4vw, 52px);
 }
+
 .hero__top {
   display: flex;
   justify-content: space-between;
   align-items: flex-start;
-  gap: 20px;
+  gap: 24px;
   flex-wrap: wrap;
 }
+
 .hero__tag {
-  font-size: 12px;
+  display: inline-flex;
+  align-items: center;
+  gap: 9px;
+  font-size: 11px;
+  letter-spacing: 0.13em;
+  text-transform: uppercase;
+  padding: 6px 13px;
+  border-color: color-mix(in srgb, var(--color-bg) 26%, transparent);
+  color: color-mix(in srgb, var(--color-bg) 82%, transparent);
 }
+.hero__pulse {
+  width: 6px;
+  height: 6px;
+  flex: none;
+  background: var(--color-accent-300);
+  box-shadow: 0 0 0 0 color-mix(in srgb, var(--color-accent-300) 70%, transparent);
+  animation: hero-pulse 2.6s ease-out infinite;
+}
+@keyframes hero-pulse {
+  0% { box-shadow: 0 0 0 0 color-mix(in srgb, var(--color-accent-300) 60%, transparent); }
+  70% { box-shadow: 0 0 0 7px transparent; }
+  100% { box-shadow: 0 0 0 0 transparent; }
+}
+
+/* The disciplines as an indexed spec list — structure where the field would
+   otherwise be empty. */
 .hero__disciplines {
   display: flex;
   flex-direction: column;
-  gap: 11px;
+  gap: 9px;
   align-items: flex-end;
   list-style: none;
   margin: 0;
   padding: 0;
+  counter-reset: none;
 }
 .hero__discipline {
-  font-family: var(--font-heading);
-  font-weight: var(--font-heading-weight);
-  font-size: 13px;
-  letter-spacing: 0.05em;
-  text-transform: uppercase;
-  color: color-mix(in srgb, var(--color-bg) 92%, transparent);
   display: flex;
   align-items: center;
-  gap: 9px;
+  gap: 11px;
+  font-family: var(--font-heading);
+  font-weight: var(--font-heading-weight);
+  font-size: 12.5px;
+  letter-spacing: 0.07em;
+  text-transform: uppercase;
+  color: color-mix(in srgb, var(--color-bg) 88%, transparent);
 }
-.hero__discipline::before {
-  content: "";
-  width: 7px;
-  height: 7px;
-  background: var(--color-accent-300);
+.hero__discipline-num {
+  font-size: 10px;
+  letter-spacing: 0.1em;
+  color: var(--color-accent-300);
+}
+.hero__discipline-rule {
+  width: 26px;
+  height: 1px;
   flex: none;
+  background: color-mix(in srgb, var(--color-bg) 30%, transparent);
 }
+
+/* Sized to fill the measure, not to sit inside it. */
 .hero__title {
   font-family: var(--font-heading);
   font-weight: var(--font-heading-weight);
   text-transform: uppercase;
-  letter-spacing: -0.02em;
-  line-height: 0.94;
-  font-size: clamp(50px, 9vw, 150px);
+  letter-spacing: -0.022em;
+  line-height: 0.9;
+  font-size: clamp(48px, 10.4vw, 168px);
   color: var(--color-bg);
   margin: 0;
 }
 .hero__line {
   display: block;
 }
+.hero__line--mark {
+  display: flex;
+  align-items: center;
+  gap: clamp(14px, 2vw, 34px);
+}
+.hero__photo {
+  position: relative;
+  display: inline-block;
+  width: clamp(54px, 8.2vw, 128px);
+  height: clamp(54px, 8.2vw, 128px);
+  flex: none;
+}
+.hero__mark-slot {
+  position: absolute;
+  inset: 12%;
+  width: auto;
+  height: auto;
+}
 
 .hero__foot {
   display: flex;
   justify-content: space-between;
   align-items: flex-end;
-  gap: 24px;
+  gap: 28px;
   flex-wrap: wrap;
+  padding-top: clamp(20px, 2.6vw, 30px);
+  border-top: 1px solid color-mix(in srgb, var(--color-bg) 24%, transparent);
 }
 .hero__lede {
-  max-width: 420px;
+  max-width: 430px;
   margin: 0;
-  font-size: 15px;
-  line-height: 1.55;
-  color: color-mix(in srgb, var(--color-bg) 78%, transparent);
+  font-size: 15.5px;
+  line-height: 1.6;
+  color: color-mix(in srgb, var(--color-bg) 86%, transparent);
 }
-/* PRIMARY CTA — a soft, rounded, translucent steel button that reads over the
-   aurora without competing with it. Deliberately not the Blueprint-framed
-   button used elsewhere: the hero wants one calm, glassy affordance. */
+.hero__actions {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+  flex: none;
+  flex-wrap: wrap;
+}
+
+/* One solid affordance, one quiet one. Square corners, because the field is
+   still governed by the blueprint system. */
 .hero__cta {
   display: inline-flex;
   align-items: center;
   gap: 9px;
-  flex: none;
   padding: 15px 26px;
-  border-radius: var(--radius-lg);
   font-family: var(--font-heading);
   font-weight: var(--font-heading-weight);
   font-size: 15px;
   letter-spacing: 0.01em;
-  color: var(--color-bg);
   text-decoration: none;
-  background: color-mix(in srgb, var(--color-accent) 82%, transparent);
-  border: 1px solid color-mix(in srgb, var(--color-bg) 20%, transparent);
-  backdrop-filter: blur(8px);
-  -webkit-backdrop-filter: blur(8px);
-  box-shadow: 0 14px 40px -18px color-mix(in srgb, #000 90%, transparent);
-  transition: background 160ms ease, transform 160ms ease, border-color 160ms ease;
-}
-.hero__cta svg {
-  display: block;
+  color: var(--color-bg);
+  background: var(--color-accent);
+  border: 1px solid var(--color-accent);
+  transition:
+    background-color 180ms ease,
+    border-color 180ms ease,
+    transform 180ms ease;
 }
 .hero__cta:hover {
-  background: color-mix(in srgb, var(--color-accent) 96%, transparent);
-  border-color: color-mix(in srgb, var(--color-bg) 34%, transparent);
+  background: var(--color-accent-400);
+  border-color: var(--color-accent-400);
   transform: translateY(-1px);
 }
 .hero__cta:active {
   transform: translateY(0);
 }
+.hero__cta--ghost {
+  background: transparent;
+  color: color-mix(in srgb, var(--color-bg) 88%, transparent);
+  border-color: color-mix(in srgb, var(--color-bg) 26%, transparent);
+}
+.hero__cta--ghost:hover {
+  background: color-mix(in srgb, var(--color-bg) 10%, transparent);
+  border-color: color-mix(in srgb, var(--color-bg) 45%, transparent);
+  color: var(--color-bg);
+}
 
 /* --------------------------------------------------------------------------
    ABOUT
    -------------------------------------------------------------------------- */
-.about__title {
-  font-size: clamp(28px, 4.2vw, 54px);
-  max-width: 1000px;
-  margin: 0 0 clamp(48px, 6vw, 88px);
+/* A spec-sheet index opens every section — the blueprint system's own way of
+   numbering a drawing, and it gives each section a fixed point to start from. */
+.section-index {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  margin: 0 0 clamp(28px, 3.4vw, 44px);
 }
+.section-index__num {
+  font-family: var(--font-heading);
+  font-weight: var(--font-heading-weight);
+  font-size: 12px;
+  letter-spacing: 0.1em;
+  color: var(--color-accent-700);
+}
+.section-index__rule {
+  width: 34px;
+  height: 1px;
+  background: var(--color-divider);
+}
+.section-index .kicker {
+  margin: 0;
+}
+/* On the steel field the index inverts along with everything else. */
+.section-index--reversed .section-index__num {
+  color: var(--color-accent-300);
+}
+.section-index--reversed .section-index__rule {
+  background: color-mix(in srgb, var(--color-bg) 30%, transparent);
+}
+
+.about__grid {
+  display: grid;
+  grid-template-columns: minmax(0, 1.35fr) minmax(0, 1fr);
+  gap: clamp(32px, 5vw, 80px);
+  align-items: start;
+  margin-bottom: clamp(48px, 6vw, 88px);
+}
+.about__title {
+  font-size: clamp(30px, 4.4vw, 62px);
+  letter-spacing: -0.02em;
+  margin: 0;
+}
+.about__aside {
+  padding-top: 8px;
+}
+.about__body {
+  font-size: 16.5px;
+  line-height: 1.62;
+  color: color-mix(in srgb, var(--color-text) 68%, transparent);
+  margin: 0 0 var(--space-6);
+}
+.about__industries {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 7px;
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+.about__industries li {
+  font-size: 11.5px;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  font-family: var(--font-heading);
+  font-weight: var(--font-heading-weight);
+  color: color-mix(in srgb, var(--color-text) 62%, transparent);
+  border: 1px solid var(--color-divider);
+  padding: 5px 10px;
+}
+.about__industries-more {
+  color: var(--color-accent-700) !important;
+  border-color: color-mix(in srgb, var(--color-accent) 45%, transparent) !important;
+}
+
+/* Stats read as one ruled row rather than four floating figures. */
 .stats {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
-  gap: clamp(24px, 4vw, 40px);
-  border-top: 1px solid var(--color-divider);
-  padding-top: clamp(24px, 4vw, 40px);
+  grid-template-columns: repeat(auto-fit, minmax(190px, 1fr));
+  gap: 0;
+  border-top: 1px solid var(--color-text);
   margin: 0;
+}
+.stat {
+  padding: clamp(22px, 2.6vw, 32px) clamp(18px, 2.2vw, 30px) clamp(18px, 2.2vw, 26px) 0;
+  border-right: 1px solid var(--color-divider);
+}
+.stat:last-child {
+  border-right: 0;
 }
 .stat__value {
   display: block;
   font-family: var(--font-heading);
   font-weight: var(--font-heading-weight);
-  font-size: clamp(30px, 3.2vw, 44px);
-  line-height: 1.05;
+  font-size: clamp(34px, 3.6vw, 52px);
+  line-height: 1;
+  letter-spacing: -0.02em;
 }
 .stat__label {
   font-size: 13px;
+  line-height: 1.45;
+  margin: 10px 0 0;
+  max-width: 20ch;
 }
 
 /* --------------------------------------------------------------------------
@@ -398,6 +617,18 @@ h3 {
 }
 .service {
   border-bottom: 1px solid var(--color-divider);
+  transition: background-color 200ms ease;
+}
+.service:hover {
+  background: color-mix(in srgb, var(--color-text) 3%, transparent);
+}
+/* The open row is marked by an accent edge, so the list always shows where
+   you are without relying on the chevron alone. */
+.service:has(.service__toggle[aria-expanded="true"]) {
+  box-shadow: inset 3px 0 0 var(--color-accent);
+}
+.service__toggle {
+  padding-inline: clamp(0px, 1.4vw, 18px) !important;
 }
 .service__toggle {
   all: unset;
@@ -446,18 +677,19 @@ h3 {
 }
 .service__figure {
   position: relative;
-  flex: 1 1 380px;
-  min-width: 280px;
+  flex: 0 1 clamp(260px, 34vw, 440px);
+  min-width: 240px;
   aspect-ratio: 4 / 3;
   display: block;
 }
 .service__meta {
-  flex: 1 1 320px;
+  flex: 1 1 340px;
   min-width: 260px;
   display: flex;
   flex-direction: column;
   gap: var(--space-3);
   justify-content: center;
+  padding-block: var(--space-3);
 }
 .service__tags {
   display: flex;
@@ -493,9 +725,9 @@ h3 {
 .testi__quote {
   font-family: var(--font-body);
   font-weight: 500;
-  font-size: clamp(20px, 2.4vw, 30px);
-  line-height: 1.4;
-  max-width: 900px;
+  font-size: clamp(20px, 2.15vw, 27px);
+  line-height: 1.45;
+  max-width: 860px;
   margin: 0 0 clamp(24px, 3vw, 40px);
 }
 .testi__foot {
@@ -794,8 +1026,20 @@ h3 {
 /* --------------------------------------------------------------------------
    FOOTER
    -------------------------------------------------------------------------- */
+/* Signature 3 of 3 — the spectrum opening the footer, closing the page the
+   same way it closed the hero field. */
+.footer::before {
+  content: "";
+  position: absolute;
+  inset-inline: 0;
+  top: 0;
+  height: 2px;
+  background: var(--spectrum);
+}
+
 .footer {
   background: var(--color-bg);
+  position: relative;
   padding: clamp(56px, 7vw, 96px) 0 0;
   overflow: hidden;
 }

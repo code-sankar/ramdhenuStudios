@@ -1,46 +1,57 @@
+import Blueprint from "./Blueprint";
 import Icon from "./Icon";
+import Logo from "./Logo";
 import { brand, disciplines } from "../data/site";
 
 /**
- * HERO — a full steel field with the wordline reversed out of it.
+ * HERO — the tagline set at full field scale on steel.
  *
- * The headline is the tagline set as three clean lines. Along the bottom a
- * soft spectral aurora glows up out of the steel — the one place colour is
- * allowed to bloom — carrying the eye down to the lede and the primary call
- * to action.
+ * Three decisions carry this section:
+ *
+ *  • The type is sized to fill the measure rather than sit inside it, so the
+ *    field reads as composed rather than as a headline with space left over.
+ *  • The brand mark is locked into the third line as a glyph in the sentence —
+ *    the artboard reserves that slot for a photograph, and the mark holds it
+ *    far better than a stand-in image would.
+ *  • The disciplines are set as an indexed spec list, which turns the top
+ *    right from empty ground into structure.
  */
 export default function Hero({ showAvailability = true }) {
   return (
     <section id="top" className="hero">
-      {/* The spectral glow that blooms up from the base of the field. */}
+      <div className="hero__grid" aria-hidden="true" />
       <div className="hero__aurora" aria-hidden="true" />
+      <div className="hero__veil" aria-hidden="true" />
 
       <div className="shell hero__inner">
         <div className="hero__top">
           {showAvailability && (
-            <span
-              className="tag tag-outline hero__tag"
-              style={{
-                borderColor: "var(--color-accent-300)",
-                color: "var(--color-accent-300)",
-              }}
-            >
-              DIGITAL AGENCY — BASED IN INDIA
+            <span className="tag tag-outline hero__tag">
+              <span className="hero__pulse" aria-hidden="true" />
+              Digital agency — based in India
             </span>
           )}
-          <ul className="hero__disciplines">
-            {disciplines.map((item) => (
+
+          <ol className="hero__disciplines">
+            {disciplines.map((item, i) => (
               <li key={item} className="hero__discipline">
+                <span className="hero__discipline-num">{String(i + 1).padStart(2, "0")}</span>
+                <span className="hero__discipline-rule" aria-hidden="true" />
                 {item}
               </li>
             ))}
-          </ul>
+          </ol>
         </div>
 
         <h1 className="hero__title">
           <span className="hero__line">A Step</span>
           <span className="hero__line">Towards Digital</span>
-          <span className="hero__line">Presence</span>
+          <span className="hero__line hero__line--mark">
+            <Blueprint reversed className="hero__photo">
+              <Logo className="hero__mark-slot" />
+            </Blueprint>
+            Presence
+          </span>
         </h1>
 
         <div className="hero__foot">
@@ -48,10 +59,16 @@ export default function Hero({ showAvailability = true }) {
             Ramdhenu is a digital agency for local businesses that want more than a website —
             strategy, visuals and campaigns, working as one.
           </p>
-          <a href="#contact" className="hero__cta">
-            <Icon name="plus" size={15} strokeWidth={2} />
-            Start a Project
-          </a>
+
+          <div className="hero__actions">
+            <a href="#contact" className="hero__cta">
+              <Icon name="plus" size={15} strokeWidth={2} />
+              Start a Project
+            </a>
+            <a href="#services" className="hero__cta hero__cta--ghost">
+              See our work
+            </a>
+          </div>
         </div>
       </div>
 

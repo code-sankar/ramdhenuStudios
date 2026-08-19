@@ -107,7 +107,7 @@ export default function Plate({ motif, label, tone = "paper" }) {
           position: "absolute",
           inset: 0,
           backgroundImage: `linear-gradient(to right, ${scheme.rule} 1px, transparent 1px), linear-gradient(to bottom, ${scheme.rule} 1px, transparent 1px)`,
-          backgroundSize: "34px 34px",
+          backgroundSize: "22px 22px",
         }}
       />
       <svg
@@ -115,10 +115,10 @@ export default function Plate({ motif, label, tone = "paper" }) {
         fill="none"
         aria-hidden="true"
         stroke={scheme.ink}
-        strokeWidth="1.2"
+        strokeWidth="1.35"
         strokeLinecap="round"
         strokeLinejoin="round"
-        style={{ position: "relative", width: "72%", height: "auto" }}
+        style={{ position: "relative", width: "84%", height: "auto" }}
       >
         {motifs[motif] ?? motifs.web}
       </svg>

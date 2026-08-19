@@ -19,6 +19,11 @@ export default function Contact() {
       <div className="shell">
         <div className="contact__inner">
           <Reveal className="contact__ask">
+            <p className="section-index section-index--reversed">
+              <span className="section-index__num">04</span>
+              <span className="section-index__rule" aria-hidden="true" />
+              <span className="kicker">Start here</span>
+            </p>
             <h2 className="section-title contact__title">Let&apos;s build your step forward.</h2>
             <p className="contact__lede">
               Tell us what you&apos;re building. We&apos;ll tell you how to get there — with a
