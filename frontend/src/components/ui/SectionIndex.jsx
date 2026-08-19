@@ -19,7 +19,7 @@ export default function SectionIndex({ num, label, onSteel = false }) {
         aria-hidden="true"
         className={`h-px w-[34px] ${onSteel ? "bg-paper/30" : "bg-line"}`}
       />
-      <span className="kicker">{label}</span>
+      <span className="text-[12px] tracking-[0.12em] text-steel-700 uppercase">{label}</span>
     </p>
   );
 }
