@@ -11,6 +11,27 @@ import { brand, nav } from "../data/site";
 export default function Header({ showAvailability = true }) {
   const [open, setOpen] = useState(false);
   const [active, setActive] = useState("");
+  const [scrolled, setScrolled] = useState(false);
+
+  /* The spectrum rule under the bar only appears once the page has moved, so
+     it reads as a response to scrolling rather than as permanent chrome.
+     Passive listener + rAF so it never blocks the scroll itself. */
+  useEffect(() => {
+    let frame = 0;
+    const onScroll = () => {
+      if (frame) return;
+      frame = requestAnimationFrame(() => {
+        setScrolled(window.scrollY > 40);
+        frame = 0;
+      });
+    };
+    onScroll();
+    window.addEventListener("scroll", onScroll, { passive: true });
+    return () => {
+      window.removeEventListener("scroll", onScroll);
+      if (frame) cancelAnimationFrame(frame);
+    };
+  }, []);
 
   /* Highlight the section currently in view. */
   useEffect(() => {
@@ -33,7 +54,7 @@ export default function Header({ showAvailability = true }) {
   }, []);
 
   return (
-    <header className="header">
+    <header className="header" data-scrolled={scrolled}>
       <nav className="nav" aria-label="Primary">
         <a href="#top" className="nav-brand" aria-label={`${brand.name} — home`} onClick={() => setOpen(false)}>
           <Logo withName />
