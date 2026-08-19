@@ -1,6 +1,4 @@
-import Blueprint from "./Blueprint";
 import Icon from "./Icon";
-import Logo from "./Logo";
 import { brand, disciplines } from "../data/site";
 
 /**
