@@ -13,19 +13,19 @@ export default function LegalDialogs({ openDoc, onClose }) {
 
   return (
     <Dialog open onClose={onClose} title={doc.title} labelledBy={`legal-${openDoc}`}>
-      <p className="legal__updated text-muted">{doc.updated}</p>
+      <p className="text-muted mb-4 text-xs">{doc.updated}</p>
 
       {LEGAL_NEEDS_REVIEW && (
-        <p className="legal__notice">
+        <p className="mb-6 flex flex-wrap items-baseline gap-2 border-b border-line pb-4 text-[13px]">
           <span className="tag tag-outline">Draft</span>
           Written to describe what this site does today. Have it reviewed before launch.
         </p>
       )}
 
       {doc.sections.map((section) => (
-        <section key={section.heading} className="legal__section">
-          <h3 className="legal__heading">{section.heading}</h3>
-          <p className="legal__body">{section.body}</p>
+        <section key={section.heading} className="mb-6">
+          <h3 className="display mb-2 text-base">{section.heading}</h3>
+          <p className="m-0 text-sm">{section.body}</p>
         </section>
       ))}
     </Dialog>

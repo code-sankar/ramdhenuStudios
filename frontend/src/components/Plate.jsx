@@ -91,21 +91,14 @@ export default function Plate({ motif, label, tone = "paper" }) {
     <div
       role="img"
       aria-label={label}
-      style={{
-        position: "absolute",
-        inset: 0,
-        background: scheme.ground,
-        display: "grid",
-        placeItems: "center",
-        overflow: "hidden",
-      }}
+      className="absolute inset-0 grid place-items-center overflow-hidden"
+      style={{ background: scheme.ground }}
     >
       {/* The modular grid, drawn faintly — the ground a spec sheet sits on. */}
       <div
         aria-hidden="true"
+        className="absolute inset-0"
         style={{
-          position: "absolute",
-          inset: 0,
           backgroundImage: `linear-gradient(to right, ${scheme.rule} 1px, transparent 1px), linear-gradient(to bottom, ${scheme.rule} 1px, transparent 1px)`,
           backgroundSize: "22px 22px",
         }}
@@ -118,7 +111,7 @@ export default function Plate({ motif, label, tone = "paper" }) {
         strokeWidth="1.35"
         strokeLinecap="round"
         strokeLinejoin="round"
-        style={{ position: "relative", width: "84%", height: "auto" }}
+        className="relative h-auto w-[84%]"
       >
         {motifs[motif] ?? motifs.web}
       </svg>

@@ -3,6 +3,7 @@ import { AnimatePresence, motion } from "motion/react";
 import Blueprint from "./Blueprint";
 import Icon from "./Icon";
 import Reveal from "./Reveal";
+import SectionIndex from "./ui/SectionIndex";
 import { testimonials, TESTIMONIALS_ARE_PLACEHOLDER } from "../data/testimonials";
 
 const AUTOPLAY_MS = 6000;
@@ -35,7 +36,7 @@ export default function Testimonials({ autoplay = true }) {
   return (
     <section
       id="testimonials"
-      className="section section--paper"
+      className="section-y bg-paper"
       onMouseEnter={() => setPaused(true)}
       onMouseLeave={() => setPaused(false)}
       onFocusCapture={() => setPaused(true)}
@@ -43,16 +44,12 @@ export default function Testimonials({ autoplay = true }) {
     >
       <div className="shell">
         <Reveal>
-          <p className="section-index">
-            <span className="section-index__num">03</span>
-            <span className="section-index__rule" aria-hidden="true" />
-            <span className="kicker">In their words</span>
-          </p>
+          <SectionIndex num="03" label="In their words" />
         </Reveal>
 
-        <Reveal className="testi__head">
-          <h2 className="section-title testi__title">What Our Clients Say</h2>
-          <div className="testi__controls">
+        <Reveal className="mb-[clamp(32px,5vw,56px)] flex flex-wrap items-end justify-between gap-6">
+          <h2 className="display text-[clamp(28px,3.6vw,44px)]">What Our Clients Say</h2>
+          <div className="flex gap-2">
             <button
               type="button"
               className="btn btn-secondary btn-icon"
@@ -80,29 +77,38 @@ export default function Testimonials({ autoplay = true }) {
               animate={{ opacity: 1, y: 0 }}
               exit={{ opacity: 0, y: -8 }}
               transition={{ duration: 0.4, ease: [0.16, 1, 0.3, 1] }}
-              style={{ margin: 0 }}
+              className="m-0"
             >
-              <blockquote className="testi__quote">&ldquo;{current.quote}&rdquo;</blockquote>
-              <figcaption className="testi__foot" style={{ fontSize: "inherit", marginTop: 0 }}>
-                <span className="testi__who">
-                  <Blueprint className={`testi__avatar${current.avatar ? " duotone" : ""}`}>
+              <blockquote className="m-0 mb-[clamp(24px,3vw,40px)] max-w-[860px] font-sans text-[clamp(20px,2.15vw,27px)] leading-[1.45] font-medium">
+                &ldquo;{current.quote}&rdquo;
+              </blockquote>
+
+              <figcaption className="mt-0 flex flex-wrap items-center justify-between gap-5 text-base">
+                <span className="flex items-center gap-[14px]">
+                  <Blueprint
+                    className={`relative inline-block h-[52px] w-[52px] flex-none ${
+                      current.avatar ? "duotone" : ""
+                    }`}
+                  >
                     <Avatar person={current} />
                   </Blueprint>
                   <span>
-                    <span className="testi__name">{current.name}</span>
-                    <span className="testi__role text-muted">{current.role}</span>
+                    <span className="block font-display text-base">{current.name}</span>
+                    <span className="text-muted block text-[13px]">{current.role}</span>
                   </span>
                 </span>
 
-                <span className="testi__dots">
+                <span className="flex">
                   {testimonials.map((person, i) => (
                     <button
                       key={person.role}
                       type="button"
-                      className={`testi__dot${person.avatar ? " duotone" : ""}`}
                       aria-label={`Show testimonial ${i + 1} of ${testimonials.length}`}
                       aria-current={i === index ? "true" : undefined}
                       onClick={() => go(i)}
+                      className={`relative -ml-2 h-8 w-8 cursor-pointer border border-line bg-none p-0 opacity-55 transition duration-200 hover:-translate-y-0.5 hover:opacity-85 aria-[current=true]:-translate-y-0.5 aria-[current=true]:opacity-100 ${
+                        person.avatar ? "duotone" : ""
+                      }`}
                     >
                       <Avatar person={person} small />
                     </button>
@@ -114,10 +120,8 @@ export default function Testimonials({ autoplay = true }) {
         </div>
 
         {TESTIMONIALS_ARE_PLACEHOLDER && (
-          <p className="text-muted" style={{ fontSize: 13, marginTop: "var(--space-8)", marginBottom: 0 }}>
-            <span className="tag tag-outline" style={{ marginRight: "var(--space-2)" }}>
-              Sample
-            </span>
+          <p className="text-muted mt-8 mb-0 text-[13px]">
+            <span className="tag tag-outline mr-2">Sample</span>
             Placeholder quotes — real client feedback replaces these at launch.
           </p>
         )}
@@ -126,32 +130,19 @@ export default function Testimonials({ autoplay = true }) {
   );
 }
 
-/** A client photo where one exists, initials on the surface tone where it doesn't. */
+/** A client photo where one exists, initials on the panel tone where it doesn't. */
 function Avatar({ person, small = false }) {
   if (person.avatar) {
     return (
-      <img
-        src={person.avatar}
-        alt=""
-        loading="lazy"
-        style={{ width: "100%", height: "100%", objectFit: "cover" }}
-      />
+      <img src={person.avatar} alt="" loading="lazy" className="h-full w-full object-cover" />
     );
   }
   return (
     <span
       aria-hidden="true"
-      style={{
-        position: "absolute",
-        inset: 0,
-        display: "grid",
-        placeItems: "center",
-        background: "var(--color-surface)",
-        fontFamily: "var(--font-heading)",
-        fontWeight: "var(--font-heading-weight)",
-        fontSize: small ? 11 : 15,
-        color: "var(--color-accent-700)",
-      }}
+      className={`absolute inset-0 grid place-items-center bg-panel font-display text-steel-700 ${
+        small ? "text-[11px]" : "text-[15px]"
+      }`}
     >
       {person.initials}
     </span>

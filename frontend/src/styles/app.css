@@ -1,18 +1,23 @@
 /* ==========================================================================
    RAMDHENU — page layer
    --------------------------------------------------------------------------
-   Layout and section styling for the site. Everything here is composed from
-   the Industry design system's tokens (see styles/industry.css and
-   INDUSTRY-README.md); this file introduces no colours, fonts or spacing of
-   its own. Component classes the system already provides — .blueprint,
-   .corner, .btn, .tag, .duotone, .nav, .text-muted — are used as-is rather
-   than reimplemented.
+   What is left after the Tailwind conversion. Everything here is something a
+   utility cannot express cleanly:
+
+     • layered gradients with masks (the aurora, its scrim, the field grid)
+     • the ::after / ::before spectrum rules
+     • parent-state selectors (:has) and pseudo-element geometry
+     • the logo's mask mechanics
+
+   Component styling lives in the markup, and every value still comes from the
+   Industry tokens by way of the bridge in theme.css. Nothing here introduces
+   a colour, a font or a spacing step of its own.
    ========================================================================== */
 
 /* THE SPECTRUM — "Ramdhenu" is Assamese for rainbow, so the brand has a claim
    on colour the Industry system otherwise forbids. It is honoured as a
    signature, never as a field: a 2px rule at three structural moments in the
-   page and nowhere else. Precision is what keeps it from reading as decoration. */
+   page, plus the hero bloom, and nowhere else. */
 :root {
   --spectrum: linear-gradient(
     90deg,
@@ -40,8 +45,7 @@ h3 {
   text-wrap: pretty;
 }
 
-/* Skip link — visually hidden until it takes focus, then it lands on the
-   steel field where it is legible. */
+/* Skip link — hidden until it takes focus, then it lands on the steel field. */
 .skip-link {
   position: fixed;
   top: var(--space-3);
@@ -60,6 +64,15 @@ h3 {
   transform: translateY(0);
 }
 
+/* The eyebrow that opens each section index. */
+.kicker {
+  margin: 0;
+  font-size: 12px;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--color-accent-700);
+}
+
 /* BRAND MARK — the artwork is white-on-transparent and used as a mask, so it
    takes the colour of whatever it sits on. See components/Logo.jsx. */
 .logo {
@@ -72,94 +85,10 @@ h3 {
   -webkit-mask-size: contain;
   mask-size: contain;
 }
-.logo--mark {
-  width: 32px;
-  height: 32px;
-}
-.logo--lockup {
-  width: 210px;
-  height: 84px;
-  -webkit-mask-position: left center;
-  mask-position: left center;
-}
-
-/* The header's compact lockup: official mark + the name set in the system's
-   heading face, which is the same condensed grotesque the artwork uses. */
-.logo-lockup-inline {
-  display: inline-flex;
-  align-items: center;
-  gap: 10px;
-}
-.logo-lockup-inline__name {
-  font-family: var(--font-heading);
-  font-weight: var(--font-heading-weight);
-  font-size: 19px;
-  letter-spacing: 0.015em;
-  line-height: 1;
-}
-
-/* The page gutter and measure every section shares. */
-.shell {
-  max-width: 1320px;
-  margin-inline: auto;
-  padding-inline: clamp(20px, 4vw, 64px);
-  width: 100%;
-  box-sizing: border-box;
-}
-
-/* Vertical rhythm. Sections alternate paper / surface / steel. */
-.section {
-  padding-block: clamp(64px, 7.4vw, 108px);
-}
-.section--paper {
-  background: var(--color-bg);
-}
-.section--surface {
-  background: var(--color-surface);
-}
-.section--steel {
-  background: var(--color-accent-900);
-}
-
-/* Type reversed out of the steel field. */
-.on-steel {
-  color: var(--color-bg);
-}
-.on-steel-muted {
-  color: color-mix(in srgb, var(--color-bg) 72%, transparent);
-}
-
-/* The eyebrow that opens each section. */
-.kicker {
-  display: block;
-  font-size: 12px;
-  letter-spacing: 0.12em;
-  text-transform: uppercase;
-  color: var(--color-accent-700);
-  margin-bottom: var(--space-3);
-}
-.section--steel .kicker,
-.on-steel .kicker {
-  color: var(--color-accent-300);
-}
-
-.section-title {
-  font-family: var(--font-heading);
-  font-weight: var(--font-heading-weight);
-  text-transform: uppercase;
-  line-height: 1.12;
-  margin: 0;
-}
-
-/* Registration marks read lighter when drawn on the steel field. */
-.corner--reversed {
-  color: color-mix(in srgb, var(--color-bg) 55%, transparent) !important;
-}
 
 /* --------------------------------------------------------------------------
-   HEADER
+   HEADER — signature 2 of 3
    -------------------------------------------------------------------------- */
-/* Signature 2 of 3 — the spectrum as the header's base rule. */
 .header::after {
   content: "";
   position: absolute;
@@ -179,93 +108,12 @@ h3 {
   backdrop-filter: none;
 }
 
-.header {
-  position: sticky;
-  top: 0;
-  z-index: 50;
-  background: color-mix(in srgb, var(--color-bg) 85%, transparent);
-  backdrop-filter: blur(10px);
-  border-bottom: 1px solid var(--color-divider);
-}
-.header .nav {
-  max-width: 1320px;
-  margin: 0 auto;
-  padding: var(--space-3) clamp(20px, 4vw, 64px);
-  flex-wrap: wrap;
-  row-gap: 12px;
-}
-.header a {
-  color: inherit;
-  text-decoration: none;
-}
-.nav-links {
-  display: flex;
-  align-items: center;
-  gap: var(--space-4);
-}
-.header .nav-link {
-  font-size: 14px;
-}
-.header .nav-link:hover {
-  color: var(--color-accent-700);
-}
-.header .nav-link[aria-current="true"] {
-  color: var(--color-accent-700);
-}
-.nav-actions {
-  display: flex;
-  align-items: center;
-  gap: var(--space-3);
-}
-
-.menu-toggle {
-  display: none;
-}
-
-/* From tablet up, the bar becomes three true columns — brand, links, actions —
-   so the links sit centred in the bar regardless of how wide the brand or
-   the action cluster are, instead of just trailing the logo. */
-@media (min-width: 768px) {
-  .header .nav {
-    display: grid;
-    grid-template-columns: 1fr auto 1fr;
-    align-items: center;
-    column-gap: var(--space-4);
-  }
-  .header .nav-brand {
-    margin-right: 0;
-  }
-  .nav-links {
-    justify-content: center;
-  }
-  .nav-actions {
-    justify-self: end;
-  }
-}
-
 /* --------------------------------------------------------------------------
-   HERO
+   HERO FIELD
    -------------------------------------------------------------------------- */
-.hero {
-  position: relative;
-  min-height: 100vh;
-  background: var(--color-accent-900);
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
-  overflow: hidden;
-  padding: clamp(80px, 13vh, 140px) 0 clamp(40px, 6vh, 64px);
-  box-sizing: border-box;
-}
-/* THE AURORA — the spectrum blooming up out of the steel field.
-   "Ramdhenu" is Assamese for rainbow, so this is the brand's own colour, and
-   the hero is the one place it is allowed to bloom rather than rule.
-
-   Two things keep it from washing the page out:
-   • A steel scrim (.hero__veil) sits between the bloom and the copy, so the
-     lede and the buttons always have ground to read against.
-   • The header goes opaque on scroll (see .header[data-scrolled]) — a
-     translucent bar passing over this would pick up a pastel tint. */
+/* THE AURORA — the spectrum blooming up out of the steel field. Two things
+   keep it from washing the page out: the scrim below, and the header going
+   opaque on scroll. */
 .hero__aurora {
   position: absolute;
   left: 0;
@@ -288,15 +136,22 @@ h3 {
   inset: 0;
   z-index: 0;
   pointer-events: none;
-  background: linear-gradient(
+  background:
+    linear-gradient(
       100deg,
       color-mix(in srgb, var(--color-accent-900) 82%, transparent) 0%,
       color-mix(in srgb, var(--color-accent-900) 46%, transparent) 46%,
       transparent 78%
     ),
-    linear-gradient(to top, color-mix(in srgb, var(--color-accent-900) 42%, transparent) 0%, transparent 40%);
+    linear-gradient(
+      to top,
+      color-mix(in srgb, var(--color-accent-900) 42%, transparent) 0%,
+      transparent 40%
+    );
 }
 
+/* The blueprint grid, barely there — it gives the field texture at the scale
+   the headline is set, so the type is not floating on flat colour. */
 .hero__grid {
   position: absolute;
   inset: 0;
@@ -321,627 +176,76 @@ h3 {
   background: var(--spectrum);
 }
 
-.hero__inner {
-  position: relative;
-  z-index: 1;
-  display: flex;
-  flex-direction: column;
-  gap: clamp(30px, 4.4vw, 52px);
-}
-
-.hero__top {
-  display: flex;
-  justify-content: space-between;
-  align-items: flex-start;
-  gap: 24px;
-  flex-wrap: wrap;
-}
-
-.hero__tag {
-  display: inline-flex;
-  align-items: center;
-  gap: 9px;
-  font-size: 11px;
-  letter-spacing: 0.13em;
-  text-transform: uppercase;
-  padding: 6px 13px;
-  border-color: color-mix(in srgb, var(--color-bg) 26%, transparent);
-  color: color-mix(in srgb, var(--color-bg) 82%, transparent);
-}
 .hero__pulse {
   width: 6px;
   height: 6px;
   flex: none;
   background: var(--color-accent-300);
-  box-shadow: 0 0 0 0 color-mix(in srgb, var(--color-accent-300) 70%, transparent);
   animation: hero-pulse 2.6s ease-out infinite;
 }
 @keyframes hero-pulse {
-  0% { box-shadow: 0 0 0 0 color-mix(in srgb, var(--color-accent-300) 60%, transparent); }
-  70% { box-shadow: 0 0 0 7px transparent; }
-  100% { box-shadow: 0 0 0 0 transparent; }
-}
-
-/* The disciplines as an indexed spec list — structure where the field would
-   otherwise be empty. */
-.hero__disciplines {
-  display: flex;
-  flex-direction: column;
-  gap: 9px;
-  align-items: flex-end;
-  list-style: none;
-  margin: 0;
-  padding: 0;
-  counter-reset: none;
-}
-.hero__discipline {
-  display: flex;
-  align-items: center;
-  gap: 11px;
-  font-family: var(--font-heading);
-  font-weight: var(--font-heading-weight);
-  font-size: 12.5px;
-  letter-spacing: 0.07em;
-  text-transform: uppercase;
-  color: color-mix(in srgb, var(--color-bg) 88%, transparent);
-}
-.hero__discipline-num {
-  font-size: 10px;
-  letter-spacing: 0.1em;
-  color: var(--color-accent-300);
-}
-.hero__discipline-rule {
-  width: 26px;
-  height: 1px;
-  flex: none;
-  background: color-mix(in srgb, var(--color-bg) 30%, transparent);
-}
-
-/* Sized to fill the measure, not to sit inside it. */
-.hero__title {
-  font-family: var(--font-heading);
-  font-weight: var(--font-heading-weight);
-  text-transform: uppercase;
-  letter-spacing: -0.022em;
-  line-height: 0.9;
-  font-size: clamp(48px, 10.4vw, 168px);
-  color: var(--color-bg);
-  margin: 0;
-}
-.hero__line {
-  display: block;
-}
-.hero__line--mark {
-  display: flex;
-  align-items: center;
-  gap: clamp(14px, 2vw, 34px);
-}
-.hero__photo {
-  position: relative;
-  display: inline-block;
-  width: clamp(54px, 8.2vw, 128px);
-  height: clamp(54px, 8.2vw, 128px);
-  flex: none;
-}
-.hero__mark-slot {
-  position: absolute;
-  inset: 12%;
-  width: auto;
-  height: auto;
-}
-
-.hero__foot {
-  display: flex;
-  justify-content: space-between;
-  align-items: flex-end;
-  gap: 28px;
-  flex-wrap: wrap;
-  padding-top: clamp(20px, 2.6vw, 30px);
-  border-top: 1px solid color-mix(in srgb, var(--color-bg) 24%, transparent);
-}
-.hero__lede {
-  max-width: 430px;
-  margin: 0;
-  font-size: 15.5px;
-  line-height: 1.6;
-  color: color-mix(in srgb, var(--color-bg) 86%, transparent);
-}
-.hero__actions {
-  display: flex;
-  align-items: center;
-  gap: var(--space-3);
-  flex: none;
-  flex-wrap: wrap;
-}
-
-/* One solid affordance, one quiet one. Square corners, because the field is
-   still governed by the blueprint system. */
-.hero__cta {
-  display: inline-flex;
-  align-items: center;
-  gap: 9px;
-  padding: 15px 26px;
-  font-family: var(--font-heading);
-  font-weight: var(--font-heading-weight);
-  font-size: 15px;
-  letter-spacing: 0.01em;
-  text-decoration: none;
-  color: var(--color-bg);
-  background: var(--color-accent);
-  border: 1px solid var(--color-accent);
-  transition:
-    background-color 180ms ease,
-    border-color 180ms ease,
-    transform 180ms ease;
-}
-.hero__cta:hover {
-  background: var(--color-accent-400);
-  border-color: var(--color-accent-400);
-  transform: translateY(-1px);
-}
-.hero__cta:active {
-  transform: translateY(0);
-}
-.hero__cta--ghost {
-  background: transparent;
-  color: color-mix(in srgb, var(--color-bg) 88%, transparent);
-  border-color: color-mix(in srgb, var(--color-bg) 26%, transparent);
-}
-.hero__cta--ghost:hover {
-  background: color-mix(in srgb, var(--color-bg) 10%, transparent);
-  border-color: color-mix(in srgb, var(--color-bg) 45%, transparent);
-  color: var(--color-bg);
+  0% {
+    box-shadow: 0 0 0 0 color-mix(in srgb, var(--color-accent-300) 60%, transparent);
+  }
+  70% {
+    box-shadow: 0 0 0 7px transparent;
+  }
+  100% {
+    box-shadow: 0 0 0 0 transparent;
+  }
 }
 
 /* --------------------------------------------------------------------------
-   ABOUT
+   SERVICES — parent-state styling the row's own classes cannot reach
    -------------------------------------------------------------------------- */
-/* A spec-sheet index opens every section — the blueprint system's own way of
-   numbering a drawing, and it gives each section a fixed point to start from. */
-.section-index {
-  display: flex;
-  align-items: center;
-  gap: 14px;
-  margin: 0 0 clamp(28px, 3.4vw, 44px);
-}
-.section-index__num {
-  font-family: var(--font-heading);
-  font-weight: var(--font-heading-weight);
-  font-size: 12px;
-  letter-spacing: 0.1em;
-  color: var(--color-accent-700);
-}
-.section-index__rule {
-  width: 34px;
-  height: 1px;
-  background: var(--color-divider);
-}
-.section-index .kicker {
-  margin: 0;
-}
-/* On the steel field the index inverts along with everything else. */
-.section-index--reversed .section-index__num {
-  color: var(--color-accent-300);
-}
-.section-index--reversed .section-index__rule {
-  background: color-mix(in srgb, var(--color-bg) 30%, transparent);
-}
-
-.about__grid {
-  display: grid;
-  grid-template-columns: minmax(0, 1.35fr) minmax(0, 1fr);
-  gap: clamp(32px, 5vw, 80px);
-  align-items: start;
-  margin-bottom: clamp(48px, 6vw, 88px);
-}
-.about__title {
-  font-size: clamp(30px, 4.4vw, 62px);
-  letter-spacing: -0.02em;
-  margin: 0;
-}
-.about__aside {
-  padding-top: 8px;
-}
-.about__body {
-  font-size: 16.5px;
-  line-height: 1.62;
-  color: color-mix(in srgb, var(--color-text) 68%, transparent);
-  margin: 0 0 var(--space-6);
-}
-.about__industries {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 7px;
-  list-style: none;
-  margin: 0;
-  padding: 0;
-}
-.about__industries li {
-  font-size: 11.5px;
-  letter-spacing: 0.04em;
-  text-transform: uppercase;
-  font-family: var(--font-heading);
-  font-weight: var(--font-heading-weight);
-  color: color-mix(in srgb, var(--color-text) 62%, transparent);
-  border: 1px solid var(--color-divider);
-  padding: 5px 10px;
-}
-.about__industries-more {
-  color: var(--color-accent-700) !important;
-  border-color: color-mix(in srgb, var(--color-accent) 45%, transparent) !important;
-}
-
-/* Stats read as one ruled row rather than four floating figures. */
-.stats {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(190px, 1fr));
-  gap: 0;
-  border-top: 1px solid var(--color-text);
-  margin: 0;
-}
-.stat {
-  padding: clamp(22px, 2.6vw, 32px) clamp(18px, 2.2vw, 30px) clamp(18px, 2.2vw, 26px) 0;
-  border-right: 1px solid var(--color-divider);
-}
-.stat:last-child {
-  border-right: 0;
-}
-.stat__value {
-  display: block;
-  font-family: var(--font-heading);
-  font-weight: var(--font-heading-weight);
-  font-size: clamp(34px, 3.6vw, 52px);
-  line-height: 1;
-  letter-spacing: -0.02em;
-}
-.stat__label {
-  font-size: 13px;
-  line-height: 1.45;
-  margin: 10px 0 0;
-  max-width: 20ch;
-}
-
-/* --------------------------------------------------------------------------
-   SERVICES — an accordion, not a card grid
-   -------------------------------------------------------------------------- */
-.services__head {
-  max-width: 640px;
-  margin-bottom: clamp(40px, 6vw, 72px);
-}
-.services__title {
-  font-size: clamp(32px, 4vw, 52px);
-  margin-bottom: var(--space-3);
-}
-.services__list {
-  border-top: 1px solid var(--color-divider);
-}
-.service {
-  border-bottom: 1px solid var(--color-divider);
-  transition: background-color 200ms ease;
-}
 .service:hover {
   background: color-mix(in srgb, var(--color-text) 3%, transparent);
 }
-/* The open row is marked by an accent edge, so the list always shows where
-   you are without relying on the chevron alone. */
+/* The open row is marked by an accent edge, so the list always shows where you
+   are without relying on the chevron alone. */
 .service:has(.service__toggle[aria-expanded="true"]) {
   box-shadow: inset 3px 0 0 var(--color-accent);
-}
-.service__toggle {
-  padding-inline: clamp(0px, 1.4vw, 18px) !important;
-}
-.service__toggle {
-  all: unset;
-  box-sizing: border-box;
-  display: flex;
-  align-items: center;
-  gap: clamp(16px, 3vw, 40px);
-  width: 100%;
-  padding: clamp(18px, 2.2vw, 28px) 0;
-  cursor: pointer;
 }
 .service__toggle:focus-visible {
   outline: 2px solid var(--color-accent);
   outline-offset: 2px;
 }
-.service__num {
-  font-family: var(--font-heading);
-  font-size: 14px;
-  color: var(--color-accent-700);
-  width: 28px;
-  flex: none;
-}
-.service__title {
-  font-family: var(--font-heading);
-  font-weight: var(--font-heading-weight);
-  font-size: clamp(19px, 2.2vw, 30px);
-  text-transform: uppercase;
-  flex: 1;
-  text-align: left;
-  transition: color 160ms ease;
-}
-.service__toggle:hover .service__title {
-  color: var(--color-accent-700);
-}
-.service__blurb {
-  font-size: 14px;
-  max-width: 300px;
-  flex: 1;
-  display: none;
-}
-.service__panel {
-  display: flex;
-  flex-wrap: wrap;
-  gap: clamp(24px, 4vw, 56px);
-  padding: 0 0 clamp(32px, 4vw, 56px);
-}
-.service__figure {
-  position: relative;
-  flex: 0 1 clamp(260px, 34vw, 440px);
-  min-width: 240px;
-  aspect-ratio: 4 / 3;
-  display: block;
-}
-.service__meta {
-  flex: 1 1 340px;
-  min-width: 260px;
-  display: flex;
-  flex-direction: column;
-  gap: var(--space-3);
-  justify-content: center;
-  padding-block: var(--space-3);
-}
-.service__tags {
-  display: flex;
-  gap: 8px;
-  flex-wrap: wrap;
-}
-.service__project {
-  font-family: var(--font-heading);
-  font-weight: var(--font-heading-weight);
-  font-size: clamp(22px, 2.4vw, 30px);
-  margin: 0;
-  text-transform: uppercase;
-}
 
 /* --------------------------------------------------------------------------
-   TESTIMONIALS
+   FOOTER — signature 3 of 3
    -------------------------------------------------------------------------- */
-.testi__head {
-  display: flex;
-  justify-content: space-between;
-  align-items: flex-end;
-  gap: 24px;
-  margin-bottom: clamp(32px, 5vw, 56px);
-  flex-wrap: wrap;
-}
-.testi__title {
-  font-size: clamp(28px, 3.6vw, 44px);
-}
-.testi__controls {
-  display: flex;
-  gap: var(--space-2);
-}
-.testi__quote {
-  font-family: var(--font-body);
-  font-weight: 500;
-  font-size: clamp(20px, 2.15vw, 27px);
-  line-height: 1.45;
-  max-width: 860px;
-  margin: 0 0 clamp(24px, 3vw, 40px);
-}
-.testi__foot {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  flex-wrap: wrap;
-  gap: 20px;
-}
-.testi__who {
-  display: flex;
-  align-items: center;
-  gap: 14px;
-}
-.testi__avatar {
-  position: relative;
-  display: inline-block;
-  width: 52px;
-  height: 52px;
-  flex: none;
-}
-.testi__name {
-  display: block;
-  font-family: var(--font-heading);
-  font-weight: var(--font-heading-weight);
-  font-size: 16px;
-}
-.testi__role {
-  display: block;
-  font-size: 13px;
-}
-.testi__dots {
-  display: flex;
-}
-.testi__dot {
-  position: relative;
-  width: 32px;
-  height: 32px;
-  margin-left: -8px;
-  cursor: pointer;
-  padding: 0;
-  background: none;
-  border: 1px solid var(--color-divider);
-  transition:
-    transform 200ms ease,
-    opacity 200ms ease;
-  opacity: 0.55;
-}
-.testi__dot:hover {
-  transform: translateY(-2px);
-  opacity: 0.85;
-}
-.testi__dot[aria-current="true"] {
-  opacity: 1;
-  transform: translateY(-2px);
-}
-
-/* --------------------------------------------------------------------------
-   CONTACT — the ask on the left, the enquiry form on the right
-   -------------------------------------------------------------------------- */
-.contact {
-  padding-block: clamp(64px, 8vw, 120px);
-  background: var(--color-accent-900);
-}
-.contact__inner {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  align-items: start;
-  gap: clamp(32px, 5vw, 72px);
-}
-.contact__title {
-  color: var(--color-bg);
-  font-size: clamp(32px, 5vw, 60px);
-  line-height: 1.05;
-  margin: 0 0 var(--space-4);
-}
-.contact__lede {
-  color: color-mix(in srgb, var(--color-bg) 70%, transparent);
-  font-size: 16px;
-  margin: 0;
-  max-width: 480px;
-}
-.contact__whatsapp {
-  position: relative;
-  margin-top: var(--space-6);
-  text-decoration: none;
-  color: var(--color-bg);
-  border-color: color-mix(in srgb, var(--color-bg) 35%, transparent);
-  padding: 13px 22px;
-  font-size: 15px;
-}
-.contact__whatsapp:hover {
-  background: color-mix(in srgb, var(--color-bg) 12%, transparent);
-}
-.contact__whatsapp:active {
-  background: color-mix(in srgb, var(--color-bg) 20%, transparent);
-}
-
-.contact__channels {
-  list-style: none;
-  margin: clamp(32px, 4vw, 48px) 0 0;
-  padding: clamp(24px, 3vw, 32px) 0 0;
-  border-top: 1px solid color-mix(in srgb, var(--color-bg) 20%, transparent);
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
-  gap: var(--space-6);
-}
-.contact__channels li {
-  display: flex;
-  flex-direction: column;
-  gap: 3px;
-}
-.contact__channels a,
-.contact__channels span:not(.contact__label) {
-  color: var(--color-bg);
-  text-decoration: none;
-  font-size: 15px;
-}
-.contact__channels a:hover {
-  color: var(--color-accent-300);
-  text-decoration: underline;
-}
-.contact__label {
-  font-size: 11px;
-  letter-spacing: 0.08em;
-  text-transform: uppercase;
-  color: var(--color-accent-300);
-}
-
-/* --------------------------------------------------------------------------
-   ENQUIRY FORM
-   -------------------------------------------------------------------------- */
-.enquiry {
-  position: relative;
-  background: var(--color-bg);
-  padding: clamp(24px, 3vw, 36px);
-}
-.enquiry__title {
-  font-family: var(--font-heading);
-  font-weight: var(--font-heading-weight);
-  font-size: 22px;
-  text-transform: uppercase;
-  margin: 0 0 var(--space-2);
-}
-.enquiry__lede {
-  font-size: 14px;
-  margin: 0 0 var(--space-6);
-}
-.enquiry__grid {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: var(--space-4);
-}
-.enquiry .field {
-  margin: 0;
-}
-.field--full {
-  grid-column: 1 / -1;
-}
-
-/* The select keeps a native control; only the chevron is ours. */
-.field__select {
-  position: relative;
-  display: block;
-}
-.field__select select {
-  appearance: none;
-  padding-right: 34px;
-}
-.field__select svg {
+.footer::before {
+  content: "";
   position: absolute;
-  top: 50%;
-  right: 11px;
-  transform: translateY(-50%);
-  pointer-events: none;
-  color: color-mix(in srgb, var(--color-text) 55%, transparent);
+  inset-inline: 0;
+  top: 0;
+  height: 2px;
+  background: var(--spectrum);
 }
 
-.field__error {
-  display: block;
-  margin-top: 5px;
-  font-size: 12px;
-  color: var(--color-accent-800);
+/* --------------------------------------------------------------------------
+   DIALOG
+   -------------------------------------------------------------------------- */
+/* Clears the sticky header (z-index 50), which would otherwise sit on top of
+   the backdrop. */
+.dialog-backdrop {
+  z-index: 100;
 }
-.input[aria-invalid="true"] {
-  border-color: var(--color-accent-800);
+/* The blueprint layer makes .dialog transparent, which is right for a card on
+   the page but unreadable for a modal over its own backdrop. Give it the paper
+   ground back and leave the border and square corners alone. */
+.dialog--solid {
+  background: var(--color-bg);
+  width: min(620px, 100%);
+  max-height: min(80vh, 720px);
+  overflow-y: auto;
 }
-
-.enquiry__submit {
-  margin-top: var(--space-6);
-  padding-block: 13px;
-  font-size: 15px;
-}
-.enquiry__fallback {
-  font-size: 12px;
-  text-align: center;
-  margin: var(--space-3) 0 0;
-}
-
-.enquiry__status {
-  margin: var(--space-4) 0 0;
-  padding: var(--space-3);
-  border: 1px solid var(--color-accent);
-  background: var(--color-accent-100);
-  color: var(--color-accent-900);
-  font-size: 13px;
-}
-.enquiry__status.is-error {
-  border-color: var(--color-accent-800);
-  background: var(--color-neutral-100);
+.dialog-body {
+  opacity: 1;
 }
 
-/* A button that reads as a link — used for the email fallback and the
-   footer's legal triggers, which open dialogs rather than navigate. */
+/* A button that reads as a link — the email fallback and the footer's legal
+   triggers, which open dialogs rather than navigate. */
 .linkish {
   all: unset;
   cursor: pointer;
@@ -956,237 +260,14 @@ h3 {
   outline: 2px solid var(--color-accent);
   outline-offset: 2px;
 }
-
-/* --------------------------------------------------------------------------
-   LEGAL DIALOG
-   -------------------------------------------------------------------------- */
-/* The blueprint layer makes .dialog transparent, which is right for a card on
-   the page but unreadable for a modal over its own backdrop. Give it the paper
-   ground back and leave the border and square corners alone. */
-/* Clears the sticky header (z-index 50), which would otherwise sit on top
-   of the backdrop. */
-.dialog-backdrop {
-  z-index: 100;
-}
-
-.dialog--solid {
-  background: var(--color-bg);
-  width: min(620px, 100%);
-  max-height: min(80vh, 720px);
-  overflow-y: auto;
-}
-.dialog__head {
-  display: flex;
-  align-items: flex-start;
-  justify-content: space-between;
-  gap: var(--space-4);
-}
-.dialog-body {
-  opacity: 1;
-}
-.legal__updated {
-  font-size: 12px;
-  margin: 0 0 var(--space-4);
-}
-.legal__notice {
-  display: flex;
-  align-items: baseline;
-  gap: var(--space-2);
-  flex-wrap: wrap;
-  font-size: 13px;
-  margin: 0 0 var(--space-6);
-  padding-bottom: var(--space-4);
-  border-bottom: 1px solid var(--color-divider);
-}
-.legal__section {
-  margin-bottom: var(--space-6);
-}
-.legal__heading {
-  font-family: var(--font-heading);
-  font-weight: var(--font-heading-weight);
-  font-size: 16px;
-  text-transform: uppercase;
-  margin: 0 0 var(--space-2);
-}
-.legal__body {
-  font-size: 14px;
-  margin: 0;
-}
-
-/* The footer's legal links are buttons; match them to their sibling anchors. */
-.footer__nav .linkish {
+/* In the footer they sit among plain anchors, so they match them. */
+.footer .linkish {
   color: inherit;
   text-decoration: none;
   font-size: 15px;
 }
-.footer__nav .linkish:hover {
+.footer .linkish:hover {
   color: var(--color-accent-700);
-}
-
-/* --------------------------------------------------------------------------
-   FOOTER
-   -------------------------------------------------------------------------- */
-/* Signature 3 of 3 — the spectrum opening the footer, closing the page the
-   same way it closed the hero field. */
-.footer::before {
-  content: "";
-  position: absolute;
-  inset-inline: 0;
-  top: 0;
-  height: 2px;
-  background: var(--spectrum);
-}
-
-.footer {
-  background: var(--color-bg);
-  position: relative;
-  padding: clamp(56px, 7vw, 96px) 0 0;
-  overflow: hidden;
-}
-.footer a {
-  color: inherit;
-  text-decoration: none;
-}
-.footer a:hover {
-  color: var(--color-accent-700);
-}
-.footer__grid {
-  display: grid;
-  grid-template-columns: 1.4fr 1fr 1fr 1fr;
-  gap: clamp(32px, 5vw, 56px);
-  padding-bottom: clamp(40px, 6vw, 72px);
-  border-bottom: 1px solid var(--color-divider);
-}
-.footer__brand {
-  margin-bottom: var(--space-4);
-}
-.footer__blurb {
-  font-size: 14px;
-  max-width: 260px;
-  margin: 0 0 var(--space-6);
-}
-.footer__col-head {
-  display: block;
-  font-size: 11px;
-  letter-spacing: 0.1em;
-  text-transform: uppercase;
-  margin-bottom: var(--space-3);
-}
-.footer__label {
-  display: block;
-  font-size: 11px;
-  letter-spacing: 0.08em;
-  text-transform: uppercase;
-  color: var(--color-accent-700);
-  margin-bottom: 2px;
-}
-.footer__value {
-  display: block;
-  margin-bottom: var(--space-3);
-}
-.footer__nav {
-  display: flex;
-  flex-direction: column;
-  gap: 10px;
-}
-.footer__socials {
-  display: flex;
-  gap: 8px;
-}
-.footer__bottom {
-  display: flex;
-  justify-content: space-between;
-  flex-wrap: wrap;
-  gap: 12px;
-  padding: var(--space-4) 0;
-  font-size: 13px;
-}
-/* The wordmark bleeding off the bottom edge. */
-.footer__wordmark-clip {
-  width: 100%;
-  overflow: hidden;
-  height: clamp(60px, 10vw, 150px);
-  pointer-events: none;
-}
-.footer__wordmark {
-  display: block;
-  font-family: var(--font-heading);
-  font-weight: var(--font-heading-weight);
-  font-size: clamp(90px, 16vw, 260px);
-  line-height: 1;
-  letter-spacing: -0.02em;
-  color: var(--color-neutral-200);
-  text-align: center;
-  transform: translateY(18%);
-}
-
-/* --------------------------------------------------------------------------
-   RESPONSIVE
-   -------------------------------------------------------------------------- */
-@media (min-width: 900px) {
-  .service__blurb {
-    display: block;
-  }
-}
-
-@media (max-width: 899px) {
-  .footer__grid {
-    grid-template-columns: 1fr 1fr;
-  }
-  .contact__inner {
-    grid-template-columns: 1fr;
-  }
-}
-
-@media (max-width: 767px) {
-  /* The bar collapses to: wordmark · CTA · toggle. The links drop into a
-     panel below it, and the availability tag steps aside — the hero carries
-     the same badge one screen down. */
-  .header .nav {
-    row-gap: 0;
-  }
-  .menu-toggle {
-    display: inline-flex;
-  }
-  .header .nav-cta {
-    font-size: 13px;
-  }
-  .header .availability {
-    display: none;
-  }
-  .nav-links {
-    display: none;
-    order: 4;
-    width: 100%;
-    flex-direction: column;
-    align-items: flex-start;
-    gap: var(--space-3);
-    margin-top: var(--space-3);
-    padding-top: var(--space-3);
-    border-top: 1px solid var(--color-divider);
-  }
-  .nav-links[data-open="true"] {
-    display: flex;
-  }
-  .nav-links .nav-link {
-    font-size: 17px;
-  }
-
-  .hero__top {
-    flex-direction: column;
-  }
-  .hero__disciplines {
-    align-items: flex-start;
-  }
-  .footer__grid {
-    grid-template-columns: 1fr;
-  }
-  .testi__head {
-    align-items: flex-start;
-  }
-  .enquiry__grid {
-    grid-template-columns: 1fr;
-  }
 }
 
 /* Honour the OS reduce-motion setting. */

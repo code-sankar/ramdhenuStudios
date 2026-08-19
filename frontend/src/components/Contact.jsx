@@ -2,6 +2,7 @@ import Blueprint from "./Blueprint";
 import EnquiryForm from "./EnquiryForm";
 import Icon from "./Icon";
 import Reveal from "./Reveal";
+import SectionIndex from "./ui/SectionIndex";
 import { contact, whatsappLink } from "../data/site";
 
 /**
@@ -15,17 +16,16 @@ import { contact, whatsappLink } from "../data/site";
  */
 export default function Contact() {
   return (
-    <section id="contact" className="contact">
+    <section id="contact" className="bg-steel-900 py-[clamp(64px,8vw,120px)]">
       <div className="shell">
-        <div className="contact__inner">
-          <Reveal className="contact__ask">
-            <p className="section-index section-index--reversed">
-              <span className="section-index__num">04</span>
-              <span className="section-index__rule" aria-hidden="true" />
-              <span className="kicker">Start here</span>
-            </p>
-            <h2 className="section-title contact__title">Let&apos;s build your step forward.</h2>
-            <p className="contact__lede">
+        <div className="grid items-start gap-[clamp(32px,5vw,72px)] lg:grid-cols-2">
+          <Reveal>
+            <SectionIndex num="04" label="Start here" onSteel />
+
+            <h2 className="display mb-4 on-steel text-[clamp(32px,5vw,60px)] leading-[1.05]">
+              Let&apos;s build your step forward.
+            </h2>
+            <p className="m-0 max-w-[480px] text-base text-paper/70">
               Tell us what you&apos;re building. We&apos;ll tell you how to get there — with a
               plan, a timeline, and a team that ships.
             </p>
@@ -36,37 +36,40 @@ export default function Contact() {
               target="_blank"
               rel="noreferrer"
               reversed
-              className="btn btn-secondary contact__whatsapp"
+              className="btn btn-secondary relative mt-6 border-paper/35 px-[22px] py-[13px] text-[15px] on-steel no-underline hover:bg-paper/10 active:bg-paper/20"
             >
               <Icon name="whatsapp" size={16} />
               Chat on WhatsApp
             </Blueprint>
 
-            <ul className="contact__channels">
-              <li>
-                <span className="contact__label">Email</span>
-                <a href={contact.emailHref}>{contact.email}</a>
-              </li>
-              <li>
-                <span className="contact__label">Phone</span>
-                <a href={contact.phoneHref}>{contact.phone}</a>
-              </li>
-              <li>
-                <span className="contact__label">Studio</span>
-                <span>{contact.studio}</span>
-              </li>
-              <li>
-                <span className="contact__label">Hours</span>
-                <span>{contact.hours}</span>
-              </li>
+            <ul className="mt-[clamp(32px,4vw,48px)] grid list-none grid-cols-[repeat(auto-fit,minmax(160px,1fr))] gap-6 border-t border-paper/20 p-0 pt-[clamp(24px,3vw,32px)]">
+              <Channel label="Email" href={contact.emailHref} value={contact.email} />
+              <Channel label="Phone" href={contact.phoneHref} value={contact.phone} />
+              <Channel label="Studio" value={contact.studio} />
+              <Channel label="Hours" value={contact.hours} />
             </ul>
           </Reveal>
 
-          <Reveal delay={0.08} className="contact__form">
+          <Reveal delay={0.08}>
             <EnquiryForm />
           </Reveal>
         </div>
       </div>
     </section>
+  );
+}
+
+function Channel({ label, value, href }) {
+  return (
+    <li className="flex flex-col gap-[3px]">
+      <span className="text-[11px] tracking-[0.08em] text-steel-300 uppercase">{label}</span>
+      {href ? (
+        <a href={href} className="text-[15px] on-steel no-underline hover:text-steel-300 hover:underline">
+          {value}
+        </a>
+      ) : (
+        <span className="text-[15px] on-steel">{value}</span>
+      )}
+    </li>
   );
 }

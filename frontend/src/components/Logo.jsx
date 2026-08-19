@@ -31,7 +31,7 @@ export default function Logo({ variant = "mark", className = "", withName = fals
       <span
         role="img"
         aria-label={`${brand.name} Studios — ${brand.tagline}`}
-        className={`logo logo--lockup ${className}`.trim()}
+        className={`logo h-[84px] w-[210px] [mask-position:left_center] [-webkit-mask-position:left_center] ${className}`.trim()}
         style={{ WebkitMaskImage: `url(${lockupSrc})`, maskImage: `url(${lockupSrc})` }}
       />
     );
@@ -44,7 +44,7 @@ export default function Logo({ variant = "mark", className = "", withName = fals
       aria-hidden={withName || undefined}
       role={withName ? undefined : "img"}
       aria-label={withName ? undefined : brand.name}
-      className={`logo logo--mark ${withName ? "" : className}`.trim()}
+      className={`logo h-8 w-8 ${withName ? "" : className}`.trim()}
       style={{ WebkitMaskImage: `url(${markSrc})`, maskImage: `url(${markSrc})` }}
     />
   );
@@ -52,9 +52,11 @@ export default function Logo({ variant = "mark", className = "", withName = fals
   if (!withName) return mark;
 
   return (
-    <span className={`logo-lockup-inline ${className}`.trim()}>
+    <span className={`inline-flex items-center gap-2.5 ${className}`.trim()}>
       {mark}
-      <span className="logo-lockup-inline__name">{brand.wordmark}</span>
+      <span className="font-display text-[19px] leading-none tracking-[0.015em]">
+        {brand.wordmark}
+      </span>
     </span>
   );
 }

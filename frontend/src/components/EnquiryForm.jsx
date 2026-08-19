@@ -126,19 +126,19 @@ export default function EnquiryForm() {
   };
 
   return (
-    <Blueprint as="div" reversed className="enquiry">
+    <Blueprint as="div" reversed className="relative bg-paper p-[clamp(24px,3vw,36px)]">
       <form ref={formRef} onSubmit={handleSubmit} noValidate>
-        <h3 className="enquiry__title">Tell us about your business</h3>
-        <p className="enquiry__lede text-muted">
+        <h3 className="display mb-2 text-[22px]">Tell us about your business</h3>
+        <p className="text-muted mb-6 text-sm">
           Takes under a minute. We reply the same working day.
         </p>
 
-        <div className="enquiry__grid">
+        <div className="grid gap-4 max-md:grid-cols-1 md:grid-cols-2">
           {Object.entries(FIELDS).map(([key, field]) => {
             const id = `${uid}-${key}`;
             const invalid = Boolean(errors[key]);
             return (
-              <p className="field" key={key}>
+              <p className="field m-0" key={key}>
                 <label htmlFor={id}>
                   {field.label}
                   {field.required && <span aria-hidden="true"> *</span>}
@@ -157,7 +157,7 @@ export default function EnquiryForm() {
                   aria-describedby={invalid ? `${id}-error` : undefined}
                 />
                 {invalid && (
-                  <span className="field__error" id={`${id}-error`}>
+                  <span className="mt-[5px] block text-xs text-steel-800" id={`${id}-error`}>
                     {errors[key]}
                   </span>
                 )}
@@ -165,9 +165,10 @@ export default function EnquiryForm() {
             );
           })}
 
-          <p className="field">
+          <p className="field m-0">
             <label htmlFor={`${uid}-service`}>Interested in</label>
-            <span className="field__select">
+            {/* Native select kept; only the chevron is ours. */}
+            <span className="relative block [&_select]:appearance-none [&_select]:pr-[34px]">
               <select
                 id={`${uid}-service`}
                 name="service"
@@ -180,11 +181,15 @@ export default function EnquiryForm() {
                   <option key={service.num}>{service.title}</option>
                 ))}
               </select>
-              <Icon name="chevronDown" aria-hidden="true" />
+              <Icon
+                name="chevronDown"
+                aria-hidden="true"
+                className="pointer-events-none absolute top-1/2 right-[11px] -translate-y-1/2 text-ink/55"
+              />
             </span>
           </p>
 
-          <p className="field field--full">
+          <p className="field col-span-full m-0">
             <label htmlFor={`${uid}-message`}>What would you like to achieve?</label>
             <textarea
               id={`${uid}-message`}
@@ -200,14 +205,14 @@ export default function EnquiryForm() {
 
         <button
           type="submit"
-          className="btn btn-primary btn-block enquiry__submit"
+          className="btn btn-primary btn-block mt-6 py-[13px] text-[15px]"
           disabled={status.state === "sending"}
         >
           <Icon name="plus" size={15} strokeWidth={2} />
           {status.state === "sending" ? "Sending…" : "Send Enquiry"}
         </button>
 
-        <p className="enquiry__fallback text-muted">
+        <p className="text-muted mt-3 mb-0 text-center text-xs">
           {enquiry.endpoint ? "Prefer email?" : "Opens WhatsApp with your details filled in."}{" "}
           <button type="button" className="linkish" onClick={emailFallback}>
             Email it instead
@@ -218,8 +223,12 @@ export default function EnquiryForm() {
         <p
           role="status"
           aria-live="polite"
-          className={`enquiry__status${status.state === "error" ? " is-error" : ""}`}
           hidden={!status.message}
+          className={`mt-4 mb-0 border p-3 text-[13px] text-steel-900 ${
+            status.state === "error"
+              ? "border-steel-800 bg-mute-100"
+              : "border-steel bg-steel-100"
+          }`}
         >
           {status.message}
         </p>
