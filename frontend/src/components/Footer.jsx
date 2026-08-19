@@ -15,10 +15,10 @@ export default function Footer() {
       <div className="shell">
         <div className="footer__grid">
           <div>
-            <Logo className="footer__brand" />
-            <p className="text-muted" style={{ fontSize: 14, maxWidth: 240, margin: "0 0 var(--space-4)" }}>
-              {brand.tagline}.
-            </p>
+            {/* The lockup carries the tagline in the artwork itself, so the
+                line that used to sit here would only repeat it. */}
+            <Logo variant="lockup" className="footer__brand" />
+            <p className="text-muted footer__blurb">{brand.description}</p>
             <div className="footer__socials">
               {socials.map((social) => (
                 <a

@@ -36,7 +36,7 @@ export default function Header({ showAvailability = true }) {
     <header className="header">
       <nav className="nav" aria-label="Primary">
         <a href="#top" className="nav-brand" aria-label={`${brand.name} — home`} onClick={() => setOpen(false)}>
-          <Logo />
+          <Logo withName />
         </a>
 
         <div id="primary-nav" className="nav-links" data-open={open}>

@@ -101,11 +101,46 @@ export const enquiry = {
 
 ## The logo
 
-`components/Logo.jsx` renders the wordmark as live text — sharp at any size,
-selectable, readable to screen readers, no extra request. To use the official
-artwork, drop it at `src/assets/logo.svg`, then uncomment the import and the
-`<img>` branch in that file. Header and footer both render `<Logo />`, so they
-pick it up together.
+The official artwork ships **white-on-transparent**, which is right for the steel
+hero but would disappear on the paper ground the header and footer sit on. So the
+PNG is used as a **CSS mask filled with `currentColor`** rather than placed as an
+`<img>`: one asset serves every ground, in the exact token colour of wherever it
+lands, and it follows the palette if the system is ever retuned.
+
+Two variants, because the lockup does not survive being shrunk:
+
+| Variant | What | Used in |
+|---|---|---|
+| `mark` | the monogram alone — legible down to ~24px | header (beside the name), hero headline |
+| `lockup` | mark + wordmark + tagline — needs ~56px of height before the tagline resolves | footer |
+
+The header pairs the official mark with the name set in Barlow Condensed, the same
+condensed grotesque the artwork's own wordmark uses. The hero locks the mark into
+the headline where the artboard calls for a photograph — it belongs in that
+sentence better than a stand-in image would, and it swaps out the moment a real
+team shot exists.
+
+```
+src/assets/brand/          full-resolution originals, versioned, never shipped
+  logo-mark-source.png       7500×7500
+  logo-lockup-source.png     7500×3000
+src/assets/               optimised derivatives the site imports
+  logo-mark.png              1.6 MB → 10 KB
+  logo-lockup.png            555 KB → 47 KB
+public/                   favicons + share card, opaque steel tile
+```
+
+After replacing a source file, regenerate the derivatives:
+
+```bash
+npm i -D playwright
+node scripts/generate-brand-assets.mjs   # logo assets + favicons
+node scripts/generate-og-image.mjs       # social share card
+```
+
+Originals live in `src/assets/brand/` rather than `public/` deliberately —
+anything in `public/` is copied verbatim into the build, so the 2.2 MB of
+full-resolution artwork would ship to every visitor.
 
 ## Adding real photography
 
