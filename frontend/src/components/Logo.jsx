@@ -15,11 +15,15 @@ import { brand } from "../data/site";
  * Two variants, because the lockup does not survive being shrunk:
  *
  *   mark    the monogram alone. Legible down to ~24px, so it carries the
- *           header, paired with the name set in the system's heading face —
- *           the same condensed grotesque the artwork's own wordmark uses.
+ *           header on small screens, paired with the name set in the system's
+ *           heading face — the same condensed grotesque the artwork uses.
  *   lockup  the full artwork: mark, wordmark and tagline. Needs ~56px of
- *           height before the tagline resolves, so it is used in the footer
- *           where there is room for it to be read.
+ *           height before the tagline resolves, which is why the header only
+ *           shows it from md up and the footer gives it more room still.
+ *
+ * Neither variant sets its own size — callers do, because two Tailwind size
+ * classes on one element resolve by stylesheet order rather than by which the
+ * caller passed.
  *
  * Sources live in src/assets/brand/ at full resolution; the files imported
  * here are the optimised derivatives (1.6 MB → 10 KB, 555 KB → 47 KB).
@@ -31,7 +35,7 @@ export default function Logo({ variant = "mark", className = "", withName = fals
       <span
         role="img"
         aria-label={`${brand.name} Studios — ${brand.tagline}`}
-        className={`logo h-[84px] w-[210px] [mask-position:left_center] [-webkit-mask-position:left_center] ${className}`.trim()}
+        className={`logo [mask-position:left_center] [-webkit-mask-position:left_center] ${className}`.trim()}
         style={{ WebkitMaskImage: `url(${lockupSrc})`, maskImage: `url(${lockupSrc})` }}
       />
     );
