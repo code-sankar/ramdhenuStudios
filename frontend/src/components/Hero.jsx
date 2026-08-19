@@ -21,6 +21,7 @@ export default function Hero({ showAvailability = true }) {
     <section id="top" className="hero">
       <div className="hero__grid" aria-hidden="true" />
       <div className="hero__aurora" aria-hidden="true" />
+      <div className="hero__veil" aria-hidden="true" />
 
       <div className="shell hero__inner">
         <div className="hero__top">
