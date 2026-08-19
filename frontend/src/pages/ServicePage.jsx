@@ -209,18 +209,14 @@ export default function ServicePage() {
           </Reveal>
           <Reveal delay={0.06}>
             <div className="flex flex-wrap gap-[clamp(24px,4vw,56px)]">
-              <Blueprint
-                className={`relative block aspect-4/3 min-w-[240px] flex-[0_1_clamp(260px,34vw,460px)] ${
-                  service.project.image ? "duotone" : ""
-                }`}
-              >
+              <Blueprint className="relative block aspect-4/3 min-w-[240px] flex-[0_1_clamp(260px,34vw,460px)]">
                 {service.project.image ? (
                   <img
                     src={service.project.image}
                     alt={`${service.project.name} — ${service.title}`}
                     loading="lazy"
                     decoding="async"
-                    className="h-full w-full object-cover"
+                    className="h-full w-full object-contain"
                   />
                 ) : (
                   <Plate motif={service.project.motif} label={`${service.project.name} — ${service.title}`} />

@@ -85,11 +85,7 @@ export default function Testimonials({ autoplay = true }) {
 
               <figcaption className="mt-0 flex flex-wrap items-center justify-between gap-5 text-base">
                 <span className="flex items-center gap-[14px]">
-                  <Blueprint
-                    className={`relative inline-block h-[52px] w-[52px] flex-none ${
-                      current.avatar ? "duotone" : ""
-                    }`}
-                  >
+                  <Blueprint className="relative inline-block h-[52px] w-[52px] flex-none">
                     <Avatar person={current} />
                   </Blueprint>
                   <span>
@@ -106,9 +102,7 @@ export default function Testimonials({ autoplay = true }) {
                       aria-label={`Show testimonial ${i + 1} of ${testimonials.length}`}
                       aria-current={i === index ? "true" : undefined}
                       onClick={() => go(i)}
-                      className={`relative -ml-2 h-8 w-8 cursor-pointer border border-line bg-none p-0 opacity-55 transition duration-200 hover:-translate-y-0.5 hover:opacity-85 aria-[current=true]:-translate-y-0.5 aria-[current=true]:opacity-100 ${
-                        person.avatar ? "duotone" : ""
-                      }`}
+                      className="relative -ml-2 h-8 w-8 cursor-pointer border border-line bg-none p-0 opacity-55 transition duration-200 hover:-translate-y-0.5 hover:opacity-85 aria-[current=true]:-translate-y-0.5 aria-[current=true]:opacity-100"
                     >
                       <Avatar person={person} small />
                     </button>

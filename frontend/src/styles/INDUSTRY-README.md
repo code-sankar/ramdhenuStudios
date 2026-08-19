@@ -1,6 +1,6 @@
 # Industry design system
 
-Industry is a wireframe: steel-blue on a light technical ground, Barlow Condensed headings over Barlow, a modular grid, and cards, figures and buttons framed as blueprint objects — square-cornered, hairline-bordered, with "+" registration marks at the corners. Cards and figures stay transparent line drawings; the primary button is the one solid object on the board, an accent fill that keeps the square corners and the marks. Photography is duotoned into the steel accent and icons are thin-stroke.
+Industry is a wireframe: steel-blue on a light technical ground, Barlow Condensed headings over Barlow, a modular grid, and cards, figures and buttons framed as blueprint objects — square-cornered, hairline-bordered, with "+" registration marks at the corners. Cards and figures stay transparent line drawings; the primary button is the one solid object on the board, an accent fill that keeps the square corners and the marks. Photography runs in true colour inside the same blueprint frame, and icons are thin-stroke.
 
 ## How to use this
 
@@ -11,7 +11,7 @@ Industry is a wireframe: steel-blue on a light technical ground, Barlow Condense
 
 ## Direction
 
-Modular grid layouts — content in equal-width cells, strong horizontal and vertical rhythm, visible structure. Cards, buttons and major sections are wireframe objects: square-cornered, thin-bordered, with `+` crosshair corner marks (the `.blueprint` class + four `<i class="corner tl/tr/bl/br">` children) — never soft filled rounded blocks. Images and figures get the same treatment: square, hairline-framed and marked, never rounded or clipped. Wrap hero and inline images in the `.duotone` class — they are desaturated and washed in the accent, like a screen print that re-colors with the theme.
+Modular grid layouts — content in equal-width cells, strong horizontal and vertical rhythm, visible structure. Cards, buttons and major sections are wireframe objects: square-cornered, thin-bordered, with `+` crosshair corner marks (the `.blueprint` class + four `<i class="corner tl/tr/bl/br">` children) — never soft filled rounded blocks. Images and figures get the same treatment: square, hairline-framed and marked, never rounded or clipped. Photographs keep their own colour — the frame does the styling, not a wash over the picture — and are sized with `object-contain` so the whole image is visible rather than cropped to fill its box.
 
 ## Color
 
@@ -42,7 +42,6 @@ Interactive states are themed, never browser defaults: give every interactive el
 | `.dialog-backdrop` + `.dialog` (+ `.dialog-title/-body/-actions`) | A modal at the top elevation | components/dialog.html |
 | `.hr` | A horizontal rule — present, but this system prefers whitespace; avoid it | — |
 | `.blueprint` + four `<i class="corner tl/tr/bl/br">` children | The wireframe frame every card, figure and primary button wears | components/cards.html |
-| `.duotone` | The image wrapper — every content photograph goes through it | foundations/image.html |
 
 States are built in: hovers and pressed states come from the accent ramp, keyboard focus is the 2px accent `:focus-visible` ring, `::selection` is an accent tint, and disabled controls drop to 45% opacity. Don't restyle them per page. The accent-to-ground pair is tuned to at least 3:1 — enough for icons, large text and interface chrome, not for body copy — so for paragraph-size text in the accent use a deep ramp step (`--color-accent-700` on this ground) rather than the accent itself.
 
@@ -51,7 +50,7 @@ States are built in: hovers and pressed states come from the accent ramp, keyboa
 - Frame cards, figures and primary buttons as blueprint objects: the `.blueprint` class plus four `<i class="corner …">` marks.
 - Keep the grid visible — equal cells, strong horizontal and vertical rhythm.
 - Condense headings (Barlow Condensed) and keep body copy in Barlow.
-- Duotone photographs with the `.duotone` wrapper so they take the accent.
+- Show photographs in true colour, framed by `.blueprint` and fitted with `object-contain` so nothing is cropped.
 
 ## Don't
 

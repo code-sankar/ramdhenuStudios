@@ -1,15 +1,16 @@
 /**
  * PLATE — what fills a figure until a real photograph exists.
  * ---------------------------------------------------------------------------
- * The Industry system runs every content photograph through `.duotone`, which
- * washes it into the steel accent. Where there is no photograph yet, dropping
- * in stock imagery would misrepresent the work — so the figure renders a drawn
- * spec-sheet plate instead: a square, hairline-framed object on the modular
- * grid, with a motif naming the discipline.
+ * Content photographs render in true colour, framed by the system's hairline
+ * and corner marks and sized with `object-contain` so nothing is cropped out of
+ * them. Where there is no photograph yet, dropping in stock imagery would
+ * misrepresent the work — so the figure renders a drawn spec-sheet plate
+ * instead: a square, hairline-framed object on the modular grid, with a motif
+ * naming the discipline.
  *
- * A plate is a drawing, not a photograph, so it is never wrapped in `.duotone`
- * — that filter is for images with real tonal range, and flattens a line
- * drawing into a solid field.
+ * A plate is a drawing rather than a photograph, so it fills its frame instead
+ * of being fitted inside one — there is no subject to crop and no aspect ratio
+ * of its own to preserve.
  *
  * `tone="steel"` inverts it for use on the dark hero field.
  * Pass `image` on a project in /src/data/services.js and this steps aside.
