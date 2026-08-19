@@ -20,7 +20,7 @@ export default function Contact() {
       <div className="shell">
         <div className="grid items-start gap-[clamp(32px,5vw,72px)] lg:grid-cols-2">
           <Reveal>
-            <SectionIndex num="04" label="Start here" onSteel />
+            <SectionIndex num="05" label="Start here" onSteel />
 
             <h2 className="display mb-4 on-steel text-[clamp(32px,5vw,60px)] leading-[1.05]">
               Let&apos;s build your step forward.

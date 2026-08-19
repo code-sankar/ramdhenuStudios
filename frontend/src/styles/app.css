@@ -235,30 +235,35 @@ h3 {
   opacity: 1;
 }
 
-/* A button that reads as a link — the email fallback and the footer's legal
-   triggers, which open dialogs rather than navigate. */
-.linkish {
-  all: unset;
-  cursor: pointer;
-  color: var(--color-accent-700);
-  text-decoration: underline;
-  text-underline-offset: 3px;
-}
-.linkish:hover {
-  color: var(--color-accent-800);
-}
-.linkish:focus-visible {
-  outline: 2px solid var(--color-accent);
-  outline-offset: 2px;
-}
-/* In the footer they sit among plain anchors, so they match them. */
-.footer .linkish {
-  color: inherit;
-  text-decoration: none;
-  font-size: 15px;
-}
-.footer .linkish:hover {
-  color: var(--color-accent-700);
+/* Reusable classes go in the components layer so utilities can still
+   override them — `.linkish` sets `all: unset`, which was beating
+   `inline-flex` from the markup and dropping the icon onto its own line. */
+@layer components {
+  /* A button that reads as a link — the email fallback and the footer's legal
+     triggers, which open dialogs rather than navigate. */
+  .linkish {
+    all: unset;
+    cursor: pointer;
+    color: var(--color-accent-700);
+    text-decoration: underline;
+    text-underline-offset: 3px;
+  }
+  .linkish:hover {
+    color: var(--color-accent-800);
+  }
+  .linkish:focus-visible {
+    outline: 2px solid var(--color-accent);
+    outline-offset: 2px;
+  }
+  /* In the footer they sit among plain anchors, so they match them. */
+  .footer .linkish {
+    color: inherit;
+    text-decoration: none;
+    font-size: 15px;
+  }
+  .footer .linkish:hover {
+    color: var(--color-accent-700);
+  }
 }
 
 /* Honour the OS reduce-motion setting. */
