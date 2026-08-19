@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import Blueprint from "./Blueprint";
 import Icon from "./Icon";
+import Logo from "./Logo";
 import { brand, nav } from "../data/site";
 
 /**
@@ -34,8 +35,8 @@ export default function Header({ showAvailability = true }) {
   return (
     <header className="header">
       <nav className="nav" aria-label="Primary">
-        <a href="#top" className="nav-brand" onClick={() => setOpen(false)}>
-          {brand.wordmark}
+        <a href="#top" className="nav-brand" aria-label={`${brand.name} — home`} onClick={() => setOpen(false)}>
+          <Logo withName />
         </a>
 
         <div id="primary-nav" className="nav-links" data-open={open}>

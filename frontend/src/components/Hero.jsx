@@ -1,6 +1,6 @@
 import Blueprint from "./Blueprint";
 import Icon from "./Icon";
-import Plate from "./Plate";
+import Logo from "./Logo";
 import { brand, disciplines } from "../data/site";
 
 /**
@@ -57,8 +57,11 @@ export default function Hero({ showAvailability = true }) {
           <span className="hero__line">A Step</span>
           <span className="hero__line">Towards Digital</span>
           <span className="hero__line hero__line--media">
+            {/* The artboard locks a photograph into this line. Until the team
+                shoot exists, the brand mark holds the slot — it belongs in the
+                sentence far better than a stand-in image would. */}
             <Blueprint reversed className="hero__photo">
-              <Plate motif="photography" tone="steel" label="Ramdhenu team at work" />
+              <Logo className="hero__mark-slot" />
             </Blueprint>
             Presence
           </span>

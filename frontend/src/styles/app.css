@@ -13,6 +13,50 @@ html { scroll-behavior: smooth; scroll-padding-top: 84px; }
 body { overflow-x: hidden; }
 p, h1, h2, h3 { text-wrap: pretty; }
 
+/* Skip link — visually hidden until it takes focus, then it lands on the
+   steel field where it is legible. */
+.skip-link {
+  position: fixed;
+  top: var(--space-3);
+  left: var(--space-3);
+  z-index: 200;
+  padding: var(--space-2) var(--space-4);
+  background: var(--color-accent);
+  color: var(--color-bg);
+  font-family: var(--font-heading);
+  font-weight: var(--font-heading-weight);
+  text-decoration: none;
+  transform: translateY(-200%);
+  transition: transform 160ms ease;
+}
+.skip-link:focus-visible { transform: translateY(0); }
+
+/* BRAND MARK — the artwork is white-on-transparent and used as a mask, so it
+   takes the colour of whatever it sits on. See components/Logo.jsx. */
+.logo {
+  display: block;
+  background-color: currentColor;
+  -webkit-mask-repeat: no-repeat;
+  mask-repeat: no-repeat;
+  -webkit-mask-position: center;
+  mask-position: center;
+  -webkit-mask-size: contain;
+  mask-size: contain;
+}
+.logo--mark { width: 32px; height: 32px; }
+.logo--lockup { width: 210px; height: 84px; -webkit-mask-position: left center; mask-position: left center; }
+
+/* The header's compact lockup: official mark + the name set in the system's
+   heading face, which is the same condensed grotesque the artwork uses. */
+.logo-lockup-inline { display: inline-flex; align-items: center; gap: 10px; }
+.logo-lockup-inline__name {
+  font-family: var(--font-heading);
+  font-weight: var(--font-heading-weight);
+  font-size: 19px;
+  letter-spacing: 0.015em;
+  line-height: 1;
+}
+
 /* The page gutter and measure every section shares. */
 .shell {
   max-width: 1320px;
@@ -154,10 +198,18 @@ p, h1, h2, h3 { text-wrap: pretty; }
 .hero__photo {
   position: relative;
   display: inline-block;
-  width: clamp(56px, 7vw, 120px);
-  height: clamp(48px, 6vw, 96px);
+  width: clamp(58px, 7.5vw, 108px);
+  height: clamp(58px, 7.5vw, 108px);
   flex: none;
 }
+/* The mark sits inside the headline's framed slot, breathing inside it. */
+.hero__mark-slot {
+  position: absolute;
+  inset: 9%;
+  width: auto;
+  height: auto;
+}
+
 .hero__foot {
   display: flex;
   justify-content: space-between;
@@ -322,15 +374,14 @@ p, h1, h2, h3 { text-wrap: pretty; }
 .testi__dot[aria-current="true"] { opacity: 1; transform: translateY(-2px); }
 
 /* --------------------------------------------------------------------------
-   CONTACT
+   CONTACT — the ask on the left, the enquiry form on the right
    -------------------------------------------------------------------------- */
 .contact { padding-block: clamp(64px, 8vw, 120px); background: var(--color-accent-900); }
 .contact__inner {
-  display: flex;
-  justify-content: space-between;
-  align-items: flex-end;
-  gap: clamp(32px, 5vw, 64px);
-  flex-wrap: wrap;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  align-items: start;
+  gap: clamp(32px, 5vw, 72px);
 }
 .contact__title {
   color: var(--color-bg);
@@ -344,6 +395,165 @@ p, h1, h2, h3 { text-wrap: pretty; }
   margin: 0;
   max-width: 480px;
 }
+.contact__whatsapp {
+  position: relative;
+  margin-top: var(--space-6);
+  text-decoration: none;
+  color: var(--color-bg);
+  border-color: color-mix(in srgb, var(--color-bg) 35%, transparent);
+  padding: 13px 22px;
+  font-size: 15px;
+}
+.contact__whatsapp:hover { background: color-mix(in srgb, var(--color-bg) 12%, transparent); }
+.contact__whatsapp:active { background: color-mix(in srgb, var(--color-bg) 20%, transparent); }
+
+.contact__channels {
+  list-style: none;
+  margin: clamp(32px, 4vw, 48px) 0 0;
+  padding: clamp(24px, 3vw, 32px) 0 0;
+  border-top: 1px solid color-mix(in srgb, var(--color-bg) 20%, transparent);
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+  gap: var(--space-6);
+}
+.contact__channels li { display: flex; flex-direction: column; gap: 3px; }
+.contact__channels a,
+.contact__channels span:not(.contact__label) {
+  color: var(--color-bg);
+  text-decoration: none;
+  font-size: 15px;
+}
+.contact__channels a:hover { color: var(--color-accent-300); text-decoration: underline; }
+.contact__label {
+  font-size: 11px;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--color-accent-300);
+}
+
+/* --------------------------------------------------------------------------
+   ENQUIRY FORM
+   -------------------------------------------------------------------------- */
+.enquiry {
+  position: relative;
+  background: var(--color-bg);
+  padding: clamp(24px, 3vw, 36px);
+}
+.enquiry__title {
+  font-family: var(--font-heading);
+  font-weight: var(--font-heading-weight);
+  font-size: 22px;
+  text-transform: uppercase;
+  margin: 0 0 var(--space-2);
+}
+.enquiry__lede { font-size: 14px; margin: 0 0 var(--space-6); }
+.enquiry__grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: var(--space-4);
+}
+.enquiry .field { margin: 0; }
+.field--full { grid-column: 1 / -1; }
+
+/* The select keeps a native control; only the chevron is ours. */
+.field__select { position: relative; display: block; }
+.field__select select { appearance: none; padding-right: 34px; }
+.field__select svg {
+  position: absolute;
+  top: 50%;
+  right: 11px;
+  transform: translateY(-50%);
+  pointer-events: none;
+  color: color-mix(in srgb, var(--color-text) 55%, transparent);
+}
+
+.field__error {
+  display: block;
+  margin-top: 5px;
+  font-size: 12px;
+  color: var(--color-accent-800);
+}
+.input[aria-invalid="true"] { border-color: var(--color-accent-800); }
+
+.enquiry__submit { margin-top: var(--space-6); padding-block: 13px; font-size: 15px; }
+.enquiry__fallback { font-size: 12px; text-align: center; margin: var(--space-3) 0 0; }
+
+.enquiry__status {
+  margin: var(--space-4) 0 0;
+  padding: var(--space-3);
+  border: 1px solid var(--color-accent);
+  background: var(--color-accent-100);
+  color: var(--color-accent-900);
+  font-size: 13px;
+}
+.enquiry__status.is-error {
+  border-color: var(--color-accent-800);
+  background: var(--color-neutral-100);
+}
+
+/* A button that reads as a link — used for the email fallback and the
+   footer's legal triggers, which open dialogs rather than navigate. */
+.linkish {
+  all: unset;
+  cursor: pointer;
+  color: var(--color-accent-700);
+  text-decoration: underline;
+  text-underline-offset: 3px;
+}
+.linkish:hover { color: var(--color-accent-800); }
+.linkish:focus-visible { outline: 2px solid var(--color-accent); outline-offset: 2px; }
+
+/* --------------------------------------------------------------------------
+   LEGAL DIALOG
+   -------------------------------------------------------------------------- */
+/* The blueprint layer makes .dialog transparent, which is right for a card on
+   the page but unreadable for a modal over its own backdrop. Give it the paper
+   ground back and leave the border and square corners alone. */
+/* Clears the sticky header (z-index 50), which would otherwise sit on top
+   of the backdrop. */
+.dialog-backdrop { z-index: 100; }
+
+.dialog--solid {
+  background: var(--color-bg);
+  width: min(620px, 100%);
+  max-height: min(80vh, 720px);
+  overflow-y: auto;
+}
+.dialog__head {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: var(--space-4);
+}
+.dialog-body { opacity: 1; }
+.legal__updated { font-size: 12px; margin: 0 0 var(--space-4); }
+.legal__notice {
+  display: flex;
+  align-items: baseline;
+  gap: var(--space-2);
+  flex-wrap: wrap;
+  font-size: 13px;
+  margin: 0 0 var(--space-6);
+  padding-bottom: var(--space-4);
+  border-bottom: 1px solid var(--color-divider);
+}
+.legal__section { margin-bottom: var(--space-6); }
+.legal__heading {
+  font-family: var(--font-heading);
+  font-weight: var(--font-heading-weight);
+  font-size: 16px;
+  text-transform: uppercase;
+  margin: 0 0 var(--space-2);
+}
+.legal__body { font-size: 14px; margin: 0; }
+
+/* The footer's legal links are buttons; match them to their sibling anchors. */
+.footer__nav .linkish {
+  color: inherit;
+  text-decoration: none;
+  font-size: 15px;
+}
+.footer__nav .linkish:hover { color: var(--color-accent-700); }
 
 /* --------------------------------------------------------------------------
    FOOTER
@@ -358,13 +568,8 @@ p, h1, h2, h3 { text-wrap: pretty; }
   padding-bottom: clamp(40px, 6vw, 72px);
   border-bottom: 1px solid var(--color-divider);
 }
-.footer__brand {
-  display: block;
-  font-family: var(--font-heading);
-  font-weight: var(--font-heading-weight);
-  font-size: 22px;
-  margin-bottom: var(--space-2);
-}
+.footer__brand { margin-bottom: var(--space-4); }
+.footer__blurb { font-size: 14px; max-width: 260px; margin: 0 0 var(--space-6); }
 .footer__col-head {
   display: block;
   font-size: 11px;
@@ -419,6 +624,7 @@ p, h1, h2, h3 { text-wrap: pretty; }
 
 @media (max-width: 899px) {
   .footer__grid { grid-template-columns: 1fr 1fr; }
+  .contact__inner { grid-template-columns: 1fr; }
 }
 
 @media (max-width: 767px) {
@@ -447,6 +653,7 @@ p, h1, h2, h3 { text-wrap: pretty; }
   .hero__disciplines { align-items: flex-start; }
   .footer__grid { grid-template-columns: 1fr; }
   .testi__head { align-items: flex-start; }
+  .enquiry__grid { grid-template-columns: 1fr; }
 }
 
 /* Honour the OS reduce-motion setting. */

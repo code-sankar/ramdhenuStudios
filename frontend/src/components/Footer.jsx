@@ -1,18 +1,24 @@
+import { useState } from "react";
 import Icon from "./Icon";
-import { brand, contact, legal, nav, socials } from "../data/site";
+import Logo from "./Logo";
+import LegalDialogs from "./LegalDialogs";
+import { brand, contact, nav, socials } from "../data/site";
 
 export default function Footer() {
   const year = new Date().getFullYear();
+  /* Privacy and Terms open in place — this is a one-page site, and two
+     documents don't justify pulling in a router. */
+  const [openDoc, setOpenDoc] = useState(null);
 
   return (
     <footer className="footer">
       <div className="shell">
         <div className="footer__grid">
           <div>
-            <span className="footer__brand">{brand.wordmark}</span>
-            <p className="text-muted" style={{ fontSize: 14, maxWidth: 240, margin: "0 0 var(--space-4)" }}>
-              {brand.tagline}.
-            </p>
+            {/* The lockup carries the tagline in the artwork itself, so the
+                line that used to sit here would only repeat it. */}
+            <Logo variant="lockup" className="footer__brand" />
+            <p className="text-muted footer__blurb">{brand.description}</p>
             <div className="footer__socials">
               {socials.map((social) => (
                 <a
@@ -55,11 +61,12 @@ export default function Footer() {
           <div>
             <span className="footer__col-head text-muted">Legal</span>
             <nav className="footer__nav" aria-label="Legal">
-              {legal.map((item) => (
-                <a key={item.label} href={item.href}>
-                  {item.label}
-                </a>
-              ))}
+              <button type="button" className="linkish" onClick={() => setOpenDoc("privacy")}>
+                Privacy Policy
+              </button>
+              <button type="button" className="linkish" onClick={() => setOpenDoc("terms")}>
+                Terms &amp; Conditions
+              </button>
             </nav>
           </div>
         </div>
@@ -76,6 +83,8 @@ export default function Footer() {
       <div className="footer__wordmark-clip" aria-hidden="true">
         <span className="footer__wordmark">{brand.wordmark}</span>
       </div>
+
+      <LegalDialogs openDoc={openDoc} onClose={() => setOpenDoc(null)} />
     </footer>
   );
 }
