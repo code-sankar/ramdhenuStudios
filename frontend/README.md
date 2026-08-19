@@ -65,7 +65,7 @@ layered gradients with masks (the hero aurora, its scrim, the field grid), the
 logo's mask mechanics. It introduces no colour, font or spacing of its own.
 
 The design system's own component classes — `.blueprint`, `.corner`, `.btn`,
-`.tag`, `.input`, `.field`, `.dialog`, `.duotone` — are used as-is rather than
+`.tag`, `.input`, `.field`, `.dialog` — are used as-is rather than
 reimplemented, which is what the system's guide asks for. Read
 `src/styles/INDUSTRY-README.md` before changing anything visual. The short version:
 
@@ -305,9 +305,10 @@ project: {
 }
 ```
 
-The component then swaps the plate for the photo and applies the system's
-`.duotone` wash automatically. Duotone is only ever applied to real photographs —
-it flattens a line drawing into a solid field.
+The component then swaps the plate for the photo. Photographs render in true
+colour inside the system's hairline frame and corner marks, fitted with
+`object-contain` — the whole image stays visible rather than being cropped to
+fill the box, so a shot's own composition survives the layout.
 
 ## Type
 

@@ -82,16 +82,13 @@ export default function VideoEmbed({ id, title, poster, caption, motif = "video"
             className="group absolute inset-0 grid w-full place-items-center focus-visible:outline-2 focus-visible:outline-offset-[-4px] focus-visible:outline-steel enabled:cursor-pointer"
           >
             {poster ? (
-              /* Every content photograph goes through the system's duotone —
-                 the still reads as brand material, then clears to full colour
-                 the moment it starts playing. */
-              <span className="duotone absolute inset-0 block">
+              <span className="absolute inset-0 block">
                 <img
                   src={poster}
                   alt=""
                   loading="lazy"
                   decoding="async"
-                  className="h-full w-full object-cover"
+                  className="h-full w-full object-contain"
                 />
               </span>
             ) : (
