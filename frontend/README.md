@@ -188,6 +188,34 @@ Originals live in `src/assets/brand/` rather than `public/` deliberately —
 anything in `public/` is copied verbatim into the build, so the 2.2 MB of
 full-resolution artwork would ship to every visitor.
 
+## Service pages
+
+Each service is a real page at `/services/<slug>/`, generated from
+`src/data/services.js`. Add or rename a service there, then:
+
+```bash
+node scripts/generate-service-pages.mjs
+```
+
+That writes `services/<slug>/index.html` (committed, not a build artefact — Vite
+needs them on disk as inputs, and keeping them in the repo makes the routes
+reviewable in a diff) and rebuilds `public/sitemap.xml`. `vite.config.js`
+discovers the inputs from that directory, so nothing else needs touching.
+
+**This is a multi-page build, not a single-page app.** The whole point of these
+pages is ranking for terms like "website design Guwahati". A client-side router
+would serve one `index.html` for every URL, leaving the title, description and
+structured data identical for all six unless JavaScript runs — and deep links
+would need a host rewrite rule. Real HTML files at real paths avoid both and
+work on any static host.
+
+Every page carries its own `<title>`, description, canonical, `Service` schema
+(with the full includes list as an offer catalog) and `BreadcrumbList`. The home
+page's services section is now an index of links into them.
+
+`src/entries/service.jsx` is shared by all six: it reads the slug back out of
+`location.pathname` and renders `pages/ServicePage.jsx` with the matching entry.
+
 ## The About video
 
 `src/data/site.js` → `aboutVideo`. Set `id` to the YouTube video ID — the part

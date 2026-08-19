@@ -68,7 +68,7 @@ export default function Header({ showAvailability = true }) {
         aria-label="Primary"
       >
         <a
-          href="#top"
+          href="/#top"
           className="nav-brand md:mr-0"
           aria-label={`${brand.name} — home`}
           onClick={() => setOpen(false)}
@@ -89,7 +89,7 @@ export default function Header({ showAvailability = true }) {
           {nav.map((item) => (
             <a
               key={item.id}
-              href={`#${item.id}`}
+              href={`/#${item.id}`}
               aria-current={active === item.id ? "true" : undefined}
               className="text-[15.5px] tracking-[0.005em] transition-colors duration-150 hover:text-steel-700 aria-[current=true]:text-steel-700 max-md:text-[17px]"
               onClick={() => setOpen(false)}
@@ -106,7 +106,7 @@ export default function Header({ showAvailability = true }) {
 
           <Blueprint
             as="a"
-            href="#contact"
+            href="/#contact"
             className="btn btn-primary relative px-5 py-2.5 text-[14.5px] no-underline max-md:order-2 max-md:px-3 max-md:py-2 max-md:text-[13px]"
             onClick={() => setOpen(false)}
           >

@@ -23,16 +23,31 @@ export default function Footer() {
             <Logo variant="lockup" className="mb-4 h-[84px] w-[210px]" />
             <p className="text-muted mb-6 max-w-[260px] text-sm">{brand.description}</p>
             <div className="flex gap-2">
-              {socials.map((social) => (
-                <a
-                  key={social.label}
-                  href={social.href}
-                  className="btn btn-icon btn-secondary"
-                  aria-label={social.label}
-                >
-                  <Icon name={social.icon} />
-                </a>
-              ))}
+              {/* Until a real profile URL is set in site.js these render as
+                  inert marks rather than `href="#"` — a dead anchor on a
+                  sub-page jumps the reader to the top for no reason. */}
+              {socials.map((social) =>
+                social.href && social.href !== "#" ? (
+                  <a
+                    key={social.label}
+                    href={social.href}
+                    target="_blank"
+                    rel="noreferrer"
+                    className="btn btn-icon btn-secondary"
+                    aria-label={social.label}
+                  >
+                    <Icon name={social.icon} />
+                  </a>
+                ) : (
+                  <span
+                    key={social.label}
+                    className="btn btn-icon btn-secondary opacity-45"
+                    title={`${social.label} — add the profile URL in src/data/site.js`}
+                  >
+                    <Icon name={social.icon} />
+                  </span>
+                ),
+              )}
             </div>
           </div>
 
@@ -60,7 +75,7 @@ export default function Footer() {
             <span className={`text-muted ${colHead}`}>Company</span>
             <nav className={linkCol} aria-label="Footer">
               {nav.map((item) => (
-                <a key={item.id} href={`#${item.id}`}>
+                <a key={item.id} href={`/#${item.id}`}>
                   {item.label}
                 </a>
               ))}
