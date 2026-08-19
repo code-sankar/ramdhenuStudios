@@ -76,7 +76,7 @@ export default function Dialog({ open, onClose, title, children, labelledBy }) {
         aria-labelledby={labelledBy}
         tabIndex={-1}
       >
-        <div className="dialog__head">
+        <div className="flex items-start justify-between gap-4">
           <h2 className="dialog-title" id={labelledBy}>
             {title}
           </h2>

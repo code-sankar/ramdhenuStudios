@@ -1,53 +1,65 @@
 import Reveal from "./Reveal";
+import SectionIndex from "./ui/SectionIndex";
 import { industries, stats } from "../data/site";
 
 /**
  * ABOUT — the positioning claim, then the facts behind it.
  *
- * The claim and its qualification used to run at the same display size, which
- * put five lines of grey under one line of black and read as a wall. They are
- * split into two columns now: the claim keeps the display scale, the
- * qualification drops to body copy where it belongs.
+ * The claim and its qualification are split across two columns: the claim
+ * keeps display scale, the qualification sits at body scale. Run at the same
+ * size they put five lines of grey under one line of black and read as a wall.
  */
 export default function About() {
   return (
-    <section id="about" className="section section--paper">
+    <section id="about" className="section-y bg-paper">
       <div className="shell">
         <Reveal>
-          <p className="section-index">
-            <span className="section-index__num">01</span>
-            <span className="section-index__rule" aria-hidden="true" />
-            <span className="kicker">Who we are</span>
-          </p>
+          <SectionIndex num="01" label="Who we are" />
         </Reveal>
 
-        <div className="about__grid">
+        <div className="mb-[clamp(48px,6vw,88px)] grid items-start gap-[clamp(32px,5vw,80px)] md:grid-cols-[minmax(0,1.35fr)_minmax(0,1fr)]">
           <Reveal>
-            <h2 className="section-title about__title">
+            <h2 className="display text-[clamp(30px,4.4vw,62px)] tracking-[-0.02em]">
               We help local businesses turn attention into customers.
             </h2>
           </Reveal>
 
-          <Reveal delay={0.08} className="about__aside">
-            <p className="about__body">
+          <Reveal delay={0.08} className="pt-2">
+            <p className="mb-6 text-[16.5px] leading-[1.62] text-ink/70">
               No jargon, no bloat — one team covering the website, the visuals and the
               campaigns that bring people through the door.
             </p>
-            <ul className="about__industries">
+
+            <ul className="flex list-none flex-wrap gap-[7px] p-0">
               {industries.slice(0, 6).map((item) => (
-                <li key={item}>{item}</li>
+                <li
+                  key={item}
+                  className="border border-line px-[10px] py-[5px] font-display text-[11.5px] tracking-[0.04em] text-ink/60 uppercase"
+                >
+                  {item}
+                </li>
               ))}
-              <li className="about__industries-more">+ more</li>
+              <li className="border border-steel/45 px-[10px] py-[5px] font-display text-[11.5px] tracking-[0.04em] text-steel-700 uppercase">
+                + more
+              </li>
             </ul>
           </Reveal>
         </div>
 
+        {/* One ruled row rather than four floating figures. */}
         <Reveal delay={0.12}>
-          <dl className="stats">
+          <dl className="m-0 grid grid-cols-[repeat(auto-fit,minmax(190px,1fr))] border-t border-ink">
             {stats.map((stat) => (
-              <div className="stat" key={stat.label}>
-                <dt className="stat__value">{stat.value}</dt>
-                <dd className="stat__label text-muted">{stat.label}</dd>
+              <div
+                key={stat.label}
+                className="border-r border-line pt-[clamp(22px,2.6vw,32px)] pr-[clamp(18px,2.2vw,30px)] pb-[clamp(18px,2.2vw,26px)] last:border-r-0"
+              >
+                <dt className="block font-display text-[clamp(34px,3.6vw,52px)] leading-none tracking-[-0.02em]">
+                  {stat.value}
+                </dt>
+                <dd className="text-muted mt-[10px] max-w-[20ch] text-[13px] leading-[1.45]">
+                  {stat.label}
+                </dd>
               </div>
             ))}
           </dl>

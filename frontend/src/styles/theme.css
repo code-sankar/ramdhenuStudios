@@ -1,0 +1,135 @@
+/* The @font-face rules come first and unlayered. industry.css imports them too,
+   but that nested @import no longer resolves once industry.css is pulled in
+   through Tailwind's pipeline, so it is declared explicitly here. */
+@import "./fonts.css";
+
+@import "tailwindcss";
+
+/* The Industry system is pulled into the `components` layer on purpose.
+   Tailwind emits its utilities into `@layer utilities`, and unlayered CSS wins
+   over any layer no matter the specificity — so an unlayered `.btn` or a bare
+   `h1 { font-size }` from the DS would silently beat `hidden` or
+   `text-[clamp(...)]` in the markup. Layering it puts the two in the right
+   order: the system supplies defaults, utilities override them. */
+@import "./industry.css" layer(components);
+
+/* ==========================================================================
+   TAILWIND ↔ INDUSTRY BRIDGE
+   --------------------------------------------------------------------------
+   Tailwind generates the utilities; the Industry design system still owns the
+   values. Every key below is an alias onto a variable declared in
+   industry.css, so `bg-steel-900` and `.blueprint` read the same source and
+   the export stays droppable-in, unmodified.
+   (industry.css is imported after this file — see main.jsx — so its :root
+   lands before anything paints.)
+
+   Names are aliased rather than mirrored because Tailwind's own theme keys
+   collide with Industry's: `--color-surface`, `--radius-md` and `--shadow-lg`
+   exist in both. Aliasing avoids a circular `--x: var(--x)` and gives the
+   utilities a vocabulary that reads in markup:
+
+     paper   → --color-bg        the light ground
+     panel   → --color-surface   the recessed ground
+     ink     → --color-text      body and headings
+     steel   → --color-accent    the one accent, with its 100–900 ramp
+     mute    → --color-neutral-* the neutral ramp
+     line    → --color-divider   hairlines
+     display → --font-heading    Barlow Condensed
+     sans    → --font-body       Barlow
+
+   Three namespaces are cleared rather than aliased. That is deliberate: it
+   makes the system's rules unbreakable from markup.
+     colours — no stray `bg-emerald-500` in a strictly mono scheme
+     radius  — the blueprint layer squares every component; no `rounded-lg`
+     shadow  — elevation comes from the DS's .elev-sm/md/lg only
+   ========================================================================== */
+
+@theme {
+  --color-*: initial;
+  --radius-*: initial;
+  --shadow-*: initial;
+  --font-*: initial;
+
+  /* Tailwind builds its whole spacing scale from one base. Industry's scale is
+     a 0.85× density-adjusted 4px scale (3.4 / 6.8 / 10.2 / 13.6 / 20.4 / 27.2),
+     so seeding the base at 3.4px makes `p-4` resolve to exactly --space-4,
+     `gap-2` to --space-2, and so on down the scale. */
+  --spacing: 3.4px;
+
+  --color-transparent: transparent;
+  --color-current: currentColor;
+  --color-white: #fff;
+  --color-black: #000;
+
+  --color-paper: var(--color-bg);
+  --color-panel: var(--color-surface);
+  --color-ink: var(--color-text);
+  --color-line: var(--color-divider);
+
+  --color-steel: var(--color-accent);
+  --color-steel-100: var(--color-accent-100);
+  --color-steel-200: var(--color-accent-200);
+  --color-steel-300: var(--color-accent-300);
+  --color-steel-400: var(--color-accent-400);
+  --color-steel-500: var(--color-accent-500);
+  --color-steel-600: var(--color-accent-600);
+  --color-steel-700: var(--color-accent-700);
+  --color-steel-800: var(--color-accent-800);
+  --color-steel-900: var(--color-accent-900);
+
+  --color-mute-100: var(--color-neutral-100);
+  --color-mute-200: var(--color-neutral-200);
+  --color-mute-300: var(--color-neutral-300);
+  --color-mute-400: var(--color-neutral-400);
+  --color-mute-500: var(--color-neutral-500);
+  --color-mute-600: var(--color-neutral-600);
+  --color-mute-700: var(--color-neutral-700);
+  --color-mute-800: var(--color-neutral-800);
+  --color-mute-900: var(--color-neutral-900);
+
+  --font-display: var(--font-heading);
+  --font-sans: var(--font-body);
+}
+
+/* ==========================================================================
+   UTILITIES — the few patterns that repeat and have no Tailwind equivalent
+   ========================================================================== */
+
+/* Page gutter + measure. Every section body sits inside this. */
+@utility shell {
+  max-width: 1320px;
+  margin-inline: auto;
+  padding-inline: clamp(20px, 4vw, 64px);
+  width: 100%;
+  box-sizing: border-box;
+}
+
+/* The section rhythm, as one utility so it can never drift between sections. */
+@utility section-y {
+  padding-block: clamp(64px, 7.4vw, 108px);
+}
+
+/* Heading face + the system's uppercase display treatment. */
+@utility display {
+  font-family: var(--font-heading);
+  font-weight: var(--font-heading-weight);
+  text-transform: uppercase;
+  line-height: 1.12;
+  margin: 0;
+}
+
+/* Copy reversed out of the steel field. Three weights cover every use, and
+   naming them keeps color-mix() out of the markup. */
+@utility on-steel {
+  color: var(--color-bg);
+}
+@utility on-steel-soft {
+  color: color-mix(in srgb, var(--color-bg) 86%, transparent);
+}
+@utility on-steel-dim {
+  color: color-mix(in srgb, var(--color-bg) 62%, transparent);
+}
+/* Hairline on the steel field, where --color-divider is far too dark. */
+@utility border-on-steel {
+  border-color: color-mix(in srgb, var(--color-bg) 24%, transparent);
+}

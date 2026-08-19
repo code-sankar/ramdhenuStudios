@@ -11,12 +11,63 @@ npm run preview
 npm run lint
 ```
 
-## The design system
+## Styling: Tailwind on top of the Industry system
 
-`src/styles/industry.css` is the exported Industry stylesheet, shipped **verbatim**
-as the single source of truth for colour, type, spacing, radius and elevation.
-`src/styles/INDUSTRY-README.md` is its authoring guide — read it before changing
-anything visual. The short version:
+Tailwind generates the utilities; **Industry still owns the values.** `src/styles/theme.css`
+is the bridge — every theme key is an alias onto a variable declared in
+`industry.css`, so `bg-steel-900` and `.blueprint` read the same source and the
+design-system export stays droppable-in, unmodified.
+
+| Utility | resolves to | |
+|---|---|---|
+| `bg-paper` | `--color-bg` | the light ground |
+| `bg-panel` | `--color-surface` | the recessed ground |
+| `text-ink` | `--color-text` | body and headings |
+| `bg-steel`, `text-steel-700`, … | `--color-accent*` | the one accent + its 100–900 ramp |
+| `text-mute-500`, … | `--color-neutral-*` | the neutral ramp |
+| `border-line` | `--color-divider` | hairlines |
+| `font-display` / `font-sans` | `--font-heading` / `--font-body` | Barlow Condensed / Barlow |
+| `p-4`, `gap-2`, … | `--space-4`, `--space-2` | see below |
+
+Names are aliased rather than mirrored because Tailwind's own keys collide with
+Industry's — `--color-surface`, `--radius-md` and `--shadow-lg` exist in both, and
+mirroring would produce a circular `--x: var(--x)`.
+
+**Spacing lines up exactly.** Tailwind builds its whole scale from one base, and
+Industry's is a 0.85× density-adjusted 4px scale (3.4 / 6.8 / 10.2 / …), so
+`--spacing: 3.4px` makes `p-4` resolve to precisely `--space-4`.
+
+**Three namespaces are cleared, not aliased** — `--color-*`, `--radius-*` and
+`--shadow-*` are set to `initial`. That makes the system's rules unbreakable from
+markup: no stray `bg-emerald-500` in a strictly mono scheme, no `rounded-lg` when
+the blueprint layer squares every component, and elevation only ever from the DS's
+`.elev-sm/md/lg`.
+
+### Two things that will bite you
+
+**Cascade layers.** `industry.css` is imported *into the `components` layer*
+(`@import "./industry.css" layer(components)`). Unlayered CSS beats any layer
+regardless of specificity, so left unlayered the DS's `.btn` would silently
+override `hidden`, and its bare `h1 { font-size: 42px }` would override
+`text-[clamp(...)]`. Layering puts them in the right order: the system supplies
+defaults, utilities override them.
+
+**Font faces are imported explicitly** in `theme.css`. `industry.css` imports them
+too, but that nested `@import` stops resolving once the file is pulled through
+Tailwind's pipeline — and the failure is silent: the variables and computed
+`font-family` still say "Barlow Condensed" while nothing is actually loaded.
+
+### What stays in CSS
+
+`src/styles/app.css` is down to the residue — things a utility cannot express:
+layered gradients with masks (the hero aurora, its scrim, the field grid), the
+`::after` / `::before` spectrum rules, parent-state selectors (`:has`), and the
+logo's mask mechanics. It introduces no colour, font or spacing of its own.
+
+The design system's own component classes — `.blueprint`, `.corner`, `.btn`,
+`.tag`, `.input`, `.field`, `.dialog`, `.duotone` — are used as-is rather than
+reimplemented, which is what the system's guide asks for. Read
+`src/styles/INDUSTRY-README.md` before changing anything visual. The short version:
 
 | | |
 |---|---|
@@ -27,25 +78,18 @@ anything visual. The short version:
 | Objects | square corners, hairline borders, `+` registration marks at each corner |
 | Icons | Lucide geometry at stroke-width 1.5 |
 
-Two rules from the guide the code depends on:
-
-- **Take every value from a token.** No hex codes, font names or raw pixel values
-  that `var(--color-*)`, `var(--font-*)`, `var(--space-*)` or `var(--radius-*)`
-  already carry. `src/styles/app.css` is the page layer and introduces none of
-  its own.
-- **A framed element never drops its marks.** `<Blueprint>` owns the border and
-  all four corner marks together, so the frame can't be rendered without them.
-
-Tailwind was removed when the system landed: its utility scale would be a second,
-competing set of tokens, which is exactly what the guide warns against.
+One rule the code depends on: **a framed element never drops its marks.**
+`<Blueprint>` owns the border and all four corner marks together, so the frame
+can't be rendered without them.
 
 ## Structure
 
 ```
 src/
   styles/
-    industry.css   the design system, exported verbatim — source of truth
-    app.css        page layer: layout and sections, composed from DS tokens
+    theme.css      Tailwind + the token bridge onto Industry; imports the rest
+    industry.css   the design system, exported verbatim — owns every value
+    app.css        the residue: gradients, masks, :has(), pseudo-elements
     fonts.css      self-hosted Barlow / Barlow Condensed @font-face rules
   data/            all copy — site.js, services.js, testimonials.js, legal.js
   components/
@@ -54,6 +98,7 @@ src/
     Logo.jsx         the wordmark — swap in the official artwork here
     Icon.jsx         the Lucide glyphs actually used, inline
     Reveal.jsx       one short scroll entrance, reused everywhere
+    ui/SectionIndex  the numbered spec-sheet index each section opens with
     EnquiryForm.jsx  the conversion point — validation + WhatsApp/POST delivery
     Dialog.jsx       the system's modal, made keyboard-safe
     LegalDialogs.jsx privacy + terms, opened from the footer

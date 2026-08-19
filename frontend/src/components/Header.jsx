@@ -7,6 +7,9 @@ import { brand, nav } from "../data/site";
 /**
  * Sticky header. Translucent paper ground with a blur, a hairline base rule,
  * and the one solid accent object on the bar — the primary button.
+ *
+ * The spectrum rule and the opaque-on-scroll swap stay in app.css: both hang
+ * off `data-scrolled`, and the rule is a ::after with the gradient token.
  */
 export default function Header({ showAvailability = true }) {
   const [open, setOpen] = useState(false);
@@ -54,19 +57,37 @@ export default function Header({ showAvailability = true }) {
   }, []);
 
   return (
-    <header className="header" data-scrolled={scrolled}>
-      <nav className="nav" aria-label="Primary">
-        <a href="#top" className="nav-brand" aria-label={`${brand.name} — home`} onClick={() => setOpen(false)}>
+    <header
+      className="header sticky top-0 z-50 border-b border-line bg-paper/85 backdrop-blur-[10px] [&_a]:text-inherit [&_a]:no-underline"
+      data-scrolled={scrolled}
+    >
+      {/* From tablet up the bar is three true columns — brand · links · actions —
+          so the links stay centred regardless of how wide either side runs. */}
+      <nav
+        className="nav mx-auto max-w-[1320px] flex-wrap gap-y-3 px-[clamp(20px,4vw,64px)] py-3 max-md:gap-y-0 md:grid md:grid-cols-[1fr_auto_1fr] md:items-center md:gap-x-4"
+        aria-label="Primary"
+      >
+        <a
+          href="#top"
+          className="nav-brand md:mr-0"
+          aria-label={`${brand.name} — home`}
+          onClick={() => setOpen(false)}
+        >
           <Logo withName />
         </a>
 
-        <div id="primary-nav" className="nav-links" data-open={open}>
+        {/* Below md the links collapse into a panel under the bar. */}
+        <div
+          id="primary-nav"
+          data-open={open}
+          className="nav-links flex items-center gap-4 max-md:order-4 max-md:mt-3 max-md:hidden max-md:w-full max-md:flex-col max-md:items-start max-md:border-t max-md:border-line max-md:pt-3 max-md:data-[open=true]:flex md:justify-center"
+        >
           {nav.map((item) => (
             <a
               key={item.id}
               href={`#${item.id}`}
-              className="nav-link"
               aria-current={active === item.id ? "true" : undefined}
+              className="text-sm hover:text-steel-700 aria-[current=true]:text-steel-700 max-md:text-[17px]"
               onClick={() => setOpen(false)}
             >
               {item.label}
@@ -74,16 +95,15 @@ export default function Header({ showAvailability = true }) {
           ))}
         </div>
 
-        <div className="nav-actions">
+        <div className="flex items-center gap-3 md:justify-self-end">
           {showAvailability && (
-            <span className="tag tag-outline availability">● Available for new projects</span>
+            <span className="tag tag-outline max-md:hidden">● Available for new projects</span>
           )}
 
           <Blueprint
             as="a"
             href="#contact"
-            className="btn btn-primary nav-cta"
-            style={{ position: "relative", textDecoration: "none" }}
+            className="btn btn-primary relative no-underline max-md:order-2 max-md:text-[13px]"
             onClick={() => setOpen(false)}
           >
             <Icon name="plus" size={14} strokeWidth={2} />
@@ -92,7 +112,7 @@ export default function Header({ showAvailability = true }) {
 
           <button
             type="button"
-            className="btn btn-secondary btn-icon menu-toggle"
+            className="btn btn-secondary btn-icon hidden max-md:order-3 max-md:inline-flex"
             aria-expanded={open}
             aria-controls="primary-nav"
             aria-label={open ? "Close menu" : "Open menu"}
