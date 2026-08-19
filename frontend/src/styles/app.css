@@ -33,7 +33,9 @@
 
 html {
   scroll-behavior: smooth;
-  scroll-padding-top: 84px;
+  /* Clears the sticky header so an in-page anchor never lands under it.
+     The bar is ~93px from md up; the extra is breathing room. */
+  scroll-padding-top: 108px;
 }
 body {
   overflow-x: hidden;
@@ -65,16 +67,23 @@ h3 {
 }
 
 /* BRAND MARK — the artwork is white-on-transparent and used as a mask, so it
-   takes the colour of whatever it sits on. See components/Logo.jsx. */
-.logo {
-  display: block;
-  background-color: currentColor;
-  -webkit-mask-repeat: no-repeat;
-  mask-repeat: no-repeat;
-  -webkit-mask-position: center;
-  mask-position: center;
-  -webkit-mask-size: contain;
-  mask-size: contain;
+   takes the colour of whatever it sits on. See components/Logo.jsx.
+
+   In the components layer, like every other class the markup combines with
+   utilities: `display: block` here was unlayered, and unlayered CSS beats any
+   layer regardless of specificity — so `hidden` and `md:block` on a <Logo>
+   silently did nothing and both header variants rendered at once. */
+@layer components {
+  .logo {
+    display: block;
+    background-color: currentColor;
+    -webkit-mask-repeat: no-repeat;
+    mask-repeat: no-repeat;
+    -webkit-mask-position: center;
+    mask-position: center;
+    -webkit-mask-size: contain;
+    mask-size: contain;
+  }
 }
 
 /* --------------------------------------------------------------------------
@@ -235,30 +244,35 @@ h3 {
   opacity: 1;
 }
 
-/* A button that reads as a link — the email fallback and the footer's legal
-   triggers, which open dialogs rather than navigate. */
-.linkish {
-  all: unset;
-  cursor: pointer;
-  color: var(--color-accent-700);
-  text-decoration: underline;
-  text-underline-offset: 3px;
-}
-.linkish:hover {
-  color: var(--color-accent-800);
-}
-.linkish:focus-visible {
-  outline: 2px solid var(--color-accent);
-  outline-offset: 2px;
-}
-/* In the footer they sit among plain anchors, so they match them. */
-.footer .linkish {
-  color: inherit;
-  text-decoration: none;
-  font-size: 15px;
-}
-.footer .linkish:hover {
-  color: var(--color-accent-700);
+/* Reusable classes go in the components layer so utilities can still
+   override them — `.linkish` sets `all: unset`, which was beating
+   `inline-flex` from the markup and dropping the icon onto its own line. */
+@layer components {
+  /* A button that reads as a link — the email fallback and the footer's legal
+     triggers, which open dialogs rather than navigate. */
+  .linkish {
+    all: unset;
+    cursor: pointer;
+    color: var(--color-accent-700);
+    text-decoration: underline;
+    text-underline-offset: 3px;
+  }
+  .linkish:hover {
+    color: var(--color-accent-800);
+  }
+  .linkish:focus-visible {
+    outline: 2px solid var(--color-accent);
+    outline-offset: 2px;
+  }
+  /* In the footer they sit among plain anchors, so they match them. */
+  .footer .linkish {
+    color: inherit;
+    text-decoration: none;
+    font-size: 15px;
+  }
+  .footer .linkish:hover {
+    color: var(--color-accent-700);
+  }
 }
 
 /* Honour the OS reduce-motion setting. */

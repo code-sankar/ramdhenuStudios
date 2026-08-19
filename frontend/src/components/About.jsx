@@ -1,9 +1,10 @@
 import Reveal from "./Reveal";
 import SectionIndex from "./ui/SectionIndex";
-import { industries, stats } from "../data/site";
+import VideoEmbed from "./VideoEmbed";
+import { aboutVideo, industries, stats } from "../data/site";
 
 /**
- * ABOUT — the positioning claim, then the facts behind it.
+ * ABOUT — the positioning claim, the film, then the facts behind it.
  *
  * The claim and its qualification are split across two columns: the claim
  * keeps display scale, the qualification sits at body scale. Run at the same
@@ -45,6 +46,15 @@ export default function About() {
             </ul>
           </Reveal>
         </div>
+
+        <Reveal delay={0.1} className="mb-[clamp(48px,6vw,88px)] max-w-[1080px]">
+          <VideoEmbed
+            id={aboutVideo.id}
+            title={aboutVideo.title}
+            poster={aboutVideo.poster}
+            caption={aboutVideo.caption}
+          />
+        </Reveal>
 
         {/* One ruled row rather than four floating figures. */}
         <Reveal delay={0.12}>

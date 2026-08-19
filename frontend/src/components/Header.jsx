@@ -64,7 +64,7 @@ export default function Header({ showAvailability = true }) {
       {/* From tablet up the bar is three true columns — brand · links · actions —
           so the links stay centred regardless of how wide either side runs. */}
       <nav
-        className="nav mx-auto max-w-[1320px] flex-wrap gap-y-3 px-[clamp(20px,4vw,64px)] py-3 max-md:gap-y-0 md:grid md:grid-cols-[1fr_auto_1fr] md:items-center md:gap-x-4"
+        className="nav mx-auto max-w-[1320px] flex-wrap gap-y-3 px-[clamp(20px,4vw,64px)] py-4 max-md:gap-y-0 md:grid md:grid-cols-[1fr_auto_1fr] md:items-center md:gap-x-6 md:py-3.5"
         aria-label="Primary"
       >
         <a
@@ -73,7 +73,11 @@ export default function Header({ showAvailability = true }) {
           aria-label={`${brand.name} — home`}
           onClick={() => setOpen(false)}
         >
-          <Logo withName />
+          <Logo withName className="md:hidden" />
+          <Logo
+            variant="lockup"
+            className="hidden h-[62px] w-[155px] md:block lg:h-[68px] lg:w-[170px]"
+          />
         </a>
 
         {/* Below md the links collapse into a panel under the bar. */}
@@ -87,7 +91,7 @@ export default function Header({ showAvailability = true }) {
               key={item.id}
               href={`#${item.id}`}
               aria-current={active === item.id ? "true" : undefined}
-              className="text-sm hover:text-steel-700 aria-[current=true]:text-steel-700 max-md:text-[17px]"
+              className="text-[15.5px] tracking-[0.005em] transition-colors duration-150 hover:text-steel-700 aria-[current=true]:text-steel-700 max-md:text-[17px]"
               onClick={() => setOpen(false)}
             >
               {item.label}
@@ -103,7 +107,7 @@ export default function Header({ showAvailability = true }) {
           <Blueprint
             as="a"
             href="#contact"
-            className="btn btn-primary relative no-underline max-md:order-2 max-md:text-[13px]"
+            className="btn btn-primary relative px-5 py-2.5 text-[14.5px] no-underline max-md:order-2 max-md:px-3 max-md:py-2 max-md:text-[13px]"
             onClick={() => setOpen(false)}
           >
             <Icon name="plus" size={14} strokeWidth={2} />
