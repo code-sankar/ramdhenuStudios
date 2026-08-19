@@ -17,7 +17,7 @@ import { brand, disciplines } from "../data/site";
 export default function Hero({ showAvailability = true }) {
   return (
     <section
-      id="top"
+      id="/"
       className="hero relative box-border flex min-h-screen flex-col justify-center overflow-hidden bg-steel-900 pt-[clamp(80px,13vh,140px)] pb-[clamp(40px,6vh,64px)]"
     >
       <div className="hero__grid" aria-hidden="true" />
@@ -51,14 +51,8 @@ export default function Hero({ showAvailability = true }) {
 
         <h1 className="display m-0 on-steel text-[clamp(48px,10.4vw,168px)] leading-[0.9] tracking-[-0.022em]">
           <span className="block">A Step</span>
-          <span className="block">Towards Digital</span>
+          <span className="block">Towards Digital </span> 
           <span className="flex items-center gap-[clamp(14px,2vw,34px)]">
-            <Blueprint
-              reversed
-              className="relative inline-block h-[clamp(54px,8.2vw,128px)] w-[clamp(54px,8.2vw,128px)] flex-none"
-            >
-              <Logo className="absolute inset-[12%] h-auto w-auto" />
-            </Blueprint>
             Presence
           </span>
         </h1>
