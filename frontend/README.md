@@ -47,12 +47,16 @@ src/
     industry.css   the design system, exported verbatim — source of truth
     app.css        page layer: layout and sections, composed from DS tokens
     fonts.css      self-hosted Barlow / Barlow Condensed @font-face rules
-  data/            all copy — site.js, services.js, testimonials.js
+  data/            all copy — site.js, services.js, testimonials.js, legal.js
   components/
-    Blueprint.jsx  the wireframe frame + its four registration marks
-    Plate.jsx      drawn spec-sheet figure, stands in for absent photography
-    Icon.jsx       the Lucide glyphs actually used, inline
-    Reveal.jsx     one short scroll entrance, reused everywhere
+    Blueprint.jsx    the wireframe frame + its four registration marks
+    Plate.jsx        drawn spec-sheet figure, stands in for absent photography
+    Logo.jsx         the wordmark — swap in the official artwork here
+    Icon.jsx         the Lucide glyphs actually used, inline
+    Reveal.jsx       one short scroll entrance, reused everywhere
+    EnquiryForm.jsx  the conversion point — validation + WhatsApp/POST delivery
+    Dialog.jsx       the system's modal, made keyboard-safe
+    LegalDialogs.jsx privacy + terms, opened from the footer
     Header · Hero · About · Services · Testimonials · Contact · Footer
 ```
 
@@ -60,21 +64,50 @@ Sections follow the artboard: **Hero → About → Services → Testimonials →
 
 ## Before this goes live
 
-Three things are deliberately marked as unfinished rather than faked. Each is a
-one-line change in `src/data/`.
+Nothing on this site fakes what the agency hasn't earned yet. Everything unproven
+is flagged in place, and each flag is a one-line change in `src/data/`. The full
+checklist lives at the top of `src/data/site.js`.
 
 | What | Where | To publish |
 |---|---|---|
-| Example projects | `services.js` → `PROJECTS_ARE_PLACEHOLDER` | Replace with real permissioned work, then set the flag to `false` to drop the "Sample" note |
-| Placeholder quotes | `testimonials.js` → `TESTIMONIALS_ARE_PLACEHOLDER` | Swap in permissioned quotes, add photos, set the flag to `false` |
-| Contact details | `site.js` → `contact` | Real phone, email, studio address |
+| Contact details | `site.js` → `contact` | Real phone, WhatsApp number, email, studio address |
+| Social profiles | `site.js` → `socials` | Replace the `#` hrefs |
+| Live domain | `site.js` → `siteUrl`, plus `index.html` | Canonical URL, OG tags, structured data, `robots.txt`, `sitemap.xml` |
+| Example projects | `services.js` → `PROJECTS_ARE_PLACEHOLDER` | Real permissioned work, then set the flag to `false` |
+| Placeholder quotes | `testimonials.js` → `TESTIMONIALS_ARE_PLACEHOLDER` | Permissioned quotes and photos, then `false` |
+| Legal copy | `legal.js` → `LEGAL_NEEDS_REVIEW` | Have both documents reviewed, then `false` |
 
 The About stats (`site.js` → `stats`) describe how the team is built — six
 disciplines, one point of contact, 48h first response — rather than claiming
-project volume the agency hasn't earned yet. They're true on day one and need no
-disclaimer.
+project volume. They're true on day one and need no disclaimer.
 
-### Adding real photography
+## The enquiry form
+
+The site funnels into one conversion point, and it works today with no backend:
+the form validates, composes the enquiry and hands it to WhatsApp, with email as
+a fallback. Both land somewhere the team already reads.
+
+To store submissions instead, set `enquiry.endpoint` in `src/data/site.js` to a
+URL that accepts a POST (Formspree, a serverless function, a CRM webhook). The
+form then posts JSON and reports success inline; WhatsApp stays available as the
+second path. Nothing else changes.
+
+```js
+export const enquiry = {
+  endpoint: "https://formspree.io/f/xxxxxxxx",   // null → WhatsApp handoff
+  whatsappGreeting: "Hi Ramdhenu, I'd like to talk about…",
+};
+```
+
+## The logo
+
+`components/Logo.jsx` renders the wordmark as live text — sharp at any size,
+selectable, readable to screen readers, no extra request. To use the official
+artwork, drop it at `src/assets/logo.svg`, then uncomment the import and the
+`<img>` branch in that file. Header and footer both render `<Logo />`, so they
+pick it up together.
+
+## Adding real photography
 
 Figures render a drawn blueprint plate until a photograph exists. Drop the file in
 `src/assets/work/` and set `image` on the project:
@@ -89,6 +122,15 @@ The component then swaps the plate for the photo and applies the system's
 `.duotone` wash automatically. Duotone is only ever applied to real photographs —
 it flattens a line drawing into a solid field.
 
+## SEO
+
+`index.html` carries the canonical URL, Open Graph and Twitter cards, and
+`ProfessionalService` structured data — the schema type that earns the knowledge
+panel and Maps treatment a local agency depends on, which is the same surface the
+Google Business service sells to clients. `public/` holds `robots.txt`,
+`sitemap.xml` and the share card. **All of these hardcode the domain**; update
+them together with `siteUrl`.
+
 ## Type
 
 Barlow and Barlow Condensed are served from `public/fonts` (Latin + Latin-Extended,
@@ -98,8 +140,16 @@ visitor's browser, and the type still renders offline.
 
 ## Accessibility
 
-Keyboard focus uses the system's 2px accent `:focus-visible` ring throughout. The
-services accordion is a real `button` with `aria-expanded` / `aria-controls`; the
-testimonial rail is `aria-live="polite"` and its autoplay suspends on hover and on
-focus, and stands down entirely under `prefers-reduced-motion` — which also flattens
-every transition on the page.
+Keyboard focus uses the system's 2px accent `:focus-visible` ring throughout, and a
+skip link is the first stop in the tab order.
+
+- **Services accordion** — real `button`s with `aria-expanded` / `aria-controls`.
+- **Testimonial rail** — `aria-live="polite"`; autoplay suspends on hover and on
+  focus, and stands down entirely under `prefers-reduced-motion`, which also
+  flattens every transition on the page.
+- **Enquiry form** — native inputs with real labels. Validation fires on submit
+  rather than on every keystroke, errors are tied to their field with
+  `aria-describedby` / `aria-invalid`, focus moves to the first field that failed,
+  and the result is announced through `role="status"`.
+- **Legal dialogs** — `role="dialog"` with `aria-modal`, Escape to close, focus
+  moved in on open and returned to the trigger on close, and Tab trapped inside.
