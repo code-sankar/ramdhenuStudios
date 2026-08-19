@@ -220,10 +220,33 @@ h3 {
   padding: clamp(80px, 13vh, 140px) 0 clamp(40px, 6vh, 64px);
   box-sizing: border-box;
 }
-.hero__mark {
+/* SPECTRAL AURORA — a single blurred band of the full spectrum blooming up
+   from the base of the steel field. The vertical mask fades it to nothing as
+   it rises; the element runs off the bottom edge so its blurred foot stays
+   saturated to the very bottom rather than fading out. It sits behind the
+   copy (z-index 0; .hero__inner is z-index 1). */
+.hero__aurora {
   position: absolute;
-  border-color: color-mix(in srgb, var(--color-bg) 16%, transparent);
+  left: 0;
+  right: 0;
+  bottom: -44px;
+  height: 44%;
+  z-index: 0;
   pointer-events: none;
+  background: linear-gradient(
+    90deg,
+    #7b2ff7 0%,
+    #4361ee 19%,
+    #12b6d8 38%,
+    #22c55e 56%,
+    #a3e635 69%,
+    #f4c020 83%,
+    #fb7c2d 100%
+  );
+  -webkit-mask-image: linear-gradient(to top, #000 4%, rgba(0, 0, 0, 0.55) 32%, transparent 82%);
+  mask-image: linear-gradient(to top, #000 4%, rgba(0, 0, 0, 0.55) 32%, transparent 82%);
+  filter: blur(54px) saturate(1.04);
+  opacity: 0.9;
 }
 .hero__inner {
   position: relative;
@@ -239,23 +262,33 @@ h3 {
   gap: 20px;
   flex-wrap: wrap;
 }
+.hero__tag {
+  font-size: 12px;
+}
 .hero__disciplines {
   display: flex;
   flex-direction: column;
-  gap: 10px;
+  gap: 11px;
   align-items: flex-end;
+  list-style: none;
+  margin: 0;
+  padding: 0;
 }
 .hero__discipline {
+  font-family: var(--font-heading);
+  font-weight: var(--font-heading-weight);
   font-size: 13px;
-  color: color-mix(in srgb, var(--color-bg) 80%, transparent);
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+  color: color-mix(in srgb, var(--color-bg) 92%, transparent);
   display: flex;
   align-items: center;
-  gap: 8px;
+  gap: 9px;
 }
 .hero__discipline::before {
   content: "";
-  width: 6px;
-  height: 6px;
+  width: 7px;
+  height: 7px;
   background: var(--color-accent-300);
   flex: none;
 }
@@ -272,25 +305,6 @@ h3 {
 .hero__line {
   display: block;
 }
-.hero__line--media {
-  display: flex;
-  align-items: center;
-  gap: clamp(14px, 2vw, 28px);
-}
-.hero__photo {
-  position: relative;
-  display: inline-block;
-  width: clamp(58px, 7.5vw, 108px);
-  height: clamp(58px, 7.5vw, 108px);
-  flex: none;
-}
-/* The mark sits inside the headline's framed slot, breathing inside it. */
-.hero__mark-slot {
-  position: absolute;
-  inset: 9%;
-  width: auto;
-  height: auto;
-}
 
 .hero__foot {
   display: flex;
@@ -303,7 +317,42 @@ h3 {
   max-width: 420px;
   margin: 0;
   font-size: 15px;
-  color: color-mix(in srgb, var(--color-bg) 75%, transparent);
+  line-height: 1.55;
+  color: color-mix(in srgb, var(--color-bg) 78%, transparent);
+}
+/* PRIMARY CTA — a soft, rounded, translucent steel button that reads over the
+   aurora without competing with it. Deliberately not the Blueprint-framed
+   button used elsewhere: the hero wants one calm, glassy affordance. */
+.hero__cta {
+  display: inline-flex;
+  align-items: center;
+  gap: 9px;
+  flex: none;
+  padding: 15px 26px;
+  border-radius: var(--radius-lg);
+  font-family: var(--font-heading);
+  font-weight: var(--font-heading-weight);
+  font-size: 15px;
+  letter-spacing: 0.01em;
+  color: var(--color-bg);
+  text-decoration: none;
+  background: color-mix(in srgb, var(--color-accent) 82%, transparent);
+  border: 1px solid color-mix(in srgb, var(--color-bg) 20%, transparent);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  box-shadow: 0 14px 40px -18px color-mix(in srgb, #000 90%, transparent);
+  transition: background 160ms ease, transform 160ms ease, border-color 160ms ease;
+}
+.hero__cta svg {
+  display: block;
+}
+.hero__cta:hover {
+  background: color-mix(in srgb, var(--color-accent) 96%, transparent);
+  border-color: color-mix(in srgb, var(--color-bg) 34%, transparent);
+  transform: translateY(-1px);
+}
+.hero__cta:active {
+  transform: translateY(0);
 }
 
 /* --------------------------------------------------------------------------
