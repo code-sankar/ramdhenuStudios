@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { Link } from "react-router-dom";
 import Icon from "./Icon";
 import LegalDialogs from "./LegalDialogs";
 import Logo from "./Logo";
@@ -75,9 +76,9 @@ export default function Footer() {
             <span className={`text-muted ${colHead}`}>Company</span>
             <nav className={linkCol} aria-label="Footer">
               {nav.map((item) => (
-                <a key={item.id} href={`/#${item.id}`}>
+                <Link key={item.id} to={`/#${item.id}`}>
                   {item.label}
-                </a>
+                </Link>
               ))}
             </nav>
           </div>

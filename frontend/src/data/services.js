@@ -1,9 +1,10 @@
 /**
  * SERVICES
  * ===========================================================================
- * One entry drives three things: the row on the home page, the whole detail
- * page at /services/<slug>/, and that page's SEO head. Adding a service here
- * and re-running `node scripts/generate-service-pages.mjs` is the entire job.
+ * One entry drives four things: the row on the home page, the whole detail page
+ * at /services/<slug>/, that page's SEO head (via seo.js), and its line in the
+ * sitemap. Adding a service here is the entire job — the route follows from the
+ * slug and there is nothing to regenerate.
  *
  * ⚠️  The client work under `project` is illustrative, supplied for layout.
  *     Replace with real, permissioned work before launch — see

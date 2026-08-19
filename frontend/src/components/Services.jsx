@@ -1,6 +1,9 @@
+import { Link } from "react-router-dom";
+
 import Icon from "./Icon";
 import Reveal from "./Reveal";
 import SectionIndex from "./ui/SectionIndex";
+import { servicePath } from "../data/seo";
 import { services } from "../data/services";
 
 /**
@@ -30,8 +33,8 @@ export default function Services() {
         <ul className="m-0 list-none border-t border-line p-0">
           {services.map((service) => (
             <li key={service.slug} className="service border-b border-line transition-colors">
-              <a
-                href={`/services/${service.slug}/`}
+              <Link
+                to={servicePath(service.slug)}
                 className="group flex items-center gap-[clamp(16px,3vw,40px)] px-[clamp(0px,1.4vw,18px)] py-[clamp(18px,2.2vw,28px)] no-underline"
               >
                 <span className="w-7 flex-none font-display text-sm text-steel-700">
@@ -46,7 +49,7 @@ export default function Services() {
                 <span className="btn btn-icon btn-secondary pointer-events-none flex-none transition-transform duration-200 group-hover:translate-x-1">
                   <Icon name="arrowRight" />
                 </span>
-              </a>
+              </Link>
             </li>
           ))}
         </ul>

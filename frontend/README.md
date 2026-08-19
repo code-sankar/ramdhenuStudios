@@ -92,7 +92,15 @@ src/
     app.css        the residue: gradients, masks, :has(), pseudo-elements
     fonts.css      self-hosted Barlow / Barlow Condensed @font-face rules
   data/            all copy — site.js, services.js, testimonials.js, legal.js
+                   plus seo.js, the head every route carries
+  pages/
+    HomePage.jsx     hero → about → services → testimonials → faq → contact
+    ServicePage.jsx  the template behind every /services/<slug>/
+    NotFoundPage.jsx unknown paths, and unknown slugs
   components/
+    Layout.jsx       skip link · header · <main> · footer, worn by every page
+    Seo.jsx          writes the route's head — title, canonical, JSON-LD
+    ScrollManager.jsx  hash, top or restore, depending on the navigation
     Blueprint.jsx    the wireframe frame + its four registration marks
     Plate.jsx        drawn spec-sheet figure, stands in for absent photography
     Logo.jsx         the wordmark — swap in the official artwork here
@@ -105,7 +113,9 @@ src/
     Header · Hero · About · Services · Testimonials · Contact · Footer
 ```
 
-Sections follow the artboard: **Hero → About → Services → Testimonials → Contact.**
+Routing lives in `src/App.jsx`: `/` → `HomePage`, `/services/:slug` → `ServicePage`,
+anything else → `NotFoundPage`. Sections follow the artboard:
+**Hero → About → Services → Testimonials → Contact.**
 
 ## Before this goes live
 
@@ -117,7 +127,7 @@ checklist lives at the top of `src/data/site.js`.
 |---|---|---|
 | Contact details | `site.js` → `contact` | Real phone, WhatsApp number, email, studio address |
 | Social profiles | `site.js` → `socials` | Replace the `#` hrefs |
-| Live domain | `site.js` → `siteUrl`, plus `index.html` | Canonical URL, OG tags, structured data, `robots.txt`, `sitemap.xml` |
+| Live domain | `site.js` → `siteUrl` | Canonical URLs, OG tags, structured data and the sitemap all derive from it; `robots.txt` names it too |
 | Example projects | `services.js` → `PROJECTS_ARE_PLACEHOLDER` | Real permissioned work, then set the flag to `false` |
 | Placeholder quotes | `testimonials.js` → `TESTIMONIALS_ARE_PLACEHOLDER` | Permissioned quotes and photos, then `false` |
 | Legal copy | `legal.js` → `LEGAL_NEEDS_REVIEW` | Have both documents reviewed, then `false` |
@@ -190,31 +200,67 @@ full-resolution artwork would ship to every visitor.
 
 ## Service pages
 
-Each service is a real page at `/services/<slug>/`, generated from
-`src/data/services.js`. Add or rename a service there, then:
+Each service is a page at `/services/<slug>/`, rendered by `src/pages/ServicePage.jsx`
+from an entry in `src/data/services.js`. **Adding a service is one entry in that
+file** — the route, the page, its head and its sitemap line all follow from it,
+and there is nothing to regenerate.
 
-```bash
-node scripts/generate-service-pages.mjs
+The slug comes off the route, so the six pages are one component, not six files:
+
+```jsx
+const { slug } = useParams();
+const service = serviceBySlug(slug);
 ```
 
-That writes `services/<slug>/index.html` (committed, not a build artefact — Vite
-needs them on disk as inputs, and keeping them in the repo makes the routes
-reviewable in a diff) and rebuilds `public/sitemap.xml`. `vite.config.js`
-discovers the inputs from that directory, so nothing else needs touching.
+A slug with no entry renders the 404 at that URL rather than redirecting, so the
+address bar keeps saying what was asked for.
 
-**This is a multi-page build, not a single-page app.** The whole point of these
-pages is ranking for terms like "website design Guwahati". A client-side router
-would serve one `index.html` for every URL, leaving the title, description and
-structured data identical for all six unless JavaScript runs — and deep links
-would need a host rewrite rule. Real HTML files at real paths avoid both and
-work on any static host.
+### The build still writes real files
 
-Every page carries its own `<title>`, description, canonical, `Service` schema
-(with the full includes list as an offer catalog) and `BreadcrumbList`. The home
-page's services section is now an index of links into them.
+`npm run build` runs `vite build` and then `scripts/generate-static-routes.mjs`,
+which writes `dist/services/<slug>/index.html` for every service, plus
+`dist/index.html`, `dist/404.html` and `dist/sitemap.xml`.
 
-`src/entries/service.jsx` is shared by all six: it reads the slug back out of
-`location.pathname` and renders `pages/ServicePage.jsx` with the matching entry.
+That step exists because two things about the old multi-page build were worth
+keeping, and neither survives a plain single-page app:
+
+**Deep links.** One `index.html` behind a client-side router needs a rewrite rule
+on the host before `/services/photography-videography/` resolves to anything. A
+real file at that path works on any static host, unconfigured. `dist/404.html`
+covers hosts that want an explicit not-found document.
+
+**Search.** These pages exist to rank for terms like "website design Guwahati".
+One `index.html` for every URL means one title, one description and one set of
+structured data for all six unless the crawler runs the JavaScript.
+
+So each file is the built `index.html` with that route's head substituted into
+the `<!--seo:start--> … <!--seo:end-->` slot. Nothing else differs between them.
+
+## SEO
+
+`src/data/seo.js` describes every route's head as data — title, description,
+canonical, Open Graph and Twitter cards, and the JSON-LD blocks. Two things read
+it, which is what stops the static head and the rendered one drifting apart:
+
+| | |
+|---|---|
+| `src/components/Seo.jsx` | applies the head for the route React is showing, and swaps it on navigation |
+| `scripts/generate-static-routes.mjs` | writes the same tags into each built HTML file |
+
+Every tag either of them writes is stamped `data-seo`. That is how `<Seo>` knows
+which tags are the route's: on a client-side navigation it removes exactly that
+set and writes the next route's, so you never end up with two canonicals.
+
+The home page carries `ProfessionalService` — the schema type that earns the
+knowledge panel and Maps treatment a local agency depends on, which is the same
+surface the Google Business service sells to clients. Each service page carries
+`Service` (with its includes list as an offer catalog) and a `BreadcrumbList`.
+The FAQ section renders its own `FAQPage` block from the questions on the page,
+so that one cannot drift either.
+
+`public/` holds `robots.txt` and the share card; `sitemap.xml` is generated into
+`dist/` at build time. **The domain is set once**, in `src/data/site.js` →
+`siteUrl` — everything above derives from it.
 
 ## The About video
 
@@ -263,15 +309,6 @@ The component then swaps the plate for the photo and applies the system's
 `.duotone` wash automatically. Duotone is only ever applied to real photographs —
 it flattens a line drawing into a solid field.
 
-## SEO
-
-`index.html` carries the canonical URL, Open Graph and Twitter cards, and
-`ProfessionalService` structured data — the schema type that earns the knowledge
-panel and Maps treatment a local agency depends on, which is the same surface the
-Google Business service sells to clients. `public/` holds `robots.txt`,
-`sitemap.xml` and the share card. **All of these hardcode the domain**; update
-them together with `siteUrl`.
-
 ## Type
 
 Barlow and Barlow Condensed are served from `public/fonts` (Latin + Latin-Extended,
@@ -284,7 +321,8 @@ visitor's browser, and the type still renders offline.
 Keyboard focus uses the system's 2px accent `:focus-visible` ring throughout, and a
 skip link is the first stop in the tab order.
 
-- **Services accordion** — real `button`s with `aria-expanded` / `aria-controls`.
+- **Services index** — six ruled rows, each a plain link to the page behind it;
+  no disclosure state to get stuck in.
 - **Testimonial rail** — `aria-live="polite"`; autoplay suspends on hover and on
   focus, and stands down entirely under `prefers-reduced-motion`, which also
   flattens every transition on the page.

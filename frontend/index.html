@@ -7,34 +7,19 @@
     <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32.png" />
     <link rel="icon" type="image/png" sizes="192x192" href="/favicon-192.png" />
     <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
-    <link rel="canonical" href="https://ramdhenu.studio/" />
+    <!--seo:start-->
+    <!--
+      Everything between these markers belongs to a route, not to this file.
 
-    <title>Ramdhenu — Digital agency for local businesses in Assam</title>
-    <meta
-      name="description"
-      content="Ramdhenu is a digital agency for local businesses that want more than a website — websites, photography, social media, Google Business and paid campaigns, from one coordinated team."
-    />
-    <meta name="author" content="Ramdhenu" />
-
-    <meta property="og:type" content="website" />
-    <meta property="og:url" content="https://ramdhenu.studio/" />
-    <meta property="og:site_name" content="Ramdhenu" />
-    <meta property="og:title" content="Ramdhenu — A step towards digital presence" />
-    <meta
-      property="og:description"
-      content="Strategy, visuals and campaigns from one coordinated team, built to turn attention into customers."
-    />
-    <meta property="og:image" content="https://ramdhenu.studio/og-image.png" />
-    <meta property="og:image:width" content="1200" />
-    <meta property="og:image:height" content="630" />
-    <meta property="og:image:alt" content="Ramdhenu Studios — a step towards digital presence" />
-    <meta name="twitter:card" content="summary_large_image" />
-    <meta name="twitter:title" content="Ramdhenu — A step towards digital presence" />
-    <meta
-      name="twitter:description"
-      content="Strategy, visuals and campaigns from one coordinated team, built to turn attention into customers."
-    />
-    <meta name="twitter:image" content="https://ramdhenu.studio/og-image.png" />
+      src/data/seo.js describes each route's head — title, description,
+      canonical, social cards and JSON-LD — and two things read it:
+      src/components/Seo.jsx applies it as you navigate, and
+      scripts/generate-static-routes.mjs writes it into the built HTML for
+      every route, replacing this block. What is here is the dev-server
+      fallback, and what a request for an unknown path falls back to.
+    -->
+    <title>Ramdhenu — A step towards digital presence</title>
+    <!--seo:end-->
 
     <!-- Barlow Condensed over Barlow, self-hosted from /public/fonts.
          See src/styles/fonts.css. Only the Latin faces above the fold
@@ -48,53 +33,6 @@
       html { background-color: #1d2d3d; }
     </style>
 
-    <!--
-      Structured data. LocalBusiness (not just Organization) is what earns the
-      knowledge panel and Maps treatment a local agency depends on — it is the
-      same surface the Google Business service sells to clients.
-      ⚠ Keep telephone, email, address and sameAs in step with src/data/site.js.
-    -->
-    <script type="application/ld+json">
-      {
-        "@context": "https://schema.org",
-        "@type": "ProfessionalService",
-        "name": "Ramdhenu",
-        "description": "Digital agency for local businesses — websites, photography, social media, Google Business and paid campaigns.",
-        "slogan": "A step towards digital presence",
-        "url": "https://ramdhenu.studio/",
-        "image": "https://ramdhenu.studio/og-image.png",
-        "telephone": "+91 98765 43210",
-        "email": "hello@ramdhenu.studio",
-        "priceRange": "$$",
-        "address": {
-          "@type": "PostalAddress",
-          "addressLocality": "Guwahati",
-          "addressRegion": "Assam",
-          "addressCountry": "IN"
-        },
-        "areaServed": { "@type": "State", "name": "Assam" },
-        "openingHoursSpecification": [
-          {
-            "@type": "OpeningHoursSpecification",
-            "dayOfWeek": ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"],
-            "opens": "10:00",
-            "closes": "19:00"
-          }
-        ],
-        "hasOfferCatalog": {
-          "@type": "OfferCatalog",
-          "name": "Services",
-          "itemListElement": [
-            { "@type": "Offer", "itemOffered": { "@type": "Service", "name": "Website Design & Development" } },
-            { "@type": "Offer", "itemOffered": { "@type": "Service", "name": "Photography & Videography" } },
-            { "@type": "Offer", "itemOffered": { "@type": "Service", "name": "Social Media Management" } },
-            { "@type": "Offer", "itemOffered": { "@type": "Service", "name": "Performance Marketing" } },
-            { "@type": "Offer", "itemOffered": { "@type": "Service", "name": "Google Business Management" } },
-            { "@type": "Offer", "itemOffered": { "@type": "Service", "name": "Graphic Design & Branding" } }
-          ]
-        }
-      }
-    </script>
   </head>
   <body>
     <div id="root"></div>
