@@ -33,7 +33,9 @@
 
 html {
   scroll-behavior: smooth;
-  scroll-padding-top: 84px;
+  /* Clears the sticky header so an in-page anchor never lands under it.
+     The bar is ~93px from md up; the extra is breathing room. */
+  scroll-padding-top: 108px;
 }
 body {
   overflow-x: hidden;
@@ -65,16 +67,23 @@ h3 {
 }
 
 /* BRAND MARK — the artwork is white-on-transparent and used as a mask, so it
-   takes the colour of whatever it sits on. See components/Logo.jsx. */
-.logo {
-  display: block;
-  background-color: currentColor;
-  -webkit-mask-repeat: no-repeat;
-  mask-repeat: no-repeat;
-  -webkit-mask-position: center;
-  mask-position: center;
-  -webkit-mask-size: contain;
-  mask-size: contain;
+   takes the colour of whatever it sits on. See components/Logo.jsx.
+
+   In the components layer, like every other class the markup combines with
+   utilities: `display: block` here was unlayered, and unlayered CSS beats any
+   layer regardless of specificity — so `hidden` and `md:block` on a <Logo>
+   silently did nothing and both header variants rendered at once. */
+@layer components {
+  .logo {
+    display: block;
+    background-color: currentColor;
+    -webkit-mask-repeat: no-repeat;
+    mask-repeat: no-repeat;
+    -webkit-mask-position: center;
+    mask-position: center;
+    -webkit-mask-size: contain;
+    mask-size: contain;
+  }
 }
 
 /* --------------------------------------------------------------------------

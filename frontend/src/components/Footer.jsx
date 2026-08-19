@@ -20,7 +20,7 @@ export default function Footer() {
           <div>
             {/* The lockup carries the tagline in the artwork itself, so a line
                 of copy repeating it would only be redundant. */}
-            <Logo variant="lockup" className="mb-4" />
+            <Logo variant="lockup" className="mb-4 h-[84px] w-[210px]" />
             <p className="text-muted mb-6 max-w-[260px] text-sm">{brand.description}</p>
             <div className="flex gap-2">
               {socials.map((social) => (
