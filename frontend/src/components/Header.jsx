@@ -53,33 +53,33 @@ export default function Header({ showAvailability = true }) {
           ))}
         </div>
 
-        <span className="nav-spacer" />
+        <div className="nav-actions">
+          {showAvailability && (
+            <span className="tag tag-outline availability">● Available for new projects</span>
+          )}
 
-        {showAvailability && (
-          <span className="tag tag-outline availability">● Available for new projects</span>
-        )}
+          <Blueprint
+            as="a"
+            href="#contact"
+            className="btn btn-primary nav-cta"
+            style={{ position: "relative", textDecoration: "none" }}
+            onClick={() => setOpen(false)}
+          >
+            <Icon name="plus" size={14} strokeWidth={2} />
+            Start a Project
+          </Blueprint>
 
-        <Blueprint
-          as="a"
-          href="#contact"
-          className="btn btn-primary nav-cta"
-          style={{ position: "relative", textDecoration: "none", marginLeft: "var(--space-2)" }}
-          onClick={() => setOpen(false)}
-        >
-          <Icon name="plus" size={14} strokeWidth={2} />
-          Start a Project
-        </Blueprint>
-
-        <button
-          type="button"
-          className="btn btn-secondary btn-icon menu-toggle"
-          aria-expanded={open}
-          aria-controls="primary-nav"
-          aria-label={open ? "Close menu" : "Open menu"}
-          onClick={() => setOpen((value) => !value)}
-        >
-          <Icon name={open ? "close" : "menu"} />
-        </button>
+          <button
+            type="button"
+            className="btn btn-secondary btn-icon menu-toggle"
+            aria-expanded={open}
+            aria-controls="primary-nav"
+            aria-label={open ? "Close menu" : "Open menu"}
+            onClick={() => setOpen((value) => !value)}
+          >
+            <Icon name={open ? "close" : "menu"} />
+          </button>
+        </div>
       </nav>
     </header>
   );
