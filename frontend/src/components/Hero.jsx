@@ -1,3 +1,5 @@
+import { Link } from "react-router-dom";
+
 import Icon from "./Icon";
 import { brand, disciplines } from "../data/site";
 
@@ -62,19 +64,19 @@ export default function Hero({ showAvailability = true }) {
           </p>
 
           <div className="flex flex-none flex-wrap items-center gap-3">
-            <a
-              href="#contact"
+            <Link
+              to="/#contact"
               className="inline-flex items-center gap-[9px] border border-steel bg-steel px-[26px] py-[15px] font-display text-[15px] tracking-[0.01em] on-steel no-underline transition duration-200 hover:-translate-y-px hover:border-steel-400 hover:bg-steel-400 active:translate-y-0"
             >
               <Icon name="plus" size={15} strokeWidth={2} />
               Start a Project
-            </a>
-            <a
-              href="#services"
+            </Link>
+            <Link
+              to="/#services"
               className="inline-flex items-center gap-[9px] border border-paper/25 px-[26px] py-[15px] font-display text-[15px] tracking-[0.01em] text-paper/90 no-underline transition duration-200 hover:border-paper/45 hover:bg-paper/10 hover:text-paper"
             >
               See our work
-            </a>
+            </Link>
           </div>
         </div>
       </div>

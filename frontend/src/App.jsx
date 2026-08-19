@@ -1,38 +1,36 @@
-import Header from "./components/Header";
-import Hero from "./components/Hero";
-import About from "./components/About";
-import Services from "./components/Services";
-import Testimonials from "./components/Testimonials";
-import Faq from "./components/Faq";
-import Contact from "./components/Contact";
-import Footer from "./components/Footer";
+import { BrowserRouter, Route, Routes } from "react-router-dom";
+
+import ScrollManager from "./components/ScrollManager";
+import HomePage from "./pages/HomePage";
+import NotFoundPage from "./pages/NotFoundPage";
+import ServicePage from "./pages/ServicePage";
 
 /**
- * RAMDHENU — built to the Industry design system (src/styles/industry.css).
+ * RAMDHENU — every page of the site, as components.
  *
- * Section order follows the artboard:
- *   Hero          the tagline, at full field
- *   About         who we are, and what the team is made of
- *   Services      six disciplines, each opening onto the work that proves it
- *   Testimonials  one voice at a time
- *   Contact       one ask, one action
+ * The six service pages used to be six hand-written HTML files that each
+ * mounted the same React tree. They are routes now, and the head each one needs
+ * to rank — title, description, canonical, Service and BreadcrumbList schema —
+ * comes from <Seo> and src/data/seo.js rather than from markup kept in step by
+ * hand.
+ *
+ * The build still writes a real HTML file for each of these paths (see
+ * scripts/generate-static-routes.mjs), so deep links keep working on any static
+ * host with no rewrite rule, and a crawler that never runs the JavaScript still
+ * gets the right head. The router is what serves them once the app has booted.
+ *
+ * Trailing slashes are the canonical form — /services/<slug>/ — and the router
+ * matches with or without one.
  */
 export default function App() {
   return (
-    <>
-      <a href="#about" className="skip-link">
-        Skip to content
-      </a>
-      <Header />
-      <main id="main">
-        <Hero />
-        <About />
-        <Services />
-        <Testimonials />
-        <Faq />
-        <Contact />
-      </main>
-      <Footer />
-    </>
+    <BrowserRouter>
+      <ScrollManager />
+      <Routes>
+        <Route path="/" element={<HomePage />} />
+        <Route path="/services/:slug" element={<ServicePage />} />
+        <Route path="*" element={<NotFoundPage />} />
+      </Routes>
+    </BrowserRouter>
   );
 }

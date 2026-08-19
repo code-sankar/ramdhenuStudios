@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import { Link } from "react-router-dom";
 import Blueprint from "./Blueprint";
 import Icon from "./Icon";
 import Logo from "./Logo";
@@ -67,8 +68,8 @@ export default function Header({ showAvailability = true }) {
         className="nav mx-auto max-w-[1320px] flex-wrap gap-y-3 px-[clamp(20px,4vw,64px)] py-4 max-md:gap-y-0 md:grid md:grid-cols-[1fr_auto_1fr] md:items-center md:gap-x-6 md:py-3.5"
         aria-label="Primary"
       >
-        <a
-          href="/#top"
+        <Link
+          to="/#top"
           className="nav-brand md:mr-0"
           aria-label={`${brand.name} — home`}
           onClick={() => setOpen(false)}
@@ -78,7 +79,7 @@ export default function Header({ showAvailability = true }) {
             variant="lockup"
             className="hidden h-[62px] w-[155px] md:block lg:h-[68px] lg:w-[170px]"
           />
-        </a>
+        </Link>
 
         {/* Below md the links collapse into a panel under the bar. */}
         <div
@@ -87,15 +88,15 @@ export default function Header({ showAvailability = true }) {
           className="flex items-center gap-4 max-md:order-4 max-md:mt-3 max-md:hidden max-md:w-full max-md:flex-col max-md:items-start max-md:border-t max-md:border-line max-md:pt-3 max-md:data-[open=true]:flex md:justify-center"
         >
           {nav.map((item) => (
-            <a
+            <Link
               key={item.id}
-              href={`/#${item.id}`}
+              to={`/#${item.id}`}
               aria-current={active === item.id ? "true" : undefined}
               className="text-[15.5px] tracking-[0.005em] transition-colors duration-150 hover:text-steel-700 aria-[current=true]:text-steel-700 max-md:text-[17px]"
               onClick={() => setOpen(false)}
             >
               {item.label}
-            </a>
+            </Link>
           ))}
         </div>
 
@@ -105,8 +106,8 @@ export default function Header({ showAvailability = true }) {
           )}
 
           <Blueprint
-            as="a"
-            href="/#contact"
+            as={Link}
+            to="/#contact"
             className="btn btn-primary relative px-5 py-2.5 text-[14.5px] no-underline max-md:order-2 max-md:px-3 max-md:py-2 max-md:text-[13px]"
             onClick={() => setOpen(false)}
           >
