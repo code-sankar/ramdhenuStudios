@@ -188,6 +188,38 @@ Originals live in `src/assets/brand/` rather than `public/` deliberately —
 anything in `public/` is copied verbatim into the build, so the 2.2 MB of
 full-resolution artwork would ship to every visitor.
 
+## The About video
+
+`src/data/site.js` → `aboutVideo`. Set `id` to the YouTube video ID — the part
+after `?v=` in the watch URL — and the slot goes live. Until then it renders a
+drawn blueprint plate marked as a sample, the same way unpublished project work
+does.
+
+```js
+export const aboutVideo = {
+  id: "dQw4w9WgXcQ",                                              // required
+  title: "Ramdhenu — who we are",                                 // used as the iframe title
+  poster: new URL("../assets/about-poster.jpg", import.meta.url).href,
+  caption: "A short introduction to the team…",
+};
+```
+
+**It is a facade, not a bare iframe.** Dropping YouTube's embed straight into
+the page costs roughly 1.5 MB of script and a dozen requests on *every* load,
+whether or not anyone watches — on a mid-range phone that lands squarely on the
+hero's LCP. Instead nothing loads until someone presses play: a local still plus
+a play control, `preconnect` on hover so the handshakes happen during the moment
+of intent, then the iframe mounts on click.
+
+**Keep the poster local.** Export your own still at 1600×900 into `src/assets/`.
+Do *not* point `poster` at `https://i.ytimg.com/…` — that is a third-party
+request on every page load, and it would make the privacy policy's "nothing is
+requested from YouTube unless you press play" untrue. The player itself uses
+`youtube-nocookie.com`, so no cookie is set until a visitor chooses to watch.
+
+If you ever swap the facade for a plain embed, update
+`src/data/legal.js` → "The video on this page" to match.
+
 ## Adding real photography
 
 Figures render a drawn blueprint plate until a photograph exists. Drop the file in

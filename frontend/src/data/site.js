@@ -81,6 +81,33 @@ export const socials = [
   { label: "Facebook", href: "#", icon: "facebook" },
 ];
 
+/**
+ * ABOUT VIDEO
+ * ---------------------------------------------------------------------------
+ * The "who we are" film in the About section.
+ *
+ * Set `id` to the YouTube video ID — the part after `?v=` in the watch URL:
+ *   https://www.youtube.com/watch?v=dQw4w9WgXcQ  →  id: "dQw4w9WgXcQ"
+ *
+ * Until then the block renders a drawn blueprint plate marked as a sample, the
+ * same way unpublished project work does, so nothing on the page pretends to be
+ * finished.
+ *
+ * ⚠️  `poster` should be your own still, exported at 1600×900 into
+ *     src/assets/ and referenced as:
+ *       poster: new URL("../assets/about-poster.jpg", import.meta.url).href
+ *
+ *     Do NOT point it at https://i.ytimg.com/… — that is a third-party request
+ *     on every page load, and the privacy policy states that nothing reaches
+ *     YouTube until a visitor presses play. A local still keeps that true.
+ */
+export const aboutVideo = {
+  id: null,
+  title: "Ramdhenu — who we are",
+  poster: null,
+  caption: "A short introduction to the team, how we work, and who we build for.",
+};
+
 /** The disciplines listed down the right of the hero. */
 export const disciplines = ["Web & Landing Pages", "Photography & Video", "Ads & Google Business"];
 
