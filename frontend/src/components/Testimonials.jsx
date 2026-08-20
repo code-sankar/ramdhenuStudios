@@ -102,7 +102,7 @@ export default function Testimonials({ autoplay = true }) {
                       aria-label={`Show testimonial ${i + 1} of ${testimonials.length}`}
                       aria-current={i === index ? "true" : undefined}
                       onClick={() => go(i)}
-                      className="relative -ml-2 h-8 w-8 cursor-pointer border border-line bg-none p-0 opacity-55 transition duration-200 hover:-translate-y-0.5 hover:opacity-85 aria-[current=true]:-translate-y-0.5 aria-[current=true]:opacity-100"
+                      className="relative -ml-2 h-8 w-8 cursor-pointer border border-line max-md:-ml-1 max-md:h-[42px] max-md:w-[42px] bg-none p-0 opacity-55 transition duration-200 hover:-translate-y-0.5 hover:opacity-85 aria-[current=true]:-translate-y-0.5 aria-[current=true]:opacity-100"
                     >
                       <Avatar person={person} small />
                     </button>

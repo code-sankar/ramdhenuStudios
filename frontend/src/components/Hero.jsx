@@ -18,13 +18,13 @@ export default function Hero({ showAvailability = true }) {
   return (
     <section
       id="/"
-      className="hero relative box-border flex min-h-screen flex-col justify-center overflow-hidden bg-steel-900 pt-[clamp(80px,13vh,140px)] pb-[clamp(40px,6vh,64px)]"
+      className="hero relative box-border flex min-h-[100svh] flex-col justify-center overflow-hidden bg-steel-900 pt-[clamp(40px,13vh,140px)] pb-[clamp(32px,6vh,64px)]"
     >
       <div className="hero__grid" aria-hidden="true" />
       <div className="hero__aurora" aria-hidden="true" />
       <div className="hero__veil" aria-hidden="true" />
 
-      <div className="shell relative z-[1] flex flex-col gap-[clamp(30px,4.4vw,52px)]">
+      <div className="shell relative z-[1] flex flex-col gap-[clamp(20px,4.4vw,52px)]">
         <div className="flex flex-wrap items-start justify-between gap-6">
           {showAvailability && (
             <span className="tag tag-outline inline-flex items-center gap-[9px] border-paper/25 px-[13px] py-1.5 text-[11px] tracking-[0.13em] text-paper/80 uppercase">
@@ -63,7 +63,7 @@ export default function Hero({ showAvailability = true }) {
             strategy, visuals and campaigns, working as one.
           </p>
 
-          <div className="flex flex-none flex-wrap items-center gap-3">
+          <div className="flex flex-none flex-wrap items-center gap-3 max-[400px]:w-full max-[400px]:*:flex-1 max-[400px]:*:justify-center">
             <Link
               to="/#contact"
               className="inline-flex items-center gap-[9px] border border-steel bg-steel px-[26px] py-[15px] font-display text-[15px] tracking-[0.01em] on-steel no-underline transition duration-200 hover:-translate-y-px hover:border-steel-400 hover:bg-steel-400 active:translate-y-0"

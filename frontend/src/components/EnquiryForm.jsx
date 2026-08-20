@@ -221,7 +221,7 @@ export default function EnquiryForm() {
 
         <p className="text-muted mt-3 mb-0 text-center text-xs">
           {enquiry.endpoint ? "Prefer email?" : "Opens WhatsApp with your details filled in."}{" "}
-          <button type="button" className="linkish" onClick={emailFallback}>
+          <button type="button" className="linkish max-md:inline-block max-md:py-2" onClick={emailFallback}>
             Email it instead
           </button>
         </p>

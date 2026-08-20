@@ -275,6 +275,83 @@ h3 {
   }
 }
 
+/* ══════════════════════════════════════════════════════════════════════════
+   MOBILE ERGONOMICS
+   ---------------------------------------------------------------------------
+   Overrides for a phone, kept here rather than in industry.css so the design
+   system stays the untouched export it is meant to be. Values only, no new
+   colour, font or spacing of its own.
+
+   Most of this site's audience arrives on a mid-range Android on mobile data,
+   which makes these fixes to the design system's desktop-scale defaults worth
+   more than anything on the desktop layout.
+   ══════════════════════════════════════════════════════════════════════ */
+@media (max-width: 767px) {
+  /* iOS Safari zooms the entire page when a focused field is under 16px, and
+     it does not zoom back out — the visitor is left on a page they now have
+     to pan sideways, halfway through the only form on the site. 16px is the
+     threshold, not a preference. */
+  .input {
+    font-size: 16px;
+    min-height: 44px;
+    padding: 10px 12px;
+  }
+  textarea.input {
+    min-height: 112px;
+  }
+
+  /* 12px labels are legible on a monitor at arm's length and marginal on a
+     phone in daylight. */
+  .field > label {
+    font-size: 13px;
+    margin-bottom: 6px;
+  }
+
+  /* Touch targets. The system sizes these for a mouse: 36px square icon
+     buttons and buttons whose height comes only from their padding. A finger
+     needs about 44px, which is also what stops a mis-tap on the header's
+     menu toggle opening a project enquiry instead.
+
+     Note for anyone reaching for a utility instead: Tailwind's numeric
+     spacing here is Industry's 0.85x scale (--spacing: 3.4px), so `h-11` is
+     37.4px and `h-10` is 34px. A touch minimum has to be written as a real
+     pixel value — max-md:min-h-[44px] — or it silently lands 15% short. */
+  .btn {
+    min-height: 44px;
+  }
+  .btn-icon {
+    width: 44px;
+    height: 44px;
+  }
+
+  /* A short phone — an SE, or anything in landscape — has no room for the
+     hero's full-field padding. Without this the primary CTA clears the fold
+     by about three pixels, which any font-fallback reflow would swallow. */
+  @media (max-height: 700px) {
+    .hero {
+      padding-top: var(--space-8);
+      padding-bottom: var(--space-6);
+    }
+    /* The stack's own rhythm has to give too, or a 640px-tall Android — still
+       a common device here — lands the CTA three pixels under the fold. */
+    .hero > .shell {
+      gap: var(--space-4);
+    }
+  }
+
+  /* A modal at 440px wide inside a 360px viewport is fine — it is the padding
+     that costs the room. Give the panel the width back. */
+  .dialog-backdrop {
+    padding: var(--space-2);
+    align-items: start;
+    padding-top: var(--space-4);
+  }
+  .dialog {
+    max-height: calc(100dvh - 2 * var(--space-4));
+    overflow-y: auto;
+  }
+}
+
 /* Honour the OS reduce-motion setting. */
 @media (prefers-reduced-motion: reduce) {
   html {

@@ -452,6 +452,31 @@ Barlow and Barlow Condensed are served from `public/fonts` (Latin + Latin-Extend
 one less DNS + TLS handshake before first paint, no third-party request from a
 visitor's browser, and the type still renders offline.
 
+## Mobile
+
+Most of this site's audience arrives on a mid-range Android on mobile data, so
+the phone layout is the real one. Two things about this codebase make that
+easier to get wrong than usual:
+
+**Tailwind's numeric spacing is 0.85× here.** `--spacing: 3.4px` aligns the
+scale with Industry's density-adjusted values, which means `h-11` is **37.4px,
+not 44**, and `h-10` is 34. A touch minimum written as `min-h-11` silently
+lands 15% short — write it as `min-h-[44px]`.
+
+**The design system is sized for a mouse.** `industry.css` ships 36px icon
+buttons, 12px field labels and 14px inputs. Those are overridden for phones in
+the `MOBILE ERGONOMICS` block in `app.css` rather than by editing the export,
+so the system stays droppable-in.
+
+The one non-obvious fix in there: **inputs go to 16px below `md`.** iOS Safari
+zooms the whole page when a focused field is under 16px and does not zoom back
+out, leaving the visitor panning sideways halfway through the only form on the
+site. 16px is a threshold, not a preference.
+
+The hero is `min-h-[100svh]` — small-viewport height, so the primary CTA clears
+the fold with the URL bar showing rather than hiding behind it. Verified on
+360×640, 375×667, 360×800 and 390×844.
+
 ## Accessibility
 
 Keyboard focus uses the system's 2px accent `:focus-visible` ring throughout, and a
@@ -468,3 +493,6 @@ skip link is the first stop in the tab order.
   and the result is announced through `role="status"`.
 - **Legal dialogs** — `role="dialog"` with `aria-modal`, Escape to close, focus
   moved in on open and returned to the trigger on close, and Tab trapped inside.
+- **Touch targets** — buttons and icon buttons reach 44px below `md`; the
+  remaining sub-40px targets are inline text links (breadcrumbs, an email
+  address in a labelled row), all above the WCAG 2.2 AA 24×24 minimum.

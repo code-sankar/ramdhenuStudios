@@ -51,7 +51,7 @@ export default function Contact() {
               <BookCall from="contact" />
             </div>
 
-            <ul className="mt-[clamp(32px,4vw,48px)] grid list-none grid-cols-[repeat(auto-fit,minmax(160px,1fr))] gap-6 border-t border-paper/20 p-0 pt-[clamp(24px,3vw,32px)]">
+            <ul className="mt-[clamp(32px,4vw,48px)] grid list-none grid-cols-[repeat(auto-fit,minmax(136px,1fr))] gap-6 border-t border-paper/20 p-0 pt-[clamp(24px,3vw,32px)]">
               <Channel label="Email" href={contact.emailHref} value={contact.email} />
               <Channel
                 label="Phone"
@@ -81,7 +81,7 @@ function Channel({ label, value, href, onClick }) {
         <a
           href={href}
           onClick={onClick}
-          className="text-[15px] on-steel no-underline hover:text-steel-300 hover:underline"
+          className="inline-block text-[15px] on-steel no-underline hover:text-steel-300 hover:underline max-md:py-1.5"
         >
           {value}
         </a>
