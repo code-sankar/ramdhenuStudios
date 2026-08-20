@@ -77,7 +77,12 @@ export const whatsappLink = `https://wa.me/${contact.whatsappNumber}?text=${enco
  * is the only one of the second kind — it is not a section of the home page.
  */
 export const nav = [
-  { label: "Services", id: "services" },
+  /* `menu` marks the one item that opens a dropdown. The six entries inside it
+     are built by the Header from services.js rather than listed here: this
+     module is imported by seo.js, so importing the route helpers back out of
+     seo.js to build hrefs would close a cycle. One boolean avoids that, and
+     the menu can never fall out of step with the services themselves. */
+  { label: "Services", id: "services", menu: true },
   { label: "Work", path: "/work/" },
   { label: "About", id: "about" },
   { label: "Testimonials", id: "testimonials" },
