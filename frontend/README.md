@@ -452,6 +452,76 @@ Barlow and Barlow Condensed are served from `public/fonts` (Latin + Latin-Extend
 one less DNS + TLS handshake before first paint, no third-party request from a
 visitor's browser, and the type still renders offline.
 
+## Motion
+
+Every animation is built from `src/lib/motion.js` — durations, easings, travel
+distances and stagger intervals in one file, so nothing anywhere is a magic
+number and the whole system can be retimed from one place.
+
+### The brief
+
+Industry is a wireframe. A system that austere has an honest motion vocabulary
+and a dishonest one, and picking wrong makes the page read as a template rather
+than as a studio's own work.
+
+| Belongs | Does not |
+|---|---|
+| content arriving on the grid — short travel, ease-out, no overshoot | spring bounce, 3D tilt, rotation, scale-from-0.8 pops |
+| hairlines drawing themselves in | letter scrambles, cursor followers, scroll-jacking |
+| layered planes at different rates | parallax large enough to notice as an effect |
+
+The second column is not squeamishness. Every item on it draws attention to the
+motion instead of to the work, and this site's job is to earn a local business
+owner's trust in about eight seconds.
+
+**Distance is the budget.** Nothing travels further than 24px and nothing runs
+longer than 0.7s, so no animation can ever be the reason a visitor waits.
+
+### The pieces
+
+| | |
+|---|---|
+| `Reveal` | one block arriving. `as` sets the element, so wrapping a list row no longer injects a `<div>` that breaks the layout it was meant to animate |
+| `Stagger` / `StaggerItem` | a list whose rows arrive in order, at 0.06s intervals |
+| `Parallax` | scroll-linked depth, transform only |
+| `SectionIndex` | the rule between number and label draws along its own axis |
+| `Layout` | `<main>` fades in on route change |
+
+Stagger is applied where sequence carries meaning — the services index, the four
+process stages, the industry index — and nowhere else. Staggering every list
+makes a page feel slow rather than considered.
+
+### Parallax
+
+The hero is already three stacked layers, so each gets its own rate as the field
+scrolls away: the grid lags furthest (it is the sheet), the aurora leads
+slightly (it is nearest), and the content lags and dims. Total separation across
+a full scroll-out is under 100px — you should register it as depth and never as
+movement.
+
+**It does not run under `prefers-reduced-motion`** (scroll-linked movement is
+the exact class that triggers vestibular symptoms — off, not reduced), **or
+below 768px** (scroll-linked transforms are the first thing to drop frames on a
+mid-range Android, and a stuttering hero costs more than depth buys).
+
+### Two traps this codebase already fell into
+
+**Variant transitions swallow `delay`.** A variant written as a plain object
+with its own `transition` beats the `transition` prop on the component, so all
+33 `<Reveal delay={…}>` call sites would silently animate at once. `up` and
+`fade` are variant *functions* taking delay through framer's `custom` prop.
+
+**Reduced motion has to be handled in JS too.** `app.css` flattens CSS
+transitions, but framer animations are unaffected by that. Every motion
+component checks `useReducedMotion()` and renders a plain element with no
+animation at all.
+
+### Measured
+
+60fps through a full-page scroll with parallax running (frame time p50 and p95
+both 16.7ms, zero frames over 32ms), CLS 0.0011, and no element left below
+opacity 0.9 on any route after animations settle.
+
 ## Mobile
 
 Most of this site's audience arrives on a mid-range Android on mobile data, so

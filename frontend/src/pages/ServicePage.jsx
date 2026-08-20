@@ -7,6 +7,7 @@ import Plate from "../components/Plate";
 import Reveal from "../components/Reveal";
 import Seo from "../components/Seo";
 import SectionIndex from "../components/ui/SectionIndex";
+import { Stagger, StaggerItem } from "../components/ui/Stagger";
 import { serviceBySlug, services } from "../data/services";
 import { serviceSeo, servicePath } from "../data/seo";
 import { whatsappLink } from "../data/site";
@@ -171,9 +172,16 @@ export default function ServicePage() {
           </Reveal>
 
           <Reveal delay={0.06}>
-            <ol className="grid list-none gap-px border-t border-ink p-0 sm:grid-cols-2 lg:grid-cols-4">
+            <Stagger
+              as="ol"
+              className="grid list-none gap-px border-t border-ink p-0 sm:grid-cols-2 lg:grid-cols-4"
+            >
               {service.process.map((stage, i) => (
-                <li key={stage.step} className="border-line pt-6 pr-6 pb-6 sm:border-r sm:last:border-r-0">
+                <StaggerItem
+                  as="li"
+                  key={stage.step}
+                  className="border-line pt-6 pr-6 pb-6 sm:border-r sm:last:border-r-0"
+                >
                   <span className="font-display text-[12px] tracking-[0.12em] text-steel-700">
                     {String(i + 1).padStart(2, "0")}
                   </span>
@@ -181,9 +189,9 @@ export default function ServicePage() {
                   <p className="text-muted m-0 max-w-[34ch] text-[14.5px] leading-relaxed">
                     {stage.body}
                   </p>
-                </li>
+                </StaggerItem>
               ))}
-            </ol>
+            </Stagger>
           </Reveal>
 
           {/* What changes — deliberately not numbers we cannot stand behind */}
@@ -285,9 +293,9 @@ export default function ServicePage() {
             </h2>
           </Reveal>
           <Reveal delay={0.06}>
-            <ul className="m-0 list-none border-t border-line p-0">
+            <Stagger as="ul" className="m-0 list-none border-t border-line p-0">
               {others.map((s) => (
-                <li key={s.slug} className="border-b border-line">
+                <StaggerItem as="li" key={s.slug} className="border-b border-line">
                   <Link
                     to={servicePath(s.slug)}
                     className="group flex items-center gap-[clamp(16px,3vw,40px)] py-5 no-underline"
@@ -303,9 +311,9 @@ export default function ServicePage() {
                       <Icon name="arrowRight" />
                     </span>
                   </Link>
-                </li>
+                </StaggerItem>
               ))}
-            </ul>
+            </Stagger>
           </Reveal>
         </div>
       </section>

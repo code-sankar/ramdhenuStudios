@@ -1,4 +1,7 @@
+import { useRef } from "react";
 import { Link } from "react-router-dom";
+
+import Parallax from "./Parallax";
 
 import Icon from "./Icon";
 import { brand, disciplines } from "../data/site";
@@ -15,16 +18,31 @@ import { brand, disciplines } from "../data/site";
  * gradients with masks are not something utilities express well.
  */
 export default function Hero({ showAvailability = true }) {
+  /* All four layers read their progress from the hero itself, so they stay in
+     step with each other rather than each measuring its own box. */
+  const field = useRef(null);
+
   return (
     <section
+      ref={field}
       id="/"
       className="hero relative box-border flex min-h-[100svh] flex-col justify-center overflow-hidden bg-steel-900 pt-[clamp(40px,13vh,140px)] pb-[clamp(32px,6vh,64px)]"
     >
-      <div className="hero__grid" aria-hidden="true" />
-      <div className="hero__aurora" aria-hidden="true" />
-      <div className="hero__veil" aria-hidden="true" />
+      {/* Depth, back to front. The grid is the sheet everything is drawn on, so
+          it lags furthest; the aurora is the nearest plane and leads slightly.
+          Total separation across a full scroll-out is under 100px. */}
+      <Parallax target={field} distance={72} className="hero__grid" aria-hidden="true" />
+      <Parallax target={field} distance={-28} className="hero__aurora" aria-hidden="true" />
+      <Parallax target={field} distance={26} className="hero__veil" aria-hidden="true" />
 
-      <div className="shell relative z-[1] flex flex-col gap-[clamp(20px,4.4vw,52px)]">
+      {/* The content lags a little and dims as the field leaves — by the time
+          it has faded it is off screen, so nothing is ever hard to read. */}
+      <Parallax
+        target={field}
+        distance={44}
+        fadeTo={0.45}
+        className="shell relative z-[1] flex flex-col gap-[clamp(20px,4.4vw,52px)]"
+      >
         <div className="flex flex-wrap items-start justify-between gap-6">
           {showAvailability && (
             <span className="tag tag-outline inline-flex items-center gap-[9px] border-paper/25 px-[13px] py-1.5 text-[11px] tracking-[0.13em] text-paper/80 uppercase">
@@ -79,7 +97,7 @@ export default function Hero({ showAvailability = true }) {
             </Link>
           </div>
         </div>
-      </div>
+      </Parallax>
 
       <span className="sr-only" hidden>
         {brand.tagline}

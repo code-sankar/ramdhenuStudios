@@ -1,5 +1,7 @@
 import { Link } from "react-router-dom";
 
+import { Stagger, StaggerItem } from "./ui/Stagger";
+
 import Icon from "./Icon";
 import Reveal from "./Reveal";
 import SectionIndex from "./ui/SectionIndex";
@@ -30,9 +32,13 @@ export default function Services() {
           </p>
         </Reveal>
 
-        <ul className="m-0 list-none border-t border-line p-0">
+        <Stagger as="ul" className="m-0 list-none border-t border-line p-0">
           {services.map((service) => (
-            <li key={service.slug} className="service border-b border-line transition-colors">
+            <StaggerItem
+              as="li"
+              key={service.slug}
+              className="service border-b border-line transition-colors"
+            >
               <Link
                 to={servicePath(service.slug)}
                 className="group flex items-center gap-[clamp(16px,3vw,40px)] px-[clamp(0px,1.4vw,18px)] py-[clamp(18px,2.2vw,28px)] no-underline"
@@ -50,9 +56,9 @@ export default function Services() {
                   <Icon name="arrowRight" />
                 </span>
               </Link>
-            </li>
+            </StaggerItem>
           ))}
-        </ul>
+        </Stagger>
       </div>
     </section>
   );
