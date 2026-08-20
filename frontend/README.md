@@ -592,17 +592,88 @@ too, since it is the same markup and the same defect.
 
 ## The boot splash
 
-A first-visit loading screen: the steel ground, a spectrum progress bar, and
-`public/loadingVid.mp4` playing over it. Markup, styles and controller are all
-inline in `index.html`.
+A first-visit intro: `public/loadingVid.mp4` playing **full screen**, over the
+steel ground, with a spectrum progress bar. Markup, styles and controller are
+all inline in `index.html`.
 
 **Not a React component, deliberately.** A component cannot paint until the
-bundle has parsed, so a splash built that way shows the empty page first and the
-"loading" screen second — backwards, and worse than no splash at all. Inline, it
-paints on the first frame, before a byte of JavaScript runs. It costs 4.5 KB
-inline, and the build copies it into all 14 routes automatically.
+bundle has parsed, so a splash built that way shows the empty page first and
+the intro second — backwards, and worse than no splash at all. Inline, it
+paints on the first frame, before a byte of JavaScript runs. It costs ~5 KB
+inline, and the build copies it into all 15 routes automatically.
 
-### The video is a bonus, never a dependency
+### The film plays through
+
+On a first visit the splash holds until the video **ends**, not until the app is
+ready. That distinction is the whole feature: the app is typically ready at
+~130ms, so anything keyed to readiness tears the splash down before the film
+starts.
+
+`object-fit: cover`, not `contain` — this one fills the screen. The site's rule
+against cropping is about content photography, where the subject matters; a
+full-bleed title card is the opposite case, and letterbox bars around it would
+read as a broken embed.
+
+### The film is a three-state lifecycle, not a boolean
+
+This is the bug worth knowing about, because the obvious implementation has it:
+
+```
+app ready fires at   ~130ms
+video `canplay` at   ~280ms
+```
+
+A boolean "is the film playing" is therefore **false at the exact moment the app
+reports ready**, so the splash dismissed itself before the film began — every
+time, on a fast connection. The state is `pending | playing | unavailable`
+instead, and readiness is only *permission* to leave, never the reason:
+
+| state | what app-ready does |
+|---|---|
+| `pending` | nothing — the film might still be coming |
+| `playing` | nothing — we wait for `ended` |
+| `unavailable` | dismisses immediately |
+
+**`loop` is deliberately absent.** With it, `ended` never fires and the splash
+would hold until the hard ceiling on every visit.
+
+### It still cannot trap anyone
+
+Every path out ends in `finish()`, and a hard ceiling fires regardless. Measured
+in a browser, each ending with the page usable and scrolling restored:
+
+| | outcome |
+|---|---|
+| film plays through | ~6.1s (5s film + fades) |
+| video cannot be decoded | 1.5s |
+| video 404s | 1.5s |
+| video request hangs forever | 4.1s — bounded by the 3s grace window |
+| `prefers-reduced-motion` | 1.6s, film never requested |
+| Skip pressed | immediate |
+| app never loads at all | the 11s ceiling |
+| no JavaScript | `<noscript>` hides it — nothing could remove it |
+| back/forward cache restore | dismissed on `pageshow` |
+
+A **Skip** control fades in after 1.2s. A held splash with no way past it is
+hostile, and it doubles as the manual escape hatch if playback stalls somewhere
+untestable. It is why `#boot` is not `aria-hidden` as a whole — the decorative
+parts opt out individually so the control stays reachable.
+
+### Tuning
+
+| | |
+|---|---|
+| `MIN_MS` (550) | below this the splash reads as a flicker |
+| `GRACE_MS` (3000) | how long the film has to start before we stop waiting |
+| `SKIP_AT` (1200) | when the Skip control appears |
+| `HARD_MS` (11000) | absolute ceiling, whatever the network does |
+
+Shows **once per session** (`sessionStorage`) — this is a client-side router,
+and replaying it on every navigation would be friction. To remove the feature,
+delete the `#boot` block from `index.html`; the `__ramdhenuReady` call in
+`main.jsx` is already optional-called and will simply do nothing.
+
+## The video is a bonus, never a dependency
 
 This is the whole design. `loadingVid.mp4` is ~300 KB, which is about **6 seconds
 on a slow 3G connection** — longer than the site itself needs to become usable.
