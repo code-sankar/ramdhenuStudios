@@ -109,6 +109,7 @@ src/
     Analytics.jsx    loads the provider, counts a pageview per route
     BookCall.jsx     the Cal.com embed, loaded on intent like the video
     ScrollManager.jsx  hash, top or restore, depending on the navigation
+    NavMenu.jsx      the header's Services dropdown — accordion below md
     Blueprint.jsx    the wireframe frame + its four registration marks
     Plate.jsx        drawn spec-sheet figure, stands in for absent photography
     Logo.jsx         the wordmark — swap in the official artwork here
@@ -304,6 +305,52 @@ Two details worth knowing before you edit the copy:
 - **Nothing on these pages claims a result**, quotes a figure or names a client.
   They describe how we'd approach a trade, which is true on day one. The moment
   one starts claiming outcomes we can't evidence, it stops being worth ranking.
+
+## The Services dropdown
+
+The header's "Services" item opens a menu of the six disciplines
+(`src/components/NavMenu.jsx`). Its contents are built in `Header.jsx` from
+`services.js`, so the menu cannot fall out of step with the services
+themselves — `site.js` only carries a `menu: true` flag on that one nav item.
+That indirection is deliberate: `seo.js` imports `site.js`, so building hrefs
+in `site.js` would need the route helpers back out of `seo.js` and close a
+cycle.
+
+### The trigger is a button, not a link
+
+That is the whole accessibility story. A link that also opens a menu has to
+guess which one a click meant. A button that opens a menu is unambiguous — and
+the destination the link used to point at survives as the first row inside
+("All services"). **A trigger that swallows its own destination is a dead
+end.**
+
+| | |
+|---|---|
+| Click / Enter / Space | toggles |
+| Escape | closes and returns focus to the trigger |
+| Down from the trigger | opens and lands on the first item |
+| Up / Down inside | move between items, wrapping |
+| Focus leaving the control | closes |
+| Click anywhere outside | closes (on `pointerdown`, so it beats the click underneath) |
+
+Hover opens it too, but only behind `(hover: hover)` — a touch device never
+gets a phantom open from a tap meant as a click. **Closing is delayed 140ms**
+because the path from trigger to panel is diagonal, and a menu that vanishes
+mid-reach is the single most common way this pattern is got wrong.
+
+### Below md it is not a dropdown
+
+The header already collapses into a stacked panel on a phone, so the menu
+becomes an inline accordion inside it. An absolutely positioned overlay in a
+360px column would cover the nav it belongs to. Same component, same state,
+different placement — `md:absolute` versus static.
+
+### Open-ness is a path, not a boolean
+
+`openAt` stores the pathname the menu was opened on, and `open` is derived
+from `openAt === pathname`. A navigation therefore closes it **by derivation**,
+rather than by an effect firing after the new page has already painted behind
+it. That also keeps the component clear of `react-hooks/set-state-in-effect`.
 
 ## The work page
 

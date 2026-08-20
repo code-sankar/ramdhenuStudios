@@ -1,8 +1,11 @@
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { Link, useLocation } from "react-router-dom";
 import Blueprint from "./Blueprint";
 import Icon from "./Icon";
 import Logo from "./Logo";
+import NavMenu from "./NavMenu";
+import { servicePath } from "../data/seo";
+import { services } from "../data/services";
 import { brand, nav, navHref } from "../data/site";
 
 /**
@@ -21,6 +24,21 @@ export default function Header({ showAvailability = true }) {
   /* A nav item is either a home anchor, current while its section is in view,
      or a real route, current while the URL matches it. */
   const isCurrent = (item) => (item.path ? pathname === item.path : active === item.id);
+
+  /* The dropdown's contents. "All services" keeps the destination the trigger
+     used to point at — a menu that replaces a link has to give that link back
+     somewhere, or the section becomes unreachable from the bar. */
+  const serviceMenu = useMemo(
+    () => [
+      { label: "All services", to: "/#services" },
+      ...services.map((service) => ({
+        label: service.short,
+        to: servicePath(service.slug),
+        num: service.num,
+      })),
+    ],
+    [],
+  );
 
   /* The spectrum rule under the bar only appears once the page has moved, so
      it reads as a response to scrolling rather than as permanent chrome.
@@ -92,17 +110,28 @@ export default function Header({ showAvailability = true }) {
           data-open={open}
           className="flex items-center gap-4 max-md:order-4 max-md:mt-3 max-md:hidden max-md:w-full max-md:flex-col max-md:items-start max-md:border-t max-md:border-line max-md:pt-3 max-md:data-[open=true]:flex md:justify-center"
         >
-          {nav.map((item) => (
-            <Link
-              key={item.label}
-              to={navHref(item)}
-              aria-current={isCurrent(item) ? "true" : undefined}
-              className="text-[15.5px] tracking-[0.005em] transition-colors duration-150 hover:text-steel-700 aria-[current=true]:text-steel-700 max-md:text-[17px]"
-              onClick={() => setOpen(false)}
-            >
-              {item.label}
-            </Link>
-          ))}
+          {nav.map((item) =>
+            item.menu ? (
+              <NavMenu
+                key={item.label}
+                label={item.label}
+                items={serviceMenu}
+                currentPath={pathname}
+                active={isCurrent(item) || pathname.startsWith("/services/")}
+                onNavigate={() => setOpen(false)}
+              />
+            ) : (
+              <Link
+                key={item.label}
+                to={navHref(item)}
+                aria-current={isCurrent(item) ? "true" : undefined}
+                className="text-[15.5px] tracking-[0.005em] transition-colors duration-150 hover:text-steel-700 aria-[current=true]:text-steel-700 max-md:text-[17px]"
+                onClick={() => setOpen(false)}
+              >
+                {item.label}
+              </Link>
+            ),
+          )}
         </div>
 
         <div className="flex items-center gap-3 md:justify-self-end">
