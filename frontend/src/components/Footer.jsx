@@ -3,7 +3,7 @@ import { Link } from "react-router-dom";
 import Icon from "./Icon";
 import LegalDialogs from "./LegalDialogs";
 import Logo from "./Logo";
-import { brand, contact, nav, socials } from "../data/site";
+import { brand, contact, nav, navHref, socials } from "../data/site";
 import { track } from "../lib/track";
 
 const colHead = "mb-3 block text-[11px] tracking-[0.1em] uppercase";
@@ -83,7 +83,7 @@ export default function Footer() {
             <span className={`text-muted ${colHead}`}>Company</span>
             <nav className={linkCol} aria-label="Footer">
               {nav.map((item) => (
-                <Link key={item.id} to={`/#${item.id}`}>
+                <Link key={item.label} to={navHref(item)}>
                   {item.label}
                 </Link>
               ))}

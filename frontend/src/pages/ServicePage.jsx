@@ -9,6 +9,7 @@ import Seo from "../components/Seo";
 import SectionIndex from "../components/ui/SectionIndex";
 import { Stagger, StaggerItem } from "../components/ui/Stagger";
 import { serviceBySlug, services } from "../data/services";
+import { workByService } from "../data/work";
 import { serviceSeo, servicePath } from "../data/seo";
 import { whatsappLink } from "../data/site";
 import { track } from "../lib/track";
@@ -37,6 +38,7 @@ export default function ServicePage() {
   if (!service) return <NotFoundPage />;
 
   const others = services.filter((s) => s.slug !== service.slug);
+  const project = workByService(service.slug);
 
   return (
     <Layout skipTo="#service-body">
@@ -215,54 +217,62 @@ export default function ServicePage() {
       </section>
 
       {/* --------------------------------------------------------------------
-          THE WORK
+          THE WORK — sourced from the shared portfolio catalog in
+          src/data/work.js, which also drives /work/. Not every service is
+          guaranteed a matching entry, so the section steps aside rather than
+          rendering half a card if one is ever missing.
       -------------------------------------------------------------------- */}
-      <section className="section-y bg-paper">
-        <div className="shell">
-          <Reveal>
-            <SectionIndex num="03" label="The work" />
-          </Reveal>
-          <Reveal delay={0.06}>
-            <div className="flex flex-wrap gap-[clamp(24px,4vw,56px)]">
-              <Blueprint
-                className={`relative block aspect-4/3 min-w-[240px] flex-[0_1_clamp(260px,34vw,460px)] ${
-                  service.project.image ? "" : ""
-                }`}
-              >
-                {service.project.image ? (
-                  <img
-                    src={service.project.image}
-                    alt={`${service.project.name} — ${service.title}`}
-                    loading="lazy"
-                    decoding="async"
-                    className="h-full w-full object-cover"
-                  />
-                ) : (
-                  <Plate motif={service.project.motif} label={`${service.project.name} — ${service.title}`} />
-                )}
-              </Blueprint>
+      {project && (
+        <section className="section-y bg-paper">
+          <div className="shell">
+            <Reveal>
+              <SectionIndex num="03" label="The work" />
+            </Reveal>
+            <Reveal delay={0.06}>
+              <div className="flex flex-wrap gap-[clamp(24px,4vw,56px)]">
+                <Blueprint className="relative block aspect-4/3 min-w-[240px] flex-[0_1_clamp(260px,34vw,460px)]">
+                  {project.image ? (
+                    <img
+                      src={project.image}
+                      alt={`${project.name} — ${service.title}`}
+                      loading="lazy"
+                      decoding="async"
+                      className="h-full w-full object-contain"
+                    />
+                  ) : (
+                    <Plate motif={project.motif} label={`${project.name} — ${service.title}`} />
+                  )}
+                </Blueprint>
 
-              <div className="flex min-w-[260px] flex-[1_1_340px] flex-col justify-center gap-3 py-3">
-                <div className="flex flex-wrap gap-2">
-                  {service.project.tags.map((tag) => (
-                    <span className="tag tag-outline" key={tag}>
-                      {tag}
-                    </span>
-                  ))}
+                <div className="flex min-w-[260px] flex-[1_1_340px] flex-col justify-center gap-3 py-3">
+                  <div className="flex flex-wrap gap-2">
+                    {project.tags.map((tag) => (
+                      <span className="tag tag-outline" key={tag}>
+                        {tag}
+                      </span>
+                    ))}
+                  </div>
+                  <h3 className="display text-[clamp(22px,2.4vw,30px)]">{project.name}</h3>
+                  <p className="text-muted m-0 text-[15px]">{project.desc}</p>
+                  {project.placeholder && (
+                    <p className="text-muted mt-2 mb-0 text-[13px]">
+                      <span className="tag tag-outline mr-2">Sample</span>
+                      Example project shown for layout.
+                    </p>
+                  )}
+                  <Link
+                    to="/work/"
+                    className="linkish mt-1 inline-flex w-fit items-center gap-1.5 text-[14px]"
+                  >
+                    See more of our work
+                    <Icon name="arrowRight" size={14} />
+                  </Link>
                 </div>
-                <h3 className="display text-[clamp(22px,2.4vw,30px)]">{service.project.name}</h3>
-                <p className="text-muted m-0 text-[15px]">{service.project.desc}</p>
-                {service.project.placeholder && (
-                  <p className="text-muted mt-2 mb-0 text-[13px]">
-                    <span className="tag tag-outline mr-2">Sample</span>
-                    Example project shown for layout.
-                  </p>
-                )}
               </div>
-            </div>
-          </Reveal>
-        </div>
-      </section>
+            </Reveal>
+          </div>
+        </section>
+      )}
 
       {/* --------------------------------------------------------------------
           SERVICE FAQ

@@ -17,11 +17,13 @@
  */
 import { industries } from "./industries.js";
 import { services, serviceBySlug } from "./services.js";
+import { work } from "./work.js";
 import { brand, contact, siteUrl } from "./site.js";
 
 /** Trailing slash throughout — it is what the canonical URLs and sitemap use. */
 export const servicePath = (slug) => `/services/${slug}/`;
 export const industryPath = (slug) => `/industries/${slug}/`;
+export const workPath = () => "/work/";
 
 export const absoluteUrl = (path = "/") => `${siteUrl}${path}`;
 
@@ -191,6 +193,54 @@ export const industrySeo = (industry) => {
   };
 };
 
+/**
+ * WORK
+ * One page, not one per project — see work.js for why. The ItemList gives a
+ * crawler the shape of the catalog without needing a URL per entry; each
+ * item points at the service page that explains the discipline behind it,
+ * which is the only place on the site that project currently has a home of
+ * its own.
+ */
+export const workSeo = () => {
+  const url = absoluteUrl(workPath());
+
+  return {
+    title: `Our Work in ${contact.region} | ${brand.name}`,
+    description:
+      "Websites, photography, social content, campaigns, Google Business profiles and branding built for local businesses in Assam — one example from each of our six disciplines.",
+    canonical: url,
+    og: { image: shareImage },
+    jsonLd: [
+      {
+        "@context": "https://schema.org",
+        "@type": "CollectionPage",
+        name: `${brand.name} — Our Work`,
+        description: "A look at the work behind each of Ramdhenu's six disciplines.",
+        url,
+        about: provider,
+      },
+      {
+        "@context": "https://schema.org",
+        "@type": "BreadcrumbList",
+        itemListElement: [
+          { "@type": "ListItem", position: 1, name: "Home", item: absoluteUrl("/") },
+          { "@type": "ListItem", position: 2, name: "Work", item: url },
+        ],
+      },
+      {
+        "@context": "https://schema.org",
+        "@type": "ItemList",
+        itemListElement: work.map((project, i) => ({
+          "@type": "ListItem",
+          position: i + 1,
+          name: project.name,
+          url: absoluteUrl(servicePath(project.services[0])),
+        })),
+      },
+    ],
+  };
+};
+
 /** Nothing here should ever be indexed, and it has no canonical of its own. */
 export const notFoundSeo = () => ({
   title: `Page not found — ${brand.name}`,
@@ -216,6 +266,12 @@ export const staticRoutes = () => [
     seo: industrySeo(industry),
     priority: "0.7",
   })),
+  {
+    path: workPath(),
+    file: "work/index.html",
+    seo: workSeo(),
+    priority: "0.8",
+  },
   /* Not in the sitemap: the host's 404 document, and the SPA fallback for any
      path the router does not know. */
   { path: null, file: "404.html", seo: notFoundSeo() },

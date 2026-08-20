@@ -5,7 +5,7 @@ import { Stagger, StaggerItem } from "./ui/Stagger";
 import Icon from "./Icon";
 import Reveal from "./Reveal";
 import SectionIndex from "./ui/SectionIndex";
-import { servicePath } from "../data/seo";
+import { servicePath, workPath } from "../data/seo";
 import { services } from "../data/services";
 
 /**
@@ -59,6 +59,16 @@ export default function Services() {
             </StaggerItem>
           ))}
         </Stagger>
+
+        <Reveal delay={0.1} className="mt-[clamp(28px,3.4vw,40px)]">
+          <Link
+            to={workPath()}
+            className="linkish inline-flex items-center gap-2 text-[15px]"
+          >
+            See the work behind these six disciplines
+            <Icon name="arrowRight" size={15} />
+          </Link>
+        </Reveal>
       </div>
     </section>
   );

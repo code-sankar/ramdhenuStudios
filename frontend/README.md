@@ -91,7 +91,7 @@ src/
     industry.css   the design system, exported verbatim — owns every value
     app.css        the residue: gradients, masks, :has(), pseudo-elements
     fonts.css      self-hosted Barlow / Barlow Condensed @font-face rules
-  data/            all copy — site.js, services.js, industries.js,
+  data/            all copy — site.js, services.js, industries.js, work.js,
                    testimonials.js, legal.js, plus seo.js (the head every
                    route carries), analytics.js and booking.js (both off
                    until configured)
@@ -101,6 +101,7 @@ src/
     HomePage.jsx     hero → about → services → testimonials → faq → contact
     ServicePage.jsx  the template behind every /services/<slug>/
     IndustryPage.jsx the template behind every /industries/<slug>/
+    WorkPage.jsx     every project in one filterable grid, at /work/
     NotFoundPage.jsx unknown paths, and unknown slugs
   components/
     Layout.jsx       skip link · header · <main> · footer, worn by every page
@@ -121,8 +122,9 @@ src/
 ```
 
 Routing lives in `src/App.jsx`: `/` → `HomePage`, `/services/:slug` → `ServicePage`,
-`/industries/:slug` → `IndustryPage`, anything else → `NotFoundPage`. Sections
-follow the artboard: **Hero → About → Services → Testimonials → Contact.**
+`/industries/:slug` → `IndustryPage`, `/work` → `WorkPage`, anything else →
+`NotFoundPage`. Sections follow the artboard:
+**Hero → About → Services → Testimonials → Contact.**
 
 ## Before this goes live
 
@@ -135,7 +137,7 @@ checklist lives at the top of `src/data/site.js`.
 | Contact details | `site.js` → `contact` | Real phone, WhatsApp number, email, studio address |
 | Social profiles | `site.js` → `socials` | Replace the `#` hrefs |
 | Live domain | `site.js` → `siteUrl` | Canonical URLs, OG tags, structured data and the sitemap all derive from it; `robots.txt` names it too |
-| Example projects | `services.js` → each project's `placeholder` | Real permissioned work, then drop that project's flag — one at a time |
+| Example projects | `work.js` → each project's `placeholder` | Real permissioned work, then drop that project's flag — one at a time |
 | Placeholder quotes | `testimonials.js` → each quote's `placeholder` | A real name, role and permission, then drop that quote's flag |
 | Analytics | `analytics.js` → `provider`, `siteId` | Off until set; turning it on rewrites the privacy policy's tracking line |
 | Lead storage | `site.js` → `enquiry.endpoint` | Until set, enquiries go to WhatsApp and nothing is stored |
@@ -302,6 +304,51 @@ Two details worth knowing before you edit the copy:
 - **Nothing on these pages claims a result**, quotes a figure or names a client.
   They describe how we'd approach a trade, which is true on day one. The moment
   one starts claiming outcomes we can't evidence, it stops being worth ranking.
+
+## The work page
+
+`/work/`, rendered by `src/pages/WorkPage.jsx` from `src/data/work.js` — every
+project in one filterable grid, plus the closing ask every top-level page ends
+on. Nav, footer, sitemap and the home Services section all link to it.
+
+### One catalog, not one per service
+
+`work.js` used to be six separate objects, each embedded as `project` inside
+its service in `services.js`. It is a shared catalog now: every entry lists
+which service slugs it demonstrates (`services: [slug, …]`), and two things
+read it —
+
+| | |
+|---|---|
+| `WorkPage.jsx` | the full grid at `/work/`, filterable by discipline |
+| `ServicePage.jsx` | the one example in that service's own "The work" section |
+
+A project proving more than one discipline — a shoot that also fed the social
+calendar, a site built alongside a rebrand — is one entry with two slugs in
+`services`, not two copies that can quietly drift apart. `workByService(slug)`
+picks the representative example for a service page; `workCategories()` drives
+the filter chips from whichever disciplines are actually represented, so a
+chip never appears for a discipline the catalog has nothing to show.
+
+### Why there is no page per project
+
+Six illustrative projects do not justify six more pages of "Sample"
+disclaimers. Each card links instead to the service page behind it, which is
+where the real depth about that discipline already lives. Add a dedicated
+case-study template later, once a project has earned one.
+
+### Filtering
+
+Client-side, no route change — a `useState` and a plain filter, deliberately
+not animated on toggle. Framer's `whileInView` fires once per element the
+first time it enters the viewport; refiring it on every chip click would mean
+fighting that lifecycle for an effect nobody would notice mid-toggle. The page
+load is what gets the staggered entrance; the filter itself is instant.
+
+Same placeholder discipline as everywhere else on the site: each project
+carries its own `placeholder`, the card marks itself "Sample" individually,
+and a summary note appears above the grid only while at least one entry still
+needs replacing.
 
 ## Analytics
 

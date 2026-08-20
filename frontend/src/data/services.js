@@ -6,11 +6,10 @@
  * sitemap. Adding a service here is the entire job — the route follows from the
  * slug and there is nothing to regenerate.
  *
- * ⚠️  The client work under `project` is illustrative, supplied for layout.
- *     Each one carries its own `placeholder: true`, and the page prints a
- *     "Sample" marker for exactly the projects that still have it. Replace one
- *     with real, permissioned work and drop its flag — the other five keep
- *     theirs. Never drop a flag before the client has agreed to be named.
+ * The example project shown in "The work" section lives in src/data/work.js
+ * now, not here — one catalog, so a project proving more than one discipline
+ * is never duplicated into two copies that can drift apart. See work.js for
+ * the launch checklist on replacing placeholder work with the real thing.
  *
  * Nothing here claims a result. Outcomes are written as what the work changes,
  * not as numbers we cannot yet stand behind.
@@ -83,14 +82,6 @@ export const services = [
         a: "You do, in your own name, on your own account. It is your business asset and it should never sit inside an agency's account.",
       },
     ],
-    project: {
-      placeholder: true,
-      name: "M Fitness",
-      tags: ["Web Development", "Fitness", "Landing Page"],
-      motif: "web",
-      image: "https://res.cloudinary.com/dx7b8hfwm/image/upload/v1787157619/Screenshot_2026-08-19_220941_dripzc.png",
-      desc: "A booking-focused website with room galleries, enquiry tracking and a fast mobile experience for travellers planning on the move.",
-    },
   },
 
   {
@@ -158,14 +149,6 @@ export const services = [
         a: "Yes. Usage is unrestricted once the work is paid for — print, digital, delivery platforms, paid ads, anywhere.",
       },
     ],
-    project: {
-      placeholder: true,
-      name: "The Bamboo Kitchen",
-      tags: ["Photography", "Restaurant"],
-      motif: "photography",
-      image: null,
-      desc: "A full menu shoot plus a reel series that gave the restaurant a consistent, appetising feed and stronger delivery-app listings.",
-    },
   },
 
   {
@@ -233,14 +216,6 @@ export const services = [
         a: "Consistency shows before growth does. Expect the feed to look coherent within the first month and discovery to build over several — anyone promising a number in week two is guessing.",
       },
     ],
-    project: {
-      placeholder: true,
-      name: "FitLife Gym",
-      tags: ["Social Media", "Fitness"],
-      motif: "social",
-      image: null,
-      desc: "A month-by-month content system — transformation stories, trainer reels and offer creatives — built to keep enquiries flowing.",
-    },
   },
 
   {
@@ -308,14 +283,6 @@ export const services = [
         a: "Then we say so. Some offers do not survive contact with paid traffic, and the useful outcome is finding that out in three weeks for a controlled budget rather than in six months.",
       },
     ],
-    project: {
-      placeholder: true,
-      name: "Elite Interiors",
-      tags: ["Performance Marketing", "Interiors"],
-      motif: "marketing",
-      image: null,
-      desc: "Meta and Google campaigns paired with a dedicated landing page and call tracking, so every rupee of ad spend is accountable.",
-    },
   },
 
   {
@@ -383,14 +350,6 @@ export const services = [
         a: "Only if it breaks Google's policies, and we will report those. Otherwise the answer is to reply well in public — which, handled properly, reads better to a prospective customer than no bad reviews at all.",
       },
     ],
-    project: {
-      placeholder: true,
-      name: "Aurora Salon & Spa",
-      tags: ["Google Business", "Salon"],
-      motif: "local",
-      image: null,
-      desc: "A one-page booking site plus a fully optimised Google Business Profile that put the salon on the map for nearby searches.",
-    },
   },
 
   {
@@ -459,14 +418,6 @@ export const services = [
         a: "Yes. Source files and every export format are handed over on completion. They are your brand assets and you should never need to ask us for them.",
       },
     ],
-    project: {
-      placeholder: true,
-      name: "Chabua Tea",
-      tags: ["Branding & Identity", "Retail"],
-      motif: "branding",
-      image: null,
-      desc: "A visual identity and packaging system that carries the estate's heritage onto shelves and into online listings.",
-    },
   },
 ];
 
