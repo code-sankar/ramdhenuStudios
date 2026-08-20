@@ -45,20 +45,25 @@ export default function ServicePage() {
       {/* --------------------------------------------------------------------
           MASTHEAD — steel field, same as the home hero
       -------------------------------------------------------------------- */}
-      <section className="relative overflow-hidden bg-steel-900 py-[clamp(56px,7vw,96px)]">
+      <section className="service-hero relative overflow-hidden bg-steel-900 py-[clamp(56px,7vw,96px)]">
+        {/* The spectrum field, back to front: the blueprint grid, the
+            photograph screened over it, then the veil that holds the type's
+            contrast. See SERVICE MASTHEAD FIELD in app.css. */}
         <div className="hero__grid" aria-hidden="true" />
+        <div className="service-hero__spectrum" aria-hidden="true" />
+        <div className="service-hero__veil" aria-hidden="true" />
 
         <div className="shell relative">
           <nav aria-label="Breadcrumb" className="mb-8">
             <ol className="flex list-none flex-wrap items-center gap-x-2 p-0 text-[12px] tracking-[0.08em] text-paper/55 uppercase max-md:text-[12.5px]">
               <li>
-                <Link to="/" className="inline-block py-2 no-underline hover:text-steel-300">
+                <Link to="/" className="inline-block py-2 text-paper/70 no-underline transition-colors duration-150 hover:text-paper">
                   Home
                 </Link>
               </li>
               <li aria-hidden="true">/</li>
               <li>
-                <Link to="/#services" className="inline-block py-2 no-underline hover:text-steel-300">
+                <Link to="/#services" className="inline-block py-2 text-paper/70 no-underline transition-colors duration-150 hover:text-paper">
                   Services
                 </Link>
               </li>

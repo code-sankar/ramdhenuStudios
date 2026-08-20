@@ -452,6 +452,50 @@ Barlow and Barlow Condensed are served from `public/fonts` (Latin + Latin-Extend
 one less DNS + TLS handshake before first paint, no third-party request from a
 visitor's browser, and the type still renders offline.
 
+## The service masthead field
+
+Every `/services/<slug>/` masthead carries a spectrum photograph
+(`public/service-hero-spectrum.jpg`). **The home hero deliberately does not** —
+it keeps the drawn aurora. The two fields would compete, and the home page's
+first screen is the one that must never be busy.
+
+**Why a rainbow does not break a monochrome system.** Industry is steel plus one
+accent, so a full-spectrum photograph ought to be foreign to it. It isn't,
+because the system already runs `--spectrum` as its signature: the rule under
+the header and the 2px edge closing the hero are both that same rainbow. The
+photograph is that motif at scale, which is what makes it read as the site's own
+rather than as stock.
+
+**The technique is `mix-blend-mode: screen`, and it is doing real work.** The
+source is neon on pure black. Screen maps black to transparent and keeps only
+the light, so the steel ground survives underneath — no black rectangle dropped
+into a steel section, no seam at the edges, and the field still reads as
+`--color-accent-900`. Setting the same file as a plain `background-image` would
+replace the field instead of lighting it.
+
+### Contrast is the constraint
+
+The masthead reverses a headline and a 16.5px lede out of the field, so the
+numbers in `SERVICE MASTHEAD FIELD` (`app.css`) — image opacity, the mask ramp
+and the veil stops — are **tested values, not taste**. They were tuned against
+measured contrast, sampling the real rendered backdrop behind each run of text
+with the glyphs hidden, on all six pages at three widths:
+
+| | 360px | 768px | 1440px |
+|---|---|---|---|
+| measurements | 30 | 30 | 30 |
+| below WCAG AA | 0 | 0 | 0 |
+
+Worst case anywhere is the lede at 5.38:1 against a 4.5 requirement. If you
+change any of those values, re-measure rather than eyeballing it — the failure
+mode is a 16.5px lede sitting on a bright cyan line, which looks fine on a
+designer's monitor and is unreadable on a phone in daylight.
+
+One thing that fix surfaced: breadcrumb links were inheriting the design
+system's accent link colour, which is **3.4:1 on the steel field and was failing
+before this change**. They now use muted paper. Fixed on the industry mastheads
+too, since it is the same markup and the same defect.
+
 ## Motion
 
 Every animation is built from `src/lib/motion.js` — durations, easings, travel
