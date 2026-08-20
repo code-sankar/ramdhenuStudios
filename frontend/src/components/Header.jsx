@@ -1,9 +1,9 @@
 import { useEffect, useState } from "react";
-import { Link } from "react-router-dom";
+import { Link, useLocation } from "react-router-dom";
 import Blueprint from "./Blueprint";
 import Icon from "./Icon";
 import Logo from "./Logo";
-import { brand, nav } from "../data/site";
+import { brand, nav, navHref } from "../data/site";
 
 /**
  * Sticky header. Translucent paper ground with a blur, a hairline base rule,
@@ -13,9 +13,14 @@ import { brand, nav } from "../data/site";
  * off `data-scrolled`, and the rule is a ::after with the gradient token.
  */
 export default function Header({ showAvailability = true }) {
+  const { pathname } = useLocation();
   const [open, setOpen] = useState(false);
   const [active, setActive] = useState("");
   const [scrolled, setScrolled] = useState(false);
+
+  /* A nav item is either a home anchor, current while its section is in view,
+     or a real route, current while the URL matches it. */
+  const isCurrent = (item) => (item.path ? pathname === item.path : active === item.id);
 
   /* The spectrum rule under the bar only appears once the page has moved, so
      it reads as a response to scrolling rather than as permanent chrome.
@@ -89,9 +94,9 @@ export default function Header({ showAvailability = true }) {
         >
           {nav.map((item) => (
             <Link
-              key={item.id}
-              to={`/#${item.id}`}
-              aria-current={active === item.id ? "true" : undefined}
+              key={item.label}
+              to={navHref(item)}
+              aria-current={isCurrent(item) ? "true" : undefined}
               className="text-[15.5px] tracking-[0.005em] transition-colors duration-150 hover:text-steel-700 aria-[current=true]:text-steel-700 max-md:text-[17px]"
               onClick={() => setOpen(false)}
             >

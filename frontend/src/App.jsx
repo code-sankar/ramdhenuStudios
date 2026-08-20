@@ -6,6 +6,7 @@ import HomePage from "./pages/HomePage";
 import IndustryPage from "./pages/IndustryPage";
 import NotFoundPage from "./pages/NotFoundPage";
 import ServicePage from "./pages/ServicePage";
+import WorkPage from "./pages/WorkPage";
 
 /**
  * RAMDHENU — every page of the site, as components.
@@ -21,8 +22,8 @@ import ServicePage from "./pages/ServicePage";
  * host with no rewrite rule, and a crawler that never runs the JavaScript still
  * gets the right head. The router is what serves them once the app has booted.
  *
- * Trailing slashes are the canonical form — /services/<slug>/ and
- * /industries/<slug>/ — and the router matches with or without one.
+ * Trailing slashes are the canonical form — /services/<slug>/,
+ * /industries/<slug>/ and /work/ — and the router matches with or without one.
  *
  * Service pages explain a discipline; industry pages explain a trade and route
  * into the services that matter most for it.
@@ -36,6 +37,7 @@ export default function App() {
         <Route path="/" element={<HomePage />} />
         <Route path="/services/:slug" element={<ServicePage />} />
         <Route path="/industries/:slug" element={<IndustryPage />} />
+        <Route path="/work" element={<WorkPage />} />
         <Route path="*" element={<NotFoundPage />} />
       </Routes>
     </BrowserRouter>

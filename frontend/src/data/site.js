@@ -11,7 +11,7 @@
  * │  2. `socials`        real profile URLs (currently "#")                   │
  * │  3. `enquiry`        set `endpoint` if the host handles form POSTs       │
  * │  4. `siteUrl`        the live domain — used by SEO tags + structured data │
- * │  5. services.js      drop `placeholder` on each project as it goes live  │
+ * │  5. work.js          drop `placeholder` on each project as it goes live  │
  * │  6. testimonials.js  drop `placeholder` on each quote you have rights to │
  * │  7. legal.js         have the privacy policy and terms reviewed          │
  * └─────────────────────────────────────────────────────────────────────────┘
@@ -71,13 +71,22 @@ export const whatsappLink = `https://wa.me/${contact.whatsappNumber}?text=${enco
   enquiry.whatsappGreeting,
 )}`;
 
+/**
+ * Each item is either a home-page anchor (`id`, highlighted by scroll
+ * position) or a real route (`path`, highlighted by the current URL). "Work"
+ * is the only one of the second kind — it is not a section of the home page.
+ */
 export const nav = [
   { label: "Services", id: "services" },
+  { label: "Work", path: "/work/" },
   { label: "About", id: "about" },
   { label: "Testimonials", id: "testimonials" },
   { label: "FAQ", id: "faq" },
   { label: "Contact", id: "contact" },
 ];
+
+/** Where a nav item points: its own route, or a hash into the home page. */
+export const navHref = (item) => item.path ?? `/#${item.id}`;
 
 /** ⚠ PLACEHOLDER — replace "#" with the real profile URLs. */
 export const socials = [
