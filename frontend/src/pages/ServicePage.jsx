@@ -49,15 +49,15 @@ export default function ServicePage() {
 
         <div className="shell relative">
           <nav aria-label="Breadcrumb" className="mb-8">
-            <ol className="flex list-none flex-wrap items-center gap-2 p-0 text-[12px] tracking-[0.08em] text-paper/55 uppercase">
+            <ol className="flex list-none flex-wrap items-center gap-x-2 p-0 text-[12px] tracking-[0.08em] text-paper/55 uppercase max-md:text-[12.5px]">
               <li>
-                <Link to="/" className="no-underline hover:text-steel-300">
+                <Link to="/" className="inline-block py-2 no-underline hover:text-steel-300">
                   Home
                 </Link>
               </li>
               <li aria-hidden="true">/</li>
               <li>
-                <Link to="/#services" className="no-underline hover:text-steel-300">
+                <Link to="/#services" className="inline-block py-2 no-underline hover:text-steel-300">
                   Services
                 </Link>
               </li>

@@ -70,7 +70,7 @@ export default function Header({ showAvailability = true }) {
       >
         <Link
           to="/#top"
-          className="nav-brand md:mr-0"
+          className="nav-brand flex items-center max-md:min-h-[44px] md:mr-0"
           aria-label={`${brand.name} — home`}
           onClick={() => setOpen(false)}
         >

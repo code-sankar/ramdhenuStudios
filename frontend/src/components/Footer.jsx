@@ -7,7 +7,9 @@ import { brand, contact, nav, socials } from "../data/site";
 import { track } from "../lib/track";
 
 const colHead = "mb-3 block text-[11px] tracking-[0.1em] uppercase";
-const linkCol = "flex flex-col gap-2.5";
+/* On a phone each row carries its own height rather than relying on the
+   gap, so a fingertip cannot land between two links. */
+const linkCol = "flex flex-col gap-2.5 max-md:gap-0 max-md:[&>*]:py-2.5";
 
 export default function Footer() {
   const year = new Date().getFullYear();
@@ -58,7 +60,7 @@ export default function Footer() {
             <span className="mb-0.5 block text-[11px] tracking-[0.08em] text-steel-700 uppercase">
               Email
             </span>
-            <a href={contact.emailHref} className="mb-3 block">
+            <a href={contact.emailHref} className="mb-3 block max-md:py-[10px]">
               {contact.email}
             </a>
             <span className="mb-0.5 block text-[11px] tracking-[0.08em] text-steel-700 uppercase">
@@ -67,7 +69,7 @@ export default function Footer() {
             <a
               href={contact.phoneHref}
               onClick={() => track("Phone click", { from: "footer" })}
-              className="mb-3 block"
+              className="mb-3 block max-md:py-[10px]"
             >
               {contact.phone}
             </a>

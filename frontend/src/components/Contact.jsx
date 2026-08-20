@@ -1,4 +1,5 @@
 import Blueprint from "./Blueprint";
+import BookCall from "./BookCall";
 import EnquiryForm from "./EnquiryForm";
 import Icon from "./Icon";
 import Reveal from "./Reveal";
@@ -31,20 +32,26 @@ export default function Contact() {
               plan, a timeline, and a team that ships.
             </p>
 
-            <Blueprint
-              as="a"
-              href={whatsappLink}
-              target="_blank"
-              rel="noreferrer"
-              onClick={() => track("WhatsApp click", { from: "contact" })}
-              reversed
-              className="btn btn-secondary relative mt-6 border-paper/35 px-[22px] py-[13px] text-[15px] on-steel no-underline hover:bg-paper/10 active:bg-paper/20"
-            >
-              <Icon name="whatsapp" size={16} />
-              Chat on WhatsApp
-            </Blueprint>
+            {/* Two ways in, side by side: message now, or take a slot. The
+                booking button renders nothing until cal.com is configured. */}
+            <div className="mt-6 flex flex-wrap items-center gap-3">
+              <Blueprint
+                as="a"
+                href={whatsappLink}
+                target="_blank"
+                rel="noreferrer"
+                onClick={() => track("WhatsApp click", { from: "contact" })}
+                reversed
+                className="btn btn-secondary relative border-paper/35 px-[22px] py-[13px] text-[15px] on-steel no-underline hover:bg-paper/10 active:bg-paper/20"
+              >
+                <Icon name="whatsapp" size={16} />
+                Chat on WhatsApp
+              </Blueprint>
 
-            <ul className="mt-[clamp(32px,4vw,48px)] grid list-none grid-cols-[repeat(auto-fit,minmax(160px,1fr))] gap-6 border-t border-paper/20 p-0 pt-[clamp(24px,3vw,32px)]">
+              <BookCall from="contact" />
+            </div>
+
+            <ul className="mt-[clamp(32px,4vw,48px)] grid list-none grid-cols-[repeat(auto-fit,minmax(136px,1fr))] gap-6 border-t border-paper/20 p-0 pt-[clamp(24px,3vw,32px)]">
               <Channel label="Email" href={contact.emailHref} value={contact.email} />
               <Channel
                 label="Phone"
@@ -74,7 +81,7 @@ function Channel({ label, value, href, onClick }) {
         <a
           href={href}
           onClick={onClick}
-          className="text-[15px] on-steel no-underline hover:text-steel-300 hover:underline"
+          className="inline-block text-[15px] on-steel no-underline hover:text-steel-300 hover:underline max-md:py-1.5"
         >
           {value}
         </a>

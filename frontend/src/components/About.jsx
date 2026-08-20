@@ -41,7 +41,7 @@ export default function About() {
               {industries.slice(0, 8).map((item) => {
                 const page = industryByLabel(item);
                 const chip =
-                  "block border px-[10px] py-[5px] font-display text-[11.5px] tracking-[0.04em] uppercase";
+                  "block border px-[10px] py-[5px] font-display text-[11.5px] tracking-[0.04em] uppercase max-md:px-3.5 max-md:py-[12px]";
                 return (
                   <li key={item}>
                     {page ? (

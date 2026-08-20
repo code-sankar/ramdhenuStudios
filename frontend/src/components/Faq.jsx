@@ -60,7 +60,7 @@ export default function Faq() {
             target="_blank"
             rel="noreferrer"
             onClick={() => track("WhatsApp click", { from: "faq" })}
-            className="linkish mt-6 inline-flex items-center gap-2 text-sm"
+            className="linkish mt-6 inline-flex items-center gap-2 text-sm max-md:min-h-[44px] max-md:py-2"
           >
             <Icon name="whatsapp" size={15} />
             Something else? Ask us on WhatsApp
