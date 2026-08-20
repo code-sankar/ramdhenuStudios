@@ -6,6 +6,7 @@ import Layout from "../components/Layout";
 import Reveal from "../components/Reveal";
 import Seo from "../components/Seo";
 import SectionIndex from "../components/ui/SectionIndex";
+import { Stagger, StaggerItem } from "../components/ui/Stagger";
 import { industryBySlug, industries } from "../data/industries";
 import { industryPath, industrySeo, servicePath } from "../data/seo";
 import { serviceBySlug } from "../data/services";
@@ -48,13 +49,13 @@ export default function IndustryPage() {
           <nav aria-label="Breadcrumb" className="mb-8">
             <ol className="flex list-none flex-wrap items-center gap-x-2 p-0 text-[12px] tracking-[0.08em] text-paper/55 uppercase max-md:text-[12.5px]">
               <li>
-                <Link to="/" className="inline-block py-2 no-underline hover:text-steel-300">
+                <Link to="/" className="inline-block py-2 text-paper/70 no-underline transition-colors duration-150 hover:text-paper">
                   Home
                 </Link>
               </li>
               <li aria-hidden="true">/</li>
               <li>
-                <Link to="/#about" className="inline-block py-2 no-underline hover:text-steel-300">
+                <Link to="/#about" className="inline-block py-2 text-paper/70 no-underline transition-colors duration-150 hover:text-paper">
                   Industries
                 </Link>
               </li>
@@ -173,9 +174,13 @@ export default function IndustryPage() {
           </Reveal>
 
           <Reveal delay={0.06}>
-            <ol className="grid list-none gap-px border-t border-ink p-0 sm:grid-cols-2 lg:grid-cols-4">
+            <Stagger
+              as="ol"
+              className="grid list-none gap-px border-t border-ink p-0 sm:grid-cols-2 lg:grid-cols-4"
+            >
               {industry.firstMoves.map((move, i) => (
-                <li
+                <StaggerItem
+                  as="li"
                   key={move.step}
                   className="border-line pt-6 pr-6 pb-6 sm:border-r sm:last:border-r-0"
                 >
@@ -186,9 +191,9 @@ export default function IndustryPage() {
                   <p className="text-muted m-0 max-w-[34ch] text-[14.5px] leading-relaxed">
                     {move.body}
                   </p>
-                </li>
+                </StaggerItem>
               ))}
-            </ol>
+            </Stagger>
           </Reveal>
 
           <Reveal delay={0.1} className="mt-[clamp(40px,5vw,72px)]">
@@ -241,9 +246,9 @@ export default function IndustryPage() {
             </h2>
           </Reveal>
           <Reveal delay={0.06}>
-            <ul className="m-0 list-none border-t border-line p-0">
+            <Stagger as="ul" className="m-0 list-none border-t border-line p-0">
               {others.map((i) => (
-                <li key={i.slug} className="border-b border-line">
+                <StaggerItem as="li" key={i.slug} className="border-b border-line">
                   <Link
                     to={industryPath(i.slug)}
                     className="group flex items-center gap-[clamp(16px,3vw,40px)] py-5 no-underline"
@@ -261,9 +266,9 @@ export default function IndustryPage() {
                       <Icon name="arrowRight" />
                     </span>
                   </Link>
-                </li>
+                </StaggerItem>
               ))}
-            </ul>
+            </Stagger>
           </Reveal>
         </div>
       </section>

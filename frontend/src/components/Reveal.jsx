@@ -1,20 +1,53 @@
-import { motion } from "motion/react";
+import { motion, useReducedMotion } from "motion/react";
+
+import { inView, variants } from "../lib/motion";
 
 /**
- * A short, flat entrance — 16px of travel on an ease-out curve, fired once.
- * The Industry system is a wireframe; motion here is there to establish
- * reading order as a section arrives, not to perform.
+ * REVEAL — one block arriving on the grid.
+ *
+ * A short, flat entrance fired once. The Industry system is a wireframe; motion
+ * here establishes reading order as a section arrives, it does not perform.
+ *
+ * `as` matters more than it looks: this used to always render a <div>, which
+ * meant wrapping a list row or a grid cell in one silently inserted a box that
+ * broke the layout it was meant to animate. Pass the element the layout
+ * actually needs.
+ *
+ * Under `prefers-reduced-motion` the content is rendered in its final state
+ * with no animation at all — not a faster animation, none. app.css flattens
+ * CSS transitions for the same reason; this is the JavaScript half of that.
  */
-export default function Reveal({ children, delay = 0, className }) {
+export default function Reveal({
+  children,
+  delay = 0,
+  className,
+  variant = "up",
+  as = "div",
+  ...rest
+}) {
+  const reduced = useReducedMotion();
+  const Tag = motion[as] ?? motion.div;
+
+  if (reduced) {
+    const Plain = as;
+    return (
+      <Plain className={className} {...rest}>
+        {children}
+      </Plain>
+    );
+  }
+
   return (
-    <motion.div
+    <Tag
       className={className}
-      initial={{ opacity: 0, y: 16 }}
-      whileInView={{ opacity: 1, y: 0 }}
-      viewport={{ once: true, margin: "-10% 0px -8% 0px" }}
-      transition={{ duration: 0.55, ease: [0.16, 1, 0.3, 1], delay }}
+      variants={variants[variant] ?? variants.up}
+      custom={delay}
+      initial="hidden"
+      whileInView="show"
+      viewport={inView}
+      {...rest}
     >
       {children}
-    </motion.div>
+    </Tag>
   );
 }

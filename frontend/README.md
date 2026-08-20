@@ -452,6 +452,120 @@ Barlow and Barlow Condensed are served from `public/fonts` (Latin + Latin-Extend
 one less DNS + TLS handshake before first paint, no third-party request from a
 visitor's browser, and the type still renders offline.
 
+## The service masthead field
+
+Every `/services/<slug>/` masthead carries a spectrum photograph
+(`public/service-hero-spectrum.jpg`). **The home hero deliberately does not** —
+it keeps the drawn aurora. The two fields would compete, and the home page's
+first screen is the one that must never be busy.
+
+**Why a rainbow does not break a monochrome system.** Industry is steel plus one
+accent, so a full-spectrum photograph ought to be foreign to it. It isn't,
+because the system already runs `--spectrum` as its signature: the rule under
+the header and the 2px edge closing the hero are both that same rainbow. The
+photograph is that motif at scale, which is what makes it read as the site's own
+rather than as stock.
+
+**The technique is `mix-blend-mode: screen`, and it is doing real work.** The
+source is neon on pure black. Screen maps black to transparent and keeps only
+the light, so the steel ground survives underneath — no black rectangle dropped
+into a steel section, no seam at the edges, and the field still reads as
+`--color-accent-900`. Setting the same file as a plain `background-image` would
+replace the field instead of lighting it.
+
+### Contrast is the constraint
+
+The masthead reverses a headline and a 16.5px lede out of the field, so the
+numbers in `SERVICE MASTHEAD FIELD` (`app.css`) — image opacity, the mask ramp
+and the veil stops — are **tested values, not taste**. They were tuned against
+measured contrast, sampling the real rendered backdrop behind each run of text
+with the glyphs hidden, on all six pages at three widths:
+
+| | 360px | 768px | 1440px |
+|---|---|---|---|
+| measurements | 30 | 30 | 30 |
+| below WCAG AA | 0 | 0 | 0 |
+
+Worst case anywhere is the lede at 5.38:1 against a 4.5 requirement. If you
+change any of those values, re-measure rather than eyeballing it — the failure
+mode is a 16.5px lede sitting on a bright cyan line, which looks fine on a
+designer's monitor and is unreadable on a phone in daylight.
+
+One thing that fix surfaced: breadcrumb links were inheriting the design
+system's accent link colour, which is **3.4:1 on the steel field and was failing
+before this change**. They now use muted paper. Fixed on the industry mastheads
+too, since it is the same markup and the same defect.
+
+## Motion
+
+Every animation is built from `src/lib/motion.js` — durations, easings, travel
+distances and stagger intervals in one file, so nothing anywhere is a magic
+number and the whole system can be retimed from one place.
+
+### The brief
+
+Industry is a wireframe. A system that austere has an honest motion vocabulary
+and a dishonest one, and picking wrong makes the page read as a template rather
+than as a studio's own work.
+
+| Belongs | Does not |
+|---|---|
+| content arriving on the grid — short travel, ease-out, no overshoot | spring bounce, 3D tilt, rotation, scale-from-0.8 pops |
+| hairlines drawing themselves in | letter scrambles, cursor followers, scroll-jacking |
+| layered planes at different rates | parallax large enough to notice as an effect |
+
+The second column is not squeamishness. Every item on it draws attention to the
+motion instead of to the work, and this site's job is to earn a local business
+owner's trust in about eight seconds.
+
+**Distance is the budget.** Nothing travels further than 24px and nothing runs
+longer than 0.7s, so no animation can ever be the reason a visitor waits.
+
+### The pieces
+
+| | |
+|---|---|
+| `Reveal` | one block arriving. `as` sets the element, so wrapping a list row no longer injects a `<div>` that breaks the layout it was meant to animate |
+| `Stagger` / `StaggerItem` | a list whose rows arrive in order, at 0.06s intervals |
+| `Parallax` | scroll-linked depth, transform only |
+| `SectionIndex` | the rule between number and label draws along its own axis |
+| `Layout` | `<main>` fades in on route change |
+
+Stagger is applied where sequence carries meaning — the services index, the four
+process stages, the industry index — and nowhere else. Staggering every list
+makes a page feel slow rather than considered.
+
+### Parallax
+
+The hero is already three stacked layers, so each gets its own rate as the field
+scrolls away: the grid lags furthest (it is the sheet), the aurora leads
+slightly (it is nearest), and the content lags and dims. Total separation across
+a full scroll-out is under 100px — you should register it as depth and never as
+movement.
+
+**It does not run under `prefers-reduced-motion`** (scroll-linked movement is
+the exact class that triggers vestibular symptoms — off, not reduced), **or
+below 768px** (scroll-linked transforms are the first thing to drop frames on a
+mid-range Android, and a stuttering hero costs more than depth buys).
+
+### Two traps this codebase already fell into
+
+**Variant transitions swallow `delay`.** A variant written as a plain object
+with its own `transition` beats the `transition` prop on the component, so all
+33 `<Reveal delay={…}>` call sites would silently animate at once. `up` and
+`fade` are variant *functions* taking delay through framer's `custom` prop.
+
+**Reduced motion has to be handled in JS too.** `app.css` flattens CSS
+transitions, but framer animations are unaffected by that. Every motion
+component checks `useReducedMotion()` and renders a plain element with no
+animation at all.
+
+### Measured
+
+60fps through a full-page scroll with parallax running (frame time p50 and p95
+both 16.7ms, zero frames over 32ms), CLS 0.0011, and no element left below
+opacity 0.9 on any route after animations settle.
+
 ## Mobile
 
 Most of this site's audience arrives on a mid-range Android on mobile data, so
