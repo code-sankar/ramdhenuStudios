@@ -27,6 +27,11 @@
     <link rel="preload" as="font" type="font/woff2" href="/fonts/barlow-condensed-600-latin.woff2" crossorigin />
     <link rel="preload" as="font" type="font/woff2" href="/fonts/barlow-400-latin.woff2" crossorigin />
 
+    <!-- The boot film. `fetchpriority=low` on purpose: it must load alongside
+         the bundle that actually makes the site work, never ahead of it. If it
+         loses that race the splash simply never shows it. -->
+    <link rel="preload" as="video" href="/loadingVid.mp4" fetchpriority="low" />
+
     <!-- The hero fills the first screen with the steel field; paint it before
          React mounts so there is no paper-white flash. -->
     <style>
@@ -35,7 +40,152 @@
 
   </head>
   <body>
+    <!-- ══════════════════════════════════════════════════════════════════════
+         BOOT SPLASH
+         ---------------------------------------------------------------------
+         Markup and styles live here, in the document, rather than in a React
+         component. A component cannot paint until the bundle has parsed, so a
+         splash built that way shows the empty page first and the "loading"
+         screen second — backwards, and worse than no splash at all. This
+         paints on the first frame, before a byte of JavaScript runs.
+
+         THE VIDEO IS A BONUS, NEVER A DEPENDENCY. It is ~300 KB, which is
+         about 6s on a slow 3G connection — longer than the site itself needs
+         to become usable. So nothing here waits for it: the steel ground and
+         the spectrum bar cost zero bytes and are up immediately, and the film
+         fades in only if it is decoded in time. Losing that race costs the
+         visitor nothing.
+
+         The bar is the loading indicator proper. It cannot know real progress
+         — no browser API reports "app readiness" — so it eases toward 90% and
+         only completes on the real ready signal from main.jsx. It indicates
+         work, and it never claims to be finished before it is.
+
+         Colours are hard-coded because the token sheet has not loaded yet;
+         they are --color-accent-900 and --spectrum from src/styles.
+         ══════════════════════════════════════════════════════════════════════ -->
+    <style>
+      #boot {
+        position: fixed;
+        inset: 0;
+        z-index: 9999;
+        background: #1d2d3d;
+        display: grid;
+        place-items: center;
+        transition: opacity 0.45s cubic-bezier(0.16, 1, 0.3, 1);
+      }
+      #boot[data-done] { opacity: 0; pointer-events: none; }
+      #boot video {
+        width: 100%;
+        height: 100%;
+        /* contain, not cover — the same rule the rest of the site follows:
+           never crop the subject to fill a box. */
+        object-fit: contain;
+        opacity: 0;
+        transition: opacity 0.4s ease-out;
+      }
+      #boot video[data-ready] { opacity: 1; }
+      #boot-bar {
+        position: absolute;
+        left: 0; right: 0; bottom: 0;
+        height: 2px;
+        background: rgba(242, 242, 243, 0.12);
+      }
+      #boot-bar > i {
+        display: block;
+        height: 100%;
+        width: 0;
+        background: linear-gradient(90deg, #7b2ff7 0%, #4361ee 18%, #12b6d8 37%, #2ecc71 55%, #f7b733 78%, #fc4a1a 100%);
+        transition: width 0.3s ease-out;
+      }
+      /* Without JavaScript nothing can ever take this down, so it must not go up. */
+      @media (prefers-reduced-motion: reduce) { #boot video { display: none; } }
+    </style>
+    <noscript><style>#boot { display: none !important; }</style></noscript>
+
+    <div id="boot" aria-hidden="true">
+      <!-- `loop`: if the app outlasts the film, it repeats rather than freezing
+           on its last frame, which reads as a hang. -->
+      <video id="boot-video" muted loop playsinline preload="auto" disablepictureinpicture></video>
+      <div id="boot-bar"><i></i></div>
+    </div>
+
     <div id="root"></div>
+
+    <script>
+      /* Boot splash controller. Inline and dependency-free so it runs before
+         the bundle, and small enough to read in one sitting.
+
+         THE ONE RULE: this must never be the reason someone cannot use the
+         site. Every path out — ready, decode failure, autoplay refusal, a
+         hostile network, JavaScript throwing further up — ends in finish().
+         The hard cap fires regardless of what else happened. */
+      (function () {
+        var boot = document.getElementById("boot");
+        if (!boot) return;
+
+        var bar = boot.querySelector("#boot-bar > i");
+        var video = document.getElementById("boot-video");
+        var MIN_MS = 550;   /* below this the splash reads as a flicker */
+        var MAX_MS = 6000;  /* absolute ceiling, whatever the network does */
+        var started = Date.now();
+        var finished = false;
+
+        function teardown() {
+          boot.setAttribute("data-done", "");
+          document.documentElement.style.overflow = "";
+          try { video.removeAttribute("src"); video.load(); } catch (e) { /* already gone */ }
+          setTimeout(function () { if (boot.parentNode) boot.parentNode.removeChild(boot); }, 550);
+        }
+
+        function finish() {
+          if (finished) return;
+          finished = true;
+          clearInterval(creep);
+          bar.style.width = "100%";
+          setTimeout(teardown, Math.max(0, MIN_MS - (Date.now() - started)));
+        }
+
+        /* Once per session. A client-side router would otherwise replay this
+           on navigation, and a splash you have already watched is friction. */
+        var seen = false;
+        try { seen = sessionStorage.getItem("rd-boot") === "1"; } catch (e) { /* private mode */ }
+        var reduced = window.matchMedia && matchMedia("(prefers-reduced-motion: reduce)").matches;
+
+        if (seen) { boot.parentNode.removeChild(boot); return; }
+        try { sessionStorage.setItem("rd-boot", "1"); } catch (e) { /* fine */ }
+
+        document.documentElement.style.overflow = "hidden";
+
+        /* Eases toward 90% and stops. Only the real ready signal completes it. */
+        var progress = 8;
+        bar.style.width = progress + "%";
+        var creep = setInterval(function () {
+          progress = Math.min(90, progress + (90 - progress) * 0.12 + 0.6);
+          bar.style.width = progress + "%";
+        }, 180);
+
+        /* The film, strictly opt-in on whether it arrives in time. */
+        if (!reduced) {
+          video.addEventListener("canplay", function () {
+            if (finished) return;
+            video.setAttribute("data-ready", "");
+            var p = video.play();
+            if (p && p.catch) p.catch(function () { /* autoplay refused; the bar carries on */ });
+          });
+          /* A codec the browser cannot decode, a 404, a dead network: all just
+             mean no film. None of them may hold the page. */
+          video.addEventListener("error", function () { /* deliberately empty */ });
+          video.src = "/loadingVid.mp4";
+        }
+
+        window.__ramdhenuReady = finish;
+        setTimeout(finish, MAX_MS);
+        /* Restored from the back/forward cache: never show a stale splash. */
+        window.addEventListener("pageshow", function (e) { if (e.persisted) finish(); });
+      })();
+    </script>
+
     <script type="module" src="/src/main.jsx"></script>
   </body>
 </html>
