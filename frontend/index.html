@@ -27,10 +27,10 @@
     <link rel="preload" as="font" type="font/woff2" href="/fonts/barlow-condensed-600-latin.woff2" crossorigin />
     <link rel="preload" as="font" type="font/woff2" href="/fonts/barlow-400-latin.woff2" crossorigin />
 
-    <!-- The boot film. `fetchpriority=low` on purpose: it must load alongside
-         the bundle that actually makes the site work, never ahead of it. If it
-         loses that race the splash simply never shows it. -->
-    <link rel="preload" as="video" href="/loadingVid.mp4" fetchpriority="low" />
+    <!-- The boot film. Default priority, not low: the splash now holds for it,
+         so the sooner it arrives the shorter the wait. The app bundle loads
+         behind the splash and has the film's whole runtime to finish in. -->
+    <link rel="preload" as="video" href="/loadingVid.mp4" />
 
     <!-- The hero fills the first screen with the steel field; paint it before
          React mounts so there is no paper-white flash. -->
@@ -49,17 +49,22 @@
          screen second — backwards, and worse than no splash at all. This
          paints on the first frame, before a byte of JavaScript runs.
 
-         THE VIDEO IS A BONUS, NEVER A DEPENDENCY. It is ~300 KB, which is
-         about 6s on a slow 3G connection — longer than the site itself needs
-         to become usable. So nothing here waits for it: the steel ground and
-         the spectrum bar cost zero bytes and are up immediately, and the film
-         fades in only if it is decoded in time. Losing that race costs the
-         visitor nothing.
+         THE FILM PLAYS THROUGH. On a first visit the splash holds until the
+         video ends, not until the app is ready — the app is usually ready in
+         about a second, which would tear the splash down before anyone saw
+         it. That is a deliberate cost: it buys the brand moment, and the app
+         loads behind the cover it provides.
+
+         IT STILL CANNOT TRAP ANYONE. If the film cannot be decoded, 404s,
+         stalls, or autoplay is refused, the splash reverts to dismissing the
+         moment the app is ready. A Skip control appears after a beat, and a
+         hard ceiling fires whatever else happened. `loop` is deliberately
+         absent: with it, `ended` would never fire and the splash would hold
+         until the cap every single time.
 
          The bar is the loading indicator proper. It cannot know real progress
          — no browser API reports "app readiness" — so it eases toward 90% and
-         only completes on the real ready signal from main.jsx. It indicates
-         work, and it never claims to be finished before it is.
+         only completes when the splash is actually on its way out.
 
          Colours are hard-coded because the token sheet has not loaded yet;
          they are --color-accent-900 and --spectrum from src/styles.
@@ -78,13 +83,37 @@
       #boot video {
         width: 100%;
         height: 100%;
-        /* contain, not cover — the same rule the rest of the site follows:
-           never crop the subject to fill a box. */
-        object-fit: contain;
+        /* cover, not contain: this one fills the screen. The site's rule
+           against cropping is about content photography, where the subject
+           matters; a full-bleed title card is the opposite case — letterbox
+           bars around it would read as a broken embed. */
+        object-fit: cover;
         opacity: 0;
         transition: opacity 0.4s ease-out;
       }
       #boot video[data-ready] { opacity: 1; }
+      /* A held splash with no way past it is hostile, and this is also the
+         manual escape hatch if playback stalls somewhere I cannot test. */
+      #boot-skip {
+        position: absolute;
+        right: clamp(16px, 4vw, 40px);
+        bottom: clamp(24px, 5vh, 48px);
+        min-height: 44px;
+        padding: 10px 18px;
+        font: inherit;
+        font-size: 13px;
+        letter-spacing: 0.08em;
+        text-transform: uppercase;
+        color: rgba(242, 242, 243, 0.75);
+        background: transparent;
+        border: 1px solid rgba(242, 242, 243, 0.28);
+        border-radius: 0;
+        cursor: pointer;
+        opacity: 0;
+        transition: opacity 0.3s ease-out, color 0.15s, border-color 0.15s;
+      }
+      #boot-skip[data-shown] { opacity: 1; }
+      #boot-skip:hover { color: #f2f2f3; border-color: rgba(242, 242, 243, 0.6); }
       #boot-bar {
         position: absolute;
         left: 0; right: 0; bottom: 0;
@@ -103,11 +132,14 @@
     </style>
     <noscript><style>#boot { display: none !important; }</style></noscript>
 
-    <div id="boot" aria-hidden="true">
-      <!-- `loop`: if the app outlasts the film, it repeats rather than freezing
-           on its last frame, which reads as a hang. -->
-      <video id="boot-video" muted loop playsinline preload="auto" disablepictureinpicture></video>
-      <div id="boot-bar"><i></i></div>
+    <!-- Not aria-hidden as a whole: the Skip control has to be reachable. The
+         decorative parts opt out individually instead. -->
+    <div id="boot" role="group" aria-label="Intro">
+      <!-- No `loop`: the splash waits for `ended`, which a looping video never
+           fires. -->
+      <video id="boot-video" muted playsinline preload="auto" disablepictureinpicture aria-hidden="true"></video>
+      <div id="boot-bar" aria-hidden="true"><i></i></div>
+      <button id="boot-skip" type="button">Skip</button>
     </div>
 
     <div id="root"></div>
@@ -117,19 +149,34 @@
          the bundle, and small enough to read in one sitting.
 
          THE ONE RULE: this must never be the reason someone cannot use the
-         site. Every path out — ready, decode failure, autoplay refusal, a
-         hostile network, JavaScript throwing further up — ends in finish().
-         The hard cap fires regardless of what else happened. */
+         site. Every path out — the film ending, a decode failure, autoplay
+         refusal, a hostile network, the visitor pressing Skip, JavaScript
+         throwing further up — ends in finish(). The hard ceiling fires
+         regardless of what else happened. */
       (function () {
         var boot = document.getElementById("boot");
         if (!boot) return;
 
         var bar = boot.querySelector("#boot-bar > i");
         var video = document.getElementById("boot-video");
-        var MIN_MS = 550;   /* below this the splash reads as a flicker */
-        var MAX_MS = 6000;  /* absolute ceiling, whatever the network does */
+        var skip = document.getElementById("boot-skip");
+
+        var MIN_MS = 550;    /* below this the splash reads as a flicker */
+        var HARD_MS = 11000; /* absolute ceiling — a stall must never outlive it */
+        var SKIP_AT = 1200;  /* the film gets a moment before the exit appears */
+        var GRACE_MS = 3000; /* how long the film has to start before we give up */
         var started = Date.now();
         var finished = false;
+
+        /* THE FILM IS A THREE-STATE LIFECYCLE, NOT A BOOLEAN, AND THAT MATTERS.
+           The app is typically ready around 130ms; `canplay` does not fire
+           until roughly 280ms. A boolean "is it playing" is therefore false at
+           the moment the app reports ready, and the splash tore itself down
+           before the film ever started — every single time, on a fast
+           connection. "pending" is the state that fixes it: ready does nothing
+           while the film might still be coming. */
+        var film = "pending";  /* "pending" | "playing" | "unavailable" */
+        var appIsReady = false;
 
         function teardown() {
           boot.setAttribute("data-done", "");
@@ -146,6 +193,22 @@
           setTimeout(teardown, Math.max(0, MIN_MS - (Date.now() - started)));
         }
 
+        /* The app being ready is only permission to leave, never the reason.
+           It ends the splash only once we know no film is coming. */
+        function appReady() {
+          appIsReady = true;
+          if (film === "unavailable") finish();
+        }
+
+        /* No film: a codec this browser cannot decode, a 404, a dead network,
+           autoplay refused, or simply too slow to be the intro. From here the
+           splash behaves the way it did before — out as soon as the app is up. */
+        function filmUnavailable() {
+          if (film === "playing") return;
+          film = "unavailable";
+          if (appIsReady) finish();
+        }
+
         /* Once per session. A client-side router would otherwise replay this
            on navigation, and a splash you have already watched is friction. */
         var seen = false;
@@ -157,7 +220,7 @@
 
         document.documentElement.style.overflow = "hidden";
 
-        /* Eases toward 90% and stops. Only the real ready signal completes it. */
+        /* Eases toward 90% and stops. Only the exit completes it. */
         var progress = 8;
         bar.style.width = progress + "%";
         var creep = setInterval(function () {
@@ -165,22 +228,52 @@
           bar.style.width = progress + "%";
         }, 180);
 
-        /* The film, strictly opt-in on whether it arrives in time. */
-        if (!reduced) {
+        skip.addEventListener("click", finish);
+        setTimeout(function () { if (!finished) skip.setAttribute("data-shown", ""); }, SKIP_AT);
+
+        if (reduced) {
+          /* No film at all, so there is nothing to hold for. */
+          video.removeAttribute("preload");
+          filmUnavailable();
+        } else {
           video.addEventListener("canplay", function () {
             if (finished) return;
             video.setAttribute("data-ready", "");
-            var p = video.play();
-            if (p && p.catch) p.catch(function () { /* autoplay refused; the bar carries on */ });
+            var pending = video.play();
+            if (pending && pending.catch) pending.catch(filmUnavailable);
           });
-          /* A codec the browser cannot decode, a 404, a dead network: all just
-             mean no film. None of them may hold the page. */
-          video.addEventListener("error", function () { /* deliberately empty */ });
+
+          /* `playing` is the event that means pixels are actually moving —
+             more trustworthy than the play() promise alone. */
+          video.addEventListener("playing", function () {
+            if (!finished) film = "playing";
+          });
+
+          /* The film finishing is the intended exit. */
+          video.addEventListener("ended", finish);
+
+          /* Belt and braces: if `ended` never arrives — a stall, a seek, a
+             browser that drops the event — the film's own duration says when
+             it should have. */
+          video.addEventListener("loadedmetadata", function () {
+            var ms = (video.duration || 0) * 1000;
+            if (ms > 0 && isFinite(ms)) setTimeout(finish, ms + 1200);
+          });
+
+          video.addEventListener("error", filmUnavailable);
+
+          /* A film that has not started within the grace window is not the
+             intro any more. Waiting longer would punish exactly the slow
+             connections that can least afford it. */
+          setTimeout(function () {
+            if (film === "pending") filmUnavailable();
+          }, GRACE_MS);
+
           video.src = "/loadingVid.mp4";
         }
 
-        window.__ramdhenuReady = finish;
-        setTimeout(finish, MAX_MS);
+        window.__ramdhenuReady = appReady;
+        setTimeout(finish, HARD_MS);
         /* Restored from the back/forward cache: never show a stale splash. */
         window.addEventListener("pageshow", function (e) { if (e.persisted) finish(); });
       })();
