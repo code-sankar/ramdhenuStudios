@@ -4,6 +4,7 @@ import Icon from "./Icon";
 import LegalDialogs from "./LegalDialogs";
 import Logo from "./Logo";
 import { brand, contact, nav, socials } from "../data/site";
+import { track } from "../lib/track";
 
 const colHead = "mb-3 block text-[11px] tracking-[0.1em] uppercase";
 const linkCol = "flex flex-col gap-2.5";
@@ -63,7 +64,11 @@ export default function Footer() {
             <span className="mb-0.5 block text-[11px] tracking-[0.08em] text-steel-700 uppercase">
               Phone
             </span>
-            <a href={contact.phoneHref} className="mb-3 block">
+            <a
+              href={contact.phoneHref}
+              onClick={() => track("Phone click", { from: "footer" })}
+              className="mb-3 block"
+            >
               {contact.phone}
             </a>
             <span className="mb-0.5 block text-[11px] tracking-[0.08em] text-steel-700 uppercase">

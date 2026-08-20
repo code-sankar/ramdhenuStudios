@@ -4,6 +4,7 @@ import Icon from "./Icon";
 import Reveal from "./Reveal";
 import SectionIndex from "./ui/SectionIndex";
 import { contact, whatsappLink } from "../data/site";
+import { track } from "../lib/track";
 
 /**
  * CONTACT — the closing steel field, and the site's only conversion point.
@@ -35,6 +36,7 @@ export default function Contact() {
               href={whatsappLink}
               target="_blank"
               rel="noreferrer"
+              onClick={() => track("WhatsApp click", { from: "contact" })}
               reversed
               className="btn btn-secondary relative mt-6 border-paper/35 px-[22px] py-[13px] text-[15px] on-steel no-underline hover:bg-paper/10 active:bg-paper/20"
             >
@@ -44,7 +46,12 @@ export default function Contact() {
 
             <ul className="mt-[clamp(32px,4vw,48px)] grid list-none grid-cols-[repeat(auto-fit,minmax(160px,1fr))] gap-6 border-t border-paper/20 p-0 pt-[clamp(24px,3vw,32px)]">
               <Channel label="Email" href={contact.emailHref} value={contact.email} />
-              <Channel label="Phone" href={contact.phoneHref} value={contact.phone} />
+              <Channel
+                label="Phone"
+                href={contact.phoneHref}
+                value={contact.phone}
+                onClick={() => track("Phone click", { from: "contact" })}
+              />
               <Channel label="Studio" value={contact.studio} />
               <Channel label="Hours" value={contact.hours} />
             </ul>
@@ -59,12 +66,16 @@ export default function Contact() {
   );
 }
 
-function Channel({ label, value, href }) {
+function Channel({ label, value, href, onClick }) {
   return (
     <li className="flex flex-col gap-[3px]">
       <span className="text-[11px] tracking-[0.08em] text-steel-300 uppercase">{label}</span>
       {href ? (
-        <a href={href} className="text-[15px] on-steel no-underline hover:text-steel-300 hover:underline">
+        <a
+          href={href}
+          onClick={onClick}
+          className="text-[15px] on-steel no-underline hover:text-steel-300 hover:underline"
+        >
           {value}
         </a>
       ) : (

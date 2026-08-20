@@ -91,15 +91,20 @@ src/
     industry.css   the design system, exported verbatim — owns every value
     app.css        the residue: gradients, masks, :has(), pseudo-elements
     fonts.css      self-hosted Barlow / Barlow Condensed @font-face rules
-  data/            all copy — site.js, services.js, testimonials.js, legal.js
-                   plus seo.js, the head every route carries
+  data/            all copy — site.js, services.js, industries.js,
+                   testimonials.js, legal.js, plus seo.js (the head every
+                   route carries) and analytics.js (off until configured)
+  lib/
+    track.js         send an event, safely, whether or not analytics is on
   pages/
     HomePage.jsx     hero → about → services → testimonials → faq → contact
     ServicePage.jsx  the template behind every /services/<slug>/
+    IndustryPage.jsx the template behind every /industries/<slug>/
     NotFoundPage.jsx unknown paths, and unknown slugs
   components/
     Layout.jsx       skip link · header · <main> · footer, worn by every page
     Seo.jsx          writes the route's head — title, canonical, JSON-LD
+    Analytics.jsx    loads the provider, counts a pageview per route
     ScrollManager.jsx  hash, top or restore, depending on the navigation
     Blueprint.jsx    the wireframe frame + its four registration marks
     Plate.jsx        drawn spec-sheet figure, stands in for absent photography
@@ -114,8 +119,8 @@ src/
 ```
 
 Routing lives in `src/App.jsx`: `/` → `HomePage`, `/services/:slug` → `ServicePage`,
-anything else → `NotFoundPage`. Sections follow the artboard:
-**Hero → About → Services → Testimonials → Contact.**
+`/industries/:slug` → `IndustryPage`, anything else → `NotFoundPage`. Sections
+follow the artboard: **Hero → About → Services → Testimonials → Contact.**
 
 ## Before this goes live
 
@@ -128,8 +133,10 @@ checklist lives at the top of `src/data/site.js`.
 | Contact details | `site.js` → `contact` | Real phone, WhatsApp number, email, studio address |
 | Social profiles | `site.js` → `socials` | Replace the `#` hrefs |
 | Live domain | `site.js` → `siteUrl` | Canonical URLs, OG tags, structured data and the sitemap all derive from it; `robots.txt` names it too |
-| Example projects | `services.js` → `PROJECTS_ARE_PLACEHOLDER` | Real permissioned work, then set the flag to `false` |
-| Placeholder quotes | `testimonials.js` → `TESTIMONIALS_ARE_PLACEHOLDER` | Permissioned quotes and photos, then `false` |
+| Example projects | `services.js` → each project's `placeholder` | Real permissioned work, then drop that project's flag — one at a time |
+| Placeholder quotes | `testimonials.js` → each quote's `placeholder` | A real name, role and permission, then drop that quote's flag |
+| Analytics | `analytics.js` → `provider`, `siteId` | Off until set; turning it on rewrites the privacy policy's tracking line |
+| Lead storage | `site.js` → `enquiry.endpoint` | Until set, enquiries go to WhatsApp and nothing is stored |
 | Legal copy | `legal.js` → `LEGAL_NEEDS_REVIEW` | Have both documents reviewed, then `false` |
 
 The About stats (`site.js` → `stats`) describe how the team is built — six
@@ -261,6 +268,88 @@ so that one cannot drift either.
 `public/` holds `robots.txt` and the share card; `sitemap.xml` is generated into
 `dist/` at build time. **The domain is set once**, in `src/data/site.js` →
 `siteUrl` — everything above derives from it.
+
+## Industry pages
+
+A service page answers *"what is performance marketing?"*. An industry page
+answers *"what would you do for my clinic?"* — which is what people actually
+search, and what a generic services page answers badly.
+
+Six live at `/industries/<slug>/`, rendered by `src/pages/IndustryPage.jsx` from
+`src/data/industries.js`. They reuse the whole service-page apparatus: the same
+router, the same `<Seo>`, the same static route generation, the same sitemap.
+Adding one is a single entry in that file.
+
+Each page is built to route **into** the services rather than compete with them.
+`priority` lists service slugs in the order they matter for that trade, and the
+sidebar renders them as ranked links:
+
+```js
+priority: ["photography-videography", "google-business-management", "social-media-management"],
+```
+
+The chips in the About section link to whichever industries have a page; the
+rest stay plain text, so the home page never promises a page that doesn't exist.
+
+Two details worth knowing before you edit the copy:
+
+- **`plural` and `singular` are separate fields** from `name` and `short`,
+  because a nav label does not survive being dropped into a sentence — you get
+  "for most Restaurants businesses" otherwise.
+- **Nothing on these pages claims a result**, quotes a figure or names a client.
+  They describe how we'd approach a trade, which is true on day one. The moment
+  one starts claiming outcomes we can't evidence, it stops being worth ranking.
+
+## Analytics
+
+Off until configured. Set `provider` and `siteId` in `src/data/analytics.js` and
+the site starts counting; leave `provider: null` and nothing is requested from
+anyone.
+
+```js
+export const analytics = {
+  provider: "plausible",        // or "umami", or null
+  siteId: "ramdhenu.studio",    // Plausible: the domain. Umami: the website ID.
+  src: "",                      // only when self-hosting
+};
+```
+
+Plausible and Umami are the two offered because both are cookieless: the privacy
+policy stays short and there's no consent banner standing between a visitor and
+the enquiry form. Google Analytics would change both.
+
+**Both load their `manual` script variant, deliberately.** This is a client-side
+router — a visitor who lands on the home page and clicks through three service
+pages performs one document load and three route changes. An auto-tracking
+script would record one pageview, making the pages built to rank look like they
+get no traffic. `<Analytics>` sends a pageview per route change instead.
+
+`legal.js` derives its tracking sentence from the same config, so the privacy
+policy can't quietly go out of date when you switch a provider on.
+
+### What's measured
+
+| Event | Fired when | Properties |
+|---|---|---|
+| `Enquiry sent` | the form completes by any route | `via` (form/whatsapp/email), `service` |
+| `Enquiry failed` | the POST rejects | `service` |
+| `WhatsApp click` | any WhatsApp button | `from`, `service` / `industry` |
+| `Phone click` | click-to-call in the contact panel or footer | `from` |
+
+`track()` is always safe to call — it's a no-op when analytics is off, and calls
+made before the script loads are queued and replayed, so the first pageview
+isn't the one that gets lost.
+
+### Storing enquiries
+
+`enquiry.endpoint` in `src/data/site.js` is `null`, so the form composes the
+message and hands it to WhatsApp — nothing is kept. Anyone who fills it in and
+doesn't complete the handoff is a lead you have no record of. Set it to a URL
+that accepts a POST and the form posts JSON and reports success inline:
+
+```js
+endpoint: "https://formspree.io/f/xxxxxxxx",
+```
 
 ## The About video
 

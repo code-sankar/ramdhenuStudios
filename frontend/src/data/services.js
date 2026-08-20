@@ -7,14 +7,14 @@
  * slug and there is nothing to regenerate.
  *
  * ⚠️  The client work under `project` is illustrative, supplied for layout.
- *     Replace with real, permissioned work before launch — see
- *     PROJECTS_ARE_PLACEHOLDER below.
+ *     Each one carries its own `placeholder: true`, and the page prints a
+ *     "Sample" marker for exactly the projects that still have it. Replace one
+ *     with real, permissioned work and drop its flag — the other five keep
+ *     theirs. Never drop a flag before the client has agreed to be named.
  *
  * Nothing here claims a result. Outcomes are written as what the work changes,
  * not as numbers we cannot yet stand behind.
  */
-
-export const PROJECTS_ARE_PLACEHOLDER = true;
 
 export const services = [
   {
@@ -84,6 +84,7 @@ export const services = [
       },
     ],
     project: {
+      placeholder: true,
       name: "M Fitness",
       tags: ["Web Development", "Fitness", "Landing Page"],
       motif: "web",
@@ -158,6 +159,7 @@ export const services = [
       },
     ],
     project: {
+      placeholder: true,
       name: "The Bamboo Kitchen",
       tags: ["Photography", "Restaurant"],
       motif: "photography",
@@ -232,6 +234,7 @@ export const services = [
       },
     ],
     project: {
+      placeholder: true,
       name: "FitLife Gym",
       tags: ["Social Media", "Fitness"],
       motif: "social",
@@ -306,6 +309,7 @@ export const services = [
       },
     ],
     project: {
+      placeholder: true,
       name: "Elite Interiors",
       tags: ["Performance Marketing", "Interiors"],
       motif: "marketing",
@@ -380,6 +384,7 @@ export const services = [
       },
     ],
     project: {
+      placeholder: true,
       name: "Aurora Salon & Spa",
       tags: ["Google Business", "Salon"],
       motif: "local",
@@ -455,6 +460,7 @@ export const services = [
       },
     ],
     project: {
+      placeholder: true,
       name: "Chabua Tea",
       tags: ["Branding & Identity", "Retail"],
       motif: "branding",

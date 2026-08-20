@@ -15,11 +15,13 @@
  * Because both read this file, the static head and the runtime head cannot
  * drift apart. Adding a service to services.js is the whole job again.
  */
-import { services } from "./services.js";
+import { industries } from "./industries.js";
+import { services, serviceBySlug } from "./services.js";
 import { brand, contact, siteUrl } from "./site.js";
 
 /** Trailing slash throughout — it is what the canonical URLs and sitemap use. */
 export const servicePath = (slug) => `/services/${slug}/`;
+export const industryPath = (slug) => `/industries/${slug}/`;
 
 export const absoluteUrl = (path = "/") => `${siteUrl}${path}`;
 
@@ -140,6 +142,55 @@ export const serviceSeo = (service) => {
   };
 };
 
+/**
+ * INDUSTRY
+ * A service page answers "what is performance marketing?"; these answer "what
+ * would you do for my clinic?". So the schema is the same Service type, scoped
+ * by audience rather than by discipline — and the FAQ block is published as
+ * FAQPage because those questions and answers are genuinely on the page.
+ */
+export const industrySeo = (industry) => {
+  const url = absoluteUrl(industryPath(industry.slug));
+
+  return {
+    title: industry.metaTitle,
+    description: industry.metaDescription,
+    canonical: url,
+    og: { image: shareImage },
+    jsonLd: [
+      {
+        "@context": "https://schema.org",
+        "@type": "Service",
+        name: `Digital marketing for ${industry.name}`,
+        description: industry.metaDescription,
+        serviceType: industry.priority.map((slug) => serviceBySlug(slug)?.title).filter(Boolean),
+        url,
+        provider,
+        areaServed: { "@type": "State", name: contact.region },
+        audience: { "@type": "BusinessAudience", name: industry.name },
+      },
+      {
+        "@context": "https://schema.org",
+        "@type": "BreadcrumbList",
+        itemListElement: [
+          { "@type": "ListItem", position: 1, name: "Home", item: absoluteUrl("/") },
+          { "@type": "ListItem", position: 2, name: "Industries", item: absoluteUrl("/#about") },
+          { "@type": "ListItem", position: 3, name: industry.short, item: url },
+        ],
+      },
+      {
+        "@context": "https://schema.org",
+        "@type": "FAQPage",
+        mainEntity: industry.faqs.map(({ q, a }) => ({
+          "@type": "Question",
+          name: q,
+          acceptedAnswer: { "@type": "Answer", text: a },
+        })),
+      },
+    ],
+  };
+};
+
 /** Nothing here should ever be indexed, and it has no canonical of its own. */
 export const notFoundSeo = () => ({
   title: `Page not found — ${brand.name}`,
@@ -158,6 +209,12 @@ export const staticRoutes = () => [
     file: `services/${service.slug}/index.html`,
     seo: serviceSeo(service),
     priority: "0.8",
+  })),
+  ...industries.map((industry) => ({
+    path: industryPath(industry.slug),
+    file: `industries/${industry.slug}/index.html`,
+    seo: industrySeo(industry),
+    priority: "0.7",
   })),
   /* Not in the sitemap: the host's 404 document, and the SPA fallback for any
      path the router does not know. */

@@ -6,13 +6,27 @@
  * without pulling a router in for two documents.
  *
  * ⚠️  These are plain-language starting points written to describe what this
- *     site actually does (one enquiry form, no tracking, no cookies, and a
- *     YouTube embed that stays inert until pressed). Have
- *     them reviewed before launch, and update them the moment analytics, a
- *     CRM or any third-party embed is added.
+ *     site actually does (one enquiry form, a cookieless counter that is off
+ *     until configured, and a YouTube embed that stays inert until pressed).
+ *     Have them reviewed before launch, and update them the moment a CRM or
+ *     any further third-party embed is added.
  */
+import { analytics, analyticsEnabled } from "./analytics.js";
 
 export const LEGAL_NEEDS_REVIEW = true;
+
+/**
+ * What the policy says about tracking is derived, not typed.
+ *
+ * The previous wording promised "we do not use analytics" — true when it was
+ * written, and quietly false the moment anyone switched a provider on. A
+ * privacy policy that lies is worse than no privacy policy, so this sentence
+ * is generated from the same config the script tag reads.
+ */
+const trackingClause = () =>
+  analyticsEnabled()
+    ? `We use ${analytics.provider === "plausible" ? "Plausible" : "Umami"} to count visits. It sets no cookies, stores no personal data and does not follow you to other websites — it tells us how many people read a page, not who they are. There is no advertising tracker on this site.`
+    : "We do not use cookies, analytics or advertising trackers on this site.";
 
 export const privacy = {
   title: "Privacy Policy",
@@ -20,7 +34,7 @@ export const privacy = {
   sections: [
     {
       heading: "What we collect",
-      body: "When you send an enquiry we receive the name, business name, phone number, service interest and message you type into the form. That is the only personal information this website collects. We do not use cookies, analytics or advertising trackers on this site.",
+      body: `When you send an enquiry we receive the name, business name, phone number, service interest and message you type into the form. That is the only personal information this website collects. ${trackingClause()}`,
     },
     {
       heading: "How we use it",
