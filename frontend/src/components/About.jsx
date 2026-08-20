@@ -1,7 +1,11 @@
+import { Link } from "react-router-dom";
+
 import Reveal from "./Reveal";
 import SectionIndex from "./ui/SectionIndex";
 import VideoEmbed from "./VideoEmbed";
 import { aboutVideo, industries, stats } from "../data/site";
+import { industryByLabel } from "../data/industries";
+import { industryPath } from "../data/seo";
 
 /**
  * ABOUT — the positioning claim, the film, then the facts behind it.
@@ -31,16 +35,29 @@ export default function About() {
               campaigns that bring people through the door.
             </p>
 
+            {/* The trades we have written a page for become links; the rest stay
+                plain chips. Nothing here promises a page that does not exist. */}
             <ul className="flex list-none flex-wrap gap-[7px] p-0">
-              {industries.slice(0, 6).map((item) => (
-                <li
-                  key={item}
-                  className="border border-line px-[10px] py-[5px] font-display text-[11.5px] tracking-[0.04em] text-ink/60 uppercase"
-                >
-                  {item}
-                </li>
-              ))}
-              <li className="border border-steel/45 px-[10px] py-[5px] font-display text-[11.5px] tracking-[0.04em] text-steel-700 uppercase">
+              {industries.slice(0, 8).map((item) => {
+                const page = industryByLabel(item);
+                const chip =
+                  "block border px-[10px] py-[5px] font-display text-[11.5px] tracking-[0.04em] uppercase";
+                return (
+                  <li key={item}>
+                    {page ? (
+                      <Link
+                        to={industryPath(page.slug)}
+                        className={`${chip} border-steel/45 text-steel-700 no-underline transition-colors duration-150 hover:border-steel hover:bg-steel hover:text-paper`}
+                      >
+                        {item}
+                      </Link>
+                    ) : (
+                      <span className={`${chip} border-line text-ink/60`}>{item}</span>
+                    )}
+                  </li>
+                );
+              })}
+              <li className="border border-line px-[10px] py-[5px] font-display text-[11.5px] tracking-[0.04em] text-ink/45 uppercase">
                 + more
               </li>
             </ul>

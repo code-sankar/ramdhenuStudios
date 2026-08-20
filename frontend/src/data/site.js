@@ -129,15 +129,21 @@ export const stats = [
   { value: "48h", label: "Typical first response" },
 ];
 
-/** Industries the agency starts with — drives the structured data's service area. */
+/**
+ * Industries the agency starts with, shown as chips in the About section.
+ *
+ * Any label matching an entry in /src/data/industries.js renders as a link to
+ * that page — so the order here decides which get linked from the home page.
+ * The six with pages are listed first for that reason.
+ */
 export const industries = [
   "Restaurants & Cafés",
   "Hotels & Resorts",
-  "Salons",
-  "Gyms",
-  "Clinics",
-  "Coaching Centres",
+  "Clinics & Healthcare",
+  "Salons & Spas",
   "Real Estate",
+  "Coaching Centres",
+  "Gyms",
   "Boutiques",
   "Local Retail",
   "Tourism",
