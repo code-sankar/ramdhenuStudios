@@ -14,3 +14,9 @@ createRoot(document.getElementById("root")).render(
     <App />
   </StrictMode>,
 );
+
+/* Tell the boot splash the app is up. Two frames, because render() only
+   schedules the work — the first frame commits it, the second is the one the
+   visitor actually sees painted. Optional-called: the splash removes itself
+   after one session, so on most page views this function no longer exists. */
+requestAnimationFrame(() => requestAnimationFrame(() => window.__ramdhenuReady?.()));

@@ -496,6 +496,73 @@ system's accent link colour, which is **3.4:1 on the steel field and was failing
 before this change**. They now use muted paper. Fixed on the industry mastheads
 too, since it is the same markup and the same defect.
 
+## The boot splash
+
+A first-visit loading screen: the steel ground, a spectrum progress bar, and
+`public/loadingVid.mp4` playing over it. Markup, styles and controller are all
+inline in `index.html`.
+
+**Not a React component, deliberately.** A component cannot paint until the
+bundle has parsed, so a splash built that way shows the empty page first and the
+"loading" screen second — backwards, and worse than no splash at all. Inline, it
+paints on the first frame, before a byte of JavaScript runs. It costs 4.5 KB
+inline, and the build copies it into all 14 routes automatically.
+
+### The video is a bonus, never a dependency
+
+This is the whole design. `loadingVid.mp4` is ~300 KB, which is about **6 seconds
+on a slow 3G connection** — longer than the site itself needs to become usable.
+A splash that waited for it would make the site slower in order to display a
+message saying it is loading.
+
+So nothing waits for it. The steel ground and the bar cost zero bytes and are up
+immediately; the film fades in *only if* it decodes in time. Losing that race
+costs the visitor nothing. The `<link rel="preload">` carries
+`fetchpriority="low"` for the same reason: the film loads alongside the bundle
+that actually makes the site work, never ahead of it.
+
+### It can never trap anyone
+
+Every path out ends in `finish()`, and the hard cap fires regardless of what
+else happened. Verified in a browser, each case ending with the page usable and
+scrolling restored:
+
+| | outcome |
+|---|---|
+| video cannot be decoded | dismissed at 1.25s |
+| video 404s | dismissed at 1.66s |
+| video request hangs forever | dismissed at 1.51s |
+| `prefers-reduced-motion` | dismissed, film never requested |
+| app never loads at all | dismissed at the 6s cap |
+| no JavaScript | `<noscript>` hides it — nothing could remove it |
+| back/forward cache restore | dismissed on `pageshow` |
+
+### The bar
+
+It is the loading indicator proper. No browser API reports "app readiness", so
+it eases toward 90% and **only completes on the real signal** from `main.jsx`
+(`window.__ramdhenuReady`, fired after two frames — `render()` only schedules
+the work, the second frame is the one the visitor sees). It indicates work
+without ever claiming to be finished before it is.
+
+### Tuning
+
+Two constants at the top of the controller:
+
+| | |
+|---|---|
+| `MIN_MS` (550) | below this the splash reads as a flicker |
+| `MAX_MS` (6000) | absolute ceiling, whatever the network does |
+
+It shows **once per session** (`sessionStorage`) — this is a client-side router,
+and replaying it on every navigation would be friction. To remove the feature
+entirely, delete the `#boot` block from `index.html`; the `__ramdhenuReady` call
+in `main.jsx` is already optional-called and will simply do nothing.
+
+**To make it hold for the full film** rather than tracking load, raise `MIN_MS`
+to the video's duration. That is a deliberate trade: on a fast connection it
+adds real waiting to a page that was ready.
+
 ## Motion
 
 Every animation is built from `src/lib/motion.js` — durations, easings, travel
