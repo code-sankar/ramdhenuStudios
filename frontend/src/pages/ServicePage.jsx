@@ -7,9 +7,10 @@ import Plate from "../components/Plate";
 import Reveal from "../components/Reveal";
 import Seo from "../components/Seo";
 import SectionIndex from "../components/ui/SectionIndex";
-import { PROJECTS_ARE_PLACEHOLDER, serviceBySlug, services } from "../data/services";
+import { serviceBySlug, services } from "../data/services";
 import { serviceSeo, servicePath } from "../data/seo";
 import { whatsappLink } from "../data/site";
+import { track } from "../lib/track";
 import NotFoundPage from "./NotFoundPage";
 
 /**
@@ -94,6 +95,7 @@ export default function ServicePage() {
               href={whatsappLink}
               target="_blank"
               rel="noreferrer"
+              onClick={() => track("WhatsApp click", { from: "service", service: service.title })}
               className="inline-flex items-center gap-[9px] border border-paper/25 px-[26px] py-[15px] font-display text-[15px] text-paper/90 no-underline transition duration-200 hover:border-paper/45 hover:bg-paper/10"
             >
               <Icon name="whatsapp" size={16} />
@@ -237,7 +239,7 @@ export default function ServicePage() {
                 </div>
                 <h3 className="display text-[clamp(22px,2.4vw,30px)]">{service.project.name}</h3>
                 <p className="text-muted m-0 text-[15px]">{service.project.desc}</p>
-                {PROJECTS_ARE_PLACEHOLDER && (
+                {service.project.placeholder && (
                   <p className="text-muted mt-2 mb-0 text-[13px]">
                     <span className="tag tag-outline mr-2">Sample</span>
                     Example project shown for layout.

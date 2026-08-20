@@ -2,6 +2,7 @@ import { useId, useRef, useState } from "react";
 import Blueprint from "./Blueprint";
 import Icon from "./Icon";
 import { contact, enquiry } from "../data/site";
+import { track } from "../lib/track";
 import { services } from "../data/services";
 
 /**
@@ -94,12 +95,16 @@ export default function EnquiryForm() {
           body: JSON.stringify({ ...values, text }),
         });
         if (!response.ok) throw new Error(String(response.status));
+        track("Enquiry sent", { via: "form", service: values.service });
         setValues(EMPTY);
         setStatus({
           state: "sent",
           message: "Thanks — your enquiry is in. We reply the same working day.",
         });
       } catch {
+        /* Worth measuring: a form that quietly fails looks identical to one
+           nobody fills in. */
+        track("Enquiry failed", { service: values.service });
         setStatus({
           state: "error",
           message: "That didn't send. Try WhatsApp below, or email us directly.",
@@ -108,6 +113,7 @@ export default function EnquiryForm() {
       return;
     }
 
+    track("Enquiry sent", { via: "whatsapp", service: values.service });
     window.open(
       `https://wa.me/${contact.whatsappNumber}?text=${encodeURIComponent(text)}`,
       "_blank",
@@ -120,6 +126,7 @@ export default function EnquiryForm() {
   };
 
   const emailFallback = () => {
+    track("Enquiry sent", { via: "email", service: values.service });
     window.location.href = `${contact.emailHref}?subject=${encodeURIComponent(
       "Enquiry from the website",
     )}&body=${encodeURIComponent(composeMessage(values))}`;

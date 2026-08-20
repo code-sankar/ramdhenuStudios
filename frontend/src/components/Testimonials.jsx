@@ -4,7 +4,7 @@ import Blueprint from "./Blueprint";
 import Icon from "./Icon";
 import Reveal from "./Reveal";
 import SectionIndex from "./ui/SectionIndex";
-import { testimonials, TESTIMONIALS_ARE_PLACEHOLDER } from "../data/testimonials";
+import { testimonials } from "../data/testimonials";
 
 const AUTOPLAY_MS = 6000;
 
@@ -113,10 +113,10 @@ export default function Testimonials({ autoplay = true }) {
           </AnimatePresence>
         </div>
 
-        {TESTIMONIALS_ARE_PLACEHOLDER && (
+        {current.placeholder && (
           <p className="text-muted mt-8 mb-0 text-[13px]">
             <span className="tag tag-outline mr-2">Sample</span>
-            Placeholder quotes — real client feedback replaces these at launch.
+            A written example, not real client feedback.
           </p>
         )}
       </div>

@@ -1,5 +1,6 @@
 import { BrowserRouter, Route, Routes } from "react-router-dom";
 
+import Analytics from "./components/Analytics";
 import ScrollManager from "./components/ScrollManager";
 import HomePage from "./pages/HomePage";
 import NotFoundPage from "./pages/NotFoundPage";
@@ -25,6 +26,7 @@ import ServicePage from "./pages/ServicePage";
 export default function App() {
   return (
     <BrowserRouter>
+      <Analytics />
       <ScrollManager />
       <Routes>
         <Route path="/" element={<HomePage />} />

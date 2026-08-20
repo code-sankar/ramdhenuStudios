@@ -11,8 +11,8 @@
  * │  2. `socials`        real profile URLs (currently "#")                   │
  * │  3. `enquiry`        set `endpoint` if the host handles form POSTs       │
  * │  4. `siteUrl`        the live domain — used by SEO tags + structured data │
- * │  5. services.js      PROJECTS_ARE_PLACEHOLDER → false, once work is real │
- * │  6. testimonials.js  TESTIMONIALS_ARE_PLACEHOLDER → false                │
+ * │  5. services.js      drop `placeholder` on each project as it goes live  │
+ * │  6. testimonials.js  drop `placeholder` on each quote you have rights to │
  * │  7. legal.js         have the privacy policy and terms reviewed          │
  * └─────────────────────────────────────────────────────────────────────────┘
  */

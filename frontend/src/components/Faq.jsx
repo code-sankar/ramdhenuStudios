@@ -5,6 +5,7 @@ import Reveal from "./Reveal";
 import SectionIndex from "./ui/SectionIndex";
 import { faqs } from "../data/faq";
 import { whatsappLink } from "../data/site";
+import { track } from "../lib/track";
 
 /**
  * FAQ — the objections that stall a deal, answered just before the ask.
@@ -58,6 +59,7 @@ export default function Faq() {
             href={whatsappLink}
             target="_blank"
             rel="noreferrer"
+            onClick={() => track("WhatsApp click", { from: "faq" })}
             className="linkish mt-6 inline-flex items-center gap-2 text-sm"
           >
             <Icon name="whatsapp" size={15} />
