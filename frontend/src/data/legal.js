@@ -6,12 +6,14 @@
  * without pulling a router in for two documents.
  *
  * ⚠️  These are plain-language starting points written to describe what this
- *     site actually does (one enquiry form, a cookieless counter that is off
- *     until configured, and a YouTube embed that stays inert until pressed).
+ *     site actually does (one enquiry form, a cookieless counter and a
+ *     booking calendar that are both off until configured, and a YouTube
+ *     embed that stays inert until pressed).
  *     Have them reviewed before launch, and update them the moment a CRM or
  *     any further third-party embed is added.
  */
 import { analytics, analyticsEnabled } from "./analytics.js";
+import { bookingEnabled } from "./booking.js";
 
 export const LEGAL_NEEDS_REVIEW = true;
 
@@ -28,6 +30,22 @@ const trackingClause = () =>
     ? `We use ${analytics.provider === "plausible" ? "Plausible" : "Umami"} to count visits. It sets no cookies, stores no personal data and does not follow you to other websites — it tells us how many people read a page, not who they are. There is no advertising tracker on this site.`
     : "We do not use cookies, analytics or advertising trackers on this site.";
 
+/**
+ * The booking embed is a third party, so the policy has to mention it — but
+ * only once a visitor's browser can actually reach it. With no cal.com link
+ * configured the button never renders and this section stays out, the same way
+ * the tracking sentence follows the analytics config.
+ */
+const bookingSection = () =>
+  bookingEnabled()
+    ? [
+        {
+          heading: "Booking a call",
+          body: "The booking calendar is provided by Cal.com. Nothing is requested from Cal.com until you press \u201cBook a call\u201d — before that the button is just a button on this site. Once you open it, Cal.com receives your request and its own privacy terms apply to anything you enter there, including the name, email and any notes you give when you book.",
+        },
+      ]
+    : [];
+
 export const privacy = {
   title: "Privacy Policy",
   updated: "Last updated: August 2026",
@@ -40,6 +58,7 @@ export const privacy = {
       heading: "How we use it",
       body: "Solely to reply to your enquiry and, if you become a client, to deliver the work. We do not sell, rent or share your details with anyone else, and we do not add you to a mailing list unless you ask us to.",
     },
+    ...bookingSection(),
     {
       heading: "The video on this page",
       body: "Our introduction video is hosted on YouTube, but nothing is requested from YouTube — and no cookie is set — unless you press play. The still image you see before that is served from this site. Once you start the video, YouTube receives your request and its own privacy terms apply; we use their no-cookie player, which limits what it stores.",

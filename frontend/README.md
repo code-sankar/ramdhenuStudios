@@ -93,7 +93,8 @@ src/
     fonts.css      self-hosted Barlow / Barlow Condensed @font-face rules
   data/            all copy — site.js, services.js, industries.js,
                    testimonials.js, legal.js, plus seo.js (the head every
-                   route carries) and analytics.js (off until configured)
+                   route carries), analytics.js and booking.js (both off
+                   until configured)
   lib/
     track.js         send an event, safely, whether or not analytics is on
   pages/
@@ -105,6 +106,7 @@ src/
     Layout.jsx       skip link · header · <main> · footer, worn by every page
     Seo.jsx          writes the route's head — title, canonical, JSON-LD
     Analytics.jsx    loads the provider, counts a pageview per route
+    BookCall.jsx     the Cal.com embed, loaded on intent like the video
     ScrollManager.jsx  hash, top or restore, depending on the navigation
     Blueprint.jsx    the wireframe frame + its four registration marks
     Plate.jsx        drawn spec-sheet figure, stands in for absent photography
@@ -137,6 +139,7 @@ checklist lives at the top of `src/data/site.js`.
 | Placeholder quotes | `testimonials.js` → each quote's `placeholder` | A real name, role and permission, then drop that quote's flag |
 | Analytics | `analytics.js` → `provider`, `siteId` | Off until set; turning it on rewrites the privacy policy's tracking line |
 | Lead storage | `site.js` → `enquiry.endpoint` | Until set, enquiries go to WhatsApp and nothing is stored |
+| Book a call | `booking.js` → `calLink` | Off until set; connect the calendar you actually use, or it offers slots you aren't free for |
 | Legal copy | `legal.js` → `LEGAL_NEEDS_REVIEW` | Have both documents reviewed, then `false` |
 
 The About stats (`site.js` → `stats`) describe how the team is built — six
@@ -350,6 +353,49 @@ that accepts a POST and the form posts JSON and reports success inline:
 ```js
 endpoint: "https://formspree.io/f/xxxxxxxx",
 ```
+
+## Book a call
+
+A Cal.com embed behind the contact panel's second button. **Off until
+configured** — with `booking.calLink` empty the button does not render, so
+nothing offers a booking that can't be made.
+
+```js
+// src/data/booking.js
+calLink: "ramdhenu/intro",   // the part of https://cal.com/… after the slash
+```
+
+The step people skip is the third one: connect the calendar you actually use,
+or Cal will happily offer slots you are busy for.
+
+**It is a facade, like the video.** A scheduling widget is the same trade as a
+YouTube iframe — dropped into the page it costs a third-party script and a run
+of requests on every visit, paid for by everyone including the majority who
+never book. So nothing reaches Cal.com until someone asks:
+
+| | |
+|---|---|
+| At rest | a button, and no third-party request at all |
+| On hover | `preconnect` to Cal's origins, so the handshakes happen during the moment of intent |
+| On click | the dialog opens and the embed loads inside it |
+
+It reuses `Dialog.jsx`, so Escape closes, focus is trapped and returns to the
+button, and the backdrop dismisses — none of which Cal's own modal would let us
+control.
+
+**The fallback is not optional.** An ad blocker, a captive wifi portal or Cal
+being down all end with a visitor staring at an empty box. The direct cal.com
+link renders *before* the embed is requested and stays visible throughout, so
+the booking can always be made. Verified by blocking the script: the dialog
+falls back to a plain link and an explanation rather than a dead frame.
+
+`legal.js` adds a "Booking a call" section to the privacy policy when — and
+only when — `calLink` is set, the same way the tracking sentence follows the
+analytics config. Cal.com is a third party and the policy has to say so once a
+visitor's browser can reach it.
+
+Events: `Booking opened` on click, `Call booked` on Cal's `bookingSuccessful`,
+`Booking fallback` when someone uses the direct link instead.
 
 ## The About video
 

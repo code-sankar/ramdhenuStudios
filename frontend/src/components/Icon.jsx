@@ -8,6 +8,12 @@ const paths = {
   plus: <><path d="M5 12h14" /><path d="M12 5v14" /></>,
   arrowRight: <><path d="M5 12h14" /><path d="m12 5 7 7-7 7" /></>,
   check: <path d="M20 6 9 17l-5-5" />,
+  calendar: (
+    <>
+      <rect width="18" height="18" x="3" y="4" rx="1" />
+      <path d="M3 10h18M8 2v4M16 2v4" />
+    </>
+  ),
   chevronDown: <path d="m6 9 6 6 6-6" />,
   chevronLeft: <path d="m15 18-6-6 6-6" />,
   chevronRight: <path d="m9 18 6-6-6-6" />,
