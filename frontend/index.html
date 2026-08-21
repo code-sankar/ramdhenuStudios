@@ -78,26 +78,43 @@
         display: grid;
         place-items: center;
         transition: opacity 0.45s cubic-bezier(0.16, 1, 0.3, 1);
+        /* A fixed, inset-0 box matches the LARGE viewport on a phone, so part
+           of it sits behind the browser toolbar. dvh tracks the visible area
+           instead; vh stays as the fallback for anything that lacks it. */
+        height: 100vh;
+        height: 100dvh;
       }
       #boot[data-done] { opacity: 0; pointer-events: none; }
       #boot video {
         width: 100%;
         height: 100%;
-        /* cover, not contain: this one fills the screen. The site's rule
-           against cropping is about content photography, where the subject
-           matters; a full-bleed title card is the opposite case — letterbox
-           bars around it would read as a broken embed. */
-        object-fit: cover;
+        /* THE FIT IS CHOSEN, NOT FIXED — see applyFit() below.
+           The film is 16:9. Filling a 360x800 phone with `cover` scales it to
+           ~1420px wide inside a 360px window, so three quarters of every frame
+           is cropped off the sides and what is left is an unreadable zoom.
+           `contain` is the safe default here: it never crops, and JS upgrades
+           it to `cover` only on viewports shaped enough like the film that the
+           crop is mild. */
+        object-fit: contain;
         opacity: 0;
         transition: opacity 0.4s ease-out;
       }
+      #boot[data-fit="cover"] video { object-fit: cover; }
       #boot video[data-ready] { opacity: 1; }
+
+      /* CSS-only fallback for the window before metadata arrives, or if it
+         never does: fill the screen only where the viewport is already
+         landscape-ish. Portrait keeps the uncropped default. */
+      @media (min-aspect-ratio: 4 / 3) {
+        #boot:not([data-fit]) video { object-fit: cover; }
+      }
       /* A held splash with no way past it is hostile, and this is also the
          manual escape hatch if playback stalls somewhere I cannot test. */
       #boot-skip {
         position: absolute;
-        right: clamp(16px, 4vw, 40px);
-        bottom: clamp(24px, 5vh, 48px);
+        /* Clear of a notch, a home indicator, or a phone's bottom toolbar. */
+        right: calc(clamp(16px, 4vw, 40px) + env(safe-area-inset-right, 0px));
+        bottom: calc(clamp(20px, 4vh, 48px) + env(safe-area-inset-bottom, 0px));
         min-height: 44px;
         padding: 10px 18px;
         font: inherit;
@@ -181,8 +198,31 @@
         function teardown() {
           boot.setAttribute("data-done", "");
           document.documentElement.style.overflow = "";
+          window.removeEventListener("resize", applyFit);
+          window.removeEventListener("orientationchange", applyFit);
           try { video.removeAttribute("src"); video.load(); } catch (e) { /* already gone */ }
           setTimeout(function () { if (boot.parentNode) boot.parentNode.removeChild(boot); }, 550);
+        }
+
+        /* COVER OR CONTAIN, DECIDED FROM THE ACTUAL NUMBERS.
+           `cover` fills the screen but crops whatever does not fit; how much
+           it crops depends entirely on how differently the viewport and the
+           film are shaped. The fraction of the frame that survives is the
+           ratio of the two aspect ratios, so that is what gets measured:
+
+             desktop 1280x800   16:9 film   →  90% visible   → cover
+             phone   360x800    16:9 film   →  25% visible   → contain
+
+           Below the threshold the film is letterboxed onto the steel ground
+           instead, which is the whole frame, intact, at any screen shape. */
+        var MIN_VISIBLE = 0.75;
+
+        function applyFit() {
+          if (!video.videoWidth || !video.videoHeight) return;
+          var filmAR = video.videoWidth / video.videoHeight;
+          var viewAR = (window.innerWidth || 1) / (window.innerHeight || 1);
+          var visible = filmAR > viewAR ? viewAR / filmAR : filmAR / viewAR;
+          boot.setAttribute("data-fit", visible >= MIN_VISIBLE ? "cover" : "contain");
         }
 
         function finish() {
@@ -258,7 +298,13 @@
           video.addEventListener("loadedmetadata", function () {
             var ms = (video.duration || 0) * 1000;
             if (ms > 0 && isFinite(ms)) setTimeout(finish, ms + 1200);
+            applyFit();
           });
+
+          /* Rotating a phone changes the answer, so it is recomputed rather
+             than decided once. */
+          window.addEventListener("resize", applyFit, { passive: true });
+          window.addEventListener("orientationchange", applyFit);
 
           video.addEventListener("error", filmUnavailable);
 
