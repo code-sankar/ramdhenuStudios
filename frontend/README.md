@@ -116,7 +116,7 @@ src/
     Icon.jsx         the Lucide glyphs actually used, inline
     Reveal.jsx       one short scroll entrance, reused everywhere
     BubbleField.jsx  the hero's drift of soap bubbles — 50 of them, CSS only
-    Anatomy.jsx      six disciplines wired into one build, on the service page
+    figures/         one diagram per service page — six different shapes
     ParticleMark.jsx the monogram as a body of rising bubbles (currently unused)
     Orbit.jsx        the six disciplines drawn as one system, on one centre
     ui/SectionIndex  the numbered spec-sheet index each section opens with
@@ -155,22 +155,44 @@ is the loosest that passed a measurement taken at the pixels glyphs actually
 paint, sampled across the drift cycle at seven viewports. Lighten it and the
 12px rail goes under AA. The numbers are in `coral.css` §2.1.
 
-`Anatomy` is the diagram on a service page — six disciplines wired into a
-browser frame, with a dot travelling each wire into the centre. It renders only
-where a service defines an `anatomy` array in `services.js`, which today is the
-website build alone.
+`src/components/figures/` holds one diagram per service page, and they are
+deliberately six different diagrams rather than one diagram with six sets of
+nouns:
 
-Two things about it are worth knowing before editing. **The stage's aspect ratio
-is load-bearing, not styling.** The wires are SVG in viewBox units and the cards
-are HTML in percentages; those are only the same distance while the box's
-proportions are fixed, so unlocking the ratio detaches every wire from its card
-at every width but one. `VIEW` in the component and the `aspect-ratio` in
-`coral.css` §8 must change together. **And the section numbers and band colours
-are positional.** Both the diagram and the work section are conditional, so
-hard-coded numbers were one missing project away from printing 01, 02, 04, 05 on
-a live page, and a hard-coded band would put two identical grounds side by side
-the moment a section was inserted. Both now derive from the list of sections that
-actually render.
+| figure | shape | claim | service |
+|---|---|---|---|
+| `Anatomy` | hub, orthogonal, inward | these six ship together or nothing runs | websites |
+| `Pipeline` | a line that ends | the camera is one stage of four | photo & video |
+| `Loop` | a ring that does not end | a cycle, not a campaign | social |
+| `Funnel` | narrowing tiers | most of the spend falls away | paid ads |
+| `Catchment` | a pin and its radius | you, and everyone searching near you | Google Business |
+| `Radiate` | spokes, outward | one decision, six surfaces | branding |
+
+A hub says "these belong together"; a funnel says "most of this is lost"; a ring
+says "this never finishes". Those are different claims and the services make
+different claims — reskinning one figure six times would say nothing six times,
+and a visitor moving between two service pages would notice. `Radiate` and
+`Anatomy` are the pair to watch: same node count, opposite argument, so one is
+orthogonal-and-inward on a rectangular grid and the other radial-and-outward on a
+circle. If they ever converge, the second page starts reading as the first with
+the words swapped.
+
+`Stage.jsx` carries everything that is *not* the argument — the coordinate
+space, the cards, the reduced-motion gate, the phone fallback — so a new figure
+is a layout and a claim rather than another copy of the scaffolding. Which
+figure a page gets is `figure.kind` in that service's own data.
+
+Three things to know before editing one. **The stage's proportions are
+load-bearing, not styling** — wires are SVG in viewBox units and cards are HTML
+in percentages, the same distance only while the ratio is fixed. `Stage` derives
+`aspect-ratio` from its own `view` for exactly this reason; do not put an
+`aspect-ratio` for a figure in the stylesheet. **All motion is SMIL, which
+`prefers-reduced-motion` cannot reach from CSS** — `animation-duration: 0.001ms`
+sails straight past `<animateMotion>` — so every figure gates it in JS via
+`useStill`, and a figure whose motion carries information draws a still version
+instead of dropping it. **And the section numbers and band colours are
+positional**, derived from the sections that actually render: hard-coded numbers
+were one missing project away from printing 01, 02, 04, 05 on a live page.
 
 `Orbit` is the one section that is not a list of anything. The services grid
 above it can say what the six disciplines are but not why they belong in one

@@ -1,6 +1,6 @@
 import { Link, useParams } from "react-router-dom";
 
-import Anatomy from "../components/Anatomy";
+import Figure from "../components/figures";
 import Blueprint from "../components/Blueprint";
 import Icon from "../components/Icon";
 import Layout from "../components/Layout";
@@ -49,7 +49,7 @@ export default function ServicePage() {
      index can never skip a number, whichever combination appears. */
   const order = [
     "intro",
-    service.anatomy && "anatomy",
+    service.figure && "figure",
     "process",
     project && "work",
     "faq",
@@ -205,32 +205,28 @@ export default function ServicePage() {
       </section>
 
       {/* --------------------------------------------------------------------
-          WHAT GOES INTO IT — the six disciplines wired into one build.
+          THE FIGURE — one diagram per service, and no two the same shape.
 
-          Only where the service has the data for it. The prose above can say
-          what we build; it cannot easily say that these six are one object with
-          six faces rather than a menu, and that buying four of them gets you
-          nothing that runs. The wires make that argument in a glance.
+          Only where the service has one. The prose can say what the work is;
+          it cannot easily say what shape the work has — that these six ship
+          together, or that most of that spend falls away, or that this one
+          never finishes. The drawing makes that argument in a glance, and
+          which drawing appears is the service's own data.
       -------------------------------------------------------------------- */}
-      {service.anatomy && (
-        <section className={`section-y ${band("anatomy")}`}>
+      {service.figure && (
+        <section className={`section-y ${band("figure")}`}>
           <div className="shell">
             <Reveal>
-              <SectionIndex num={num("anatomy")} label="What goes into it" />
+              <SectionIndex num={num("figure")} label={service.figure.label} />
             </Reveal>
             <Reveal className="mb-[clamp(32px,5vw,60px)] max-w-[620px]">
               <h2 className="display mb-3 text-[clamp(26px,3.2vw,40px)]">
-                Six disciplines, one build
+                {service.figure.heading}
               </h2>
-              <p className="text-muted m-0 text-base">
-                None of these is an add-on. A site with the design but not the
-                performance work is slow and beautiful; one with the back end
-                but not the search groundwork is a shop with no street. They
-                ship together or the site does not do its job.
-              </p>
+              <p className="text-muted m-0 text-base">{service.figure.body}</p>
             </Reveal>
             <Reveal delay={0.08} variant="fade">
-              <Anatomy nodes={service.anatomy} />
+              <Figure spec={service.figure} />
             </Reveal>
           </div>
         </section>
