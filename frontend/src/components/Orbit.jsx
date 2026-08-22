@@ -2,7 +2,6 @@ import { useState } from "react";
 import { Link } from "react-router-dom";
 import { useReducedMotion } from "motion/react";
 
-import ParticleMark from "./ParticleMark";
 import Reveal from "./Reveal";
 import SectionIndex from "./ui/SectionIndex";
 import { servicePath } from "../data/seo";
@@ -32,15 +31,23 @@ import { brand } from "../data/site";
  * sitting empty, so it reads as a caption on a touch device that will never
  * hover anything.
  *
- * MOTION. Three bubbles travel the orbits on coprime durations (17/23/29s) so
- * the figure never resolves into a repeating pose, and the mark at the centre
- * is the hero's own bubble cloud on a lighter palette. Everything else holds
- * still. Under `prefers-reduced-motion` the travellers are not rendered at all
- * — SMIL ignores the CSS that flattens the rest of the site's animation, so
- * this one has to be switched off in JavaScript.
+ * THE CENTRE IS THE SPHERE AND NOTHING ELSE. It carried the brand monogram as
+ * a cloud of moving particles for a while, and the honest verdict was that the
+ * figure then had two subjects: a diagram about six things orbiting one centre,
+ * and a logo animation, each asking for the eye at the same moment. Emptying it
+ * costs nothing the section was actually making — the read-out below already
+ * names the centre in words — and it buys back the thing the geometry is for.
+ * A nucleus does not need a face.
+ *
+ * MOTION, AND HOW LITTLE OF IT THERE IS. Three bubbles travel the orbits on
+ * coprime durations (17/23/29s) so the figure never resolves into a repeating
+ * pose, and the sphere breathes at under a third of a percent per second.
+ * Everything else holds still. Under `prefers-reduced-motion` the travellers
+ * are not rendered at all — SMIL ignores the CSS that flattens the rest of the
+ * site's animation, so this one has to be switched off in JavaScript.
  *
  * SIZING RUNS OFF ONE VARIABLE. `--orbit-r` is the node radius, and the
- * ellipses, the sphere, the mark and every label position are expressed
+ * ellipses, the sphere and every label position are expressed
  * against it — so the figure is retuned for a 360px phone by changing one
  * number rather than eight.
  *
@@ -70,12 +77,12 @@ const ORBITS = Array.from({ length: Math.floor(services.length / 2) }, (_, i) =>
    follow a <path>, and the travellers ride the same geometry the stroke draws
    rather than a second copy of it that could drift.
 
-   THE MINOR AXIS IS 108, NOT 76, AND THAT IS THE WHOLE COMPOSITION. An ellipse
-   passes its own centre at exactly the minor radius, so a flatter ring is a
-   ring that cuts through the middle of the figure — at 76 the bold orbit ran
-   straight across the monogram and the two fought each other. 108 puts every
-   waist at 0.54 of the node radius, outside the glyph and inside the sphere,
-   which is the band where an orbit reads as passing behind something. */
+   THE MINOR AXIS IS 108, NOT 76. An ellipse passes its own centre at exactly
+   the minor radius, so the flatter the ring the closer it runs to dead centre —
+   and three flat rings put all six of their crossings in one knot in the middle
+   of the sphere. 108 holds every waist at 0.54 of the node radius: clear of the
+   centre, still well inside the sphere's 0.75, which is the band where an orbit
+   reads as passing behind a solid thing rather than across a flat one. */
 const ORBIT_PATH = "M 0,200 A 200,108 0 1,0 400,200 A 200,108 0 1,0 0,200";
 
 /* `calc()` will not take a leading minus inside a product on every engine, so
@@ -144,22 +151,13 @@ export default function Orbit() {
               className="orbit-glow absolute top-1/2 left-1/2 h-[calc(2.1*var(--orbit-r))] w-[calc(2.1*var(--orbit-r))] -translate-x-1/2 -translate-y-1/2 rounded-full"
             />
 
-            {/* The sphere. A single off-centre highlight is what separates a
-                sphere from a circle; the rest is one radial ramp. */}
+            {/* The sphere — the whole centre of the figure, so it has to hold
+                the eye on its own. A single off-centre highlight is what
+                separates a sphere from a circle; the rest is one radial ramp
+                and two inset shadows. See coral.css. */}
             <div
               aria-hidden="true"
               className="orbit-sphere absolute top-1/2 left-1/2 h-[calc(1.5*var(--orbit-r))] w-[calc(1.5*var(--orbit-r))] -translate-x-1/2 -translate-y-1/2 rounded-full"
-            />
-
-            {/* The mark, inside the sphere: the hero's bubble cloud, repainted
-                for a light ground. Coral reads as the body of it and white as
-                the light catching the near side, over a frosted silhouette
-                that holds the glyph's edges where the bubbles thin out. */}
-            <ParticleMark
-              colors={["#c4331f", "#e8492f", "#ffffff"]}
-              silhouette={{ color: "#ffffff", alpha: 0.5 }}
-              fit={0.94}
-              className="pointer-events-none absolute top-1/2 left-1/2 h-[calc(1.12*var(--orbit-r))] w-[calc(1.12*var(--orbit-r))] -translate-x-1/2 -translate-y-1/2 sm:h-[calc(0.98*var(--orbit-r))] sm:w-[calc(0.98*var(--orbit-r))]"
             />
 
             {/* The orbits. `overflow-visible` because the stroke and the

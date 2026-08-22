@@ -133,9 +133,12 @@ Routing lives in `src/App.jsx`: `/` → `HomePage`, `/services/:slug` → `Servi
 above it can say what the six disciplines are but not why they belong in one
 place — a list is six separate things by construction. So the same six are drawn
 again as one figure: six nodes on a circle, three ellipses whose long axes land
-exactly on the opposing pairs, and the brand mark at the centre. Its geometry is
-computed from `services.js`, so adding or removing a discipline re-solves the
-whole figure rather than needing it redrawn.
+exactly on the opposing pairs, and one lit sphere at the centre they all turn
+around. The centre is deliberately empty — it held the brand mark for a while,
+and a logo animation inside a diagram gives the section two subjects competing
+for the same glance. The read-out below the figure names the centre in words
+instead. Its geometry is computed from `services.js`, so adding or removing a
+discipline re-solves the whole figure rather than needing it redrawn.
 
 ## Before this goes live
 

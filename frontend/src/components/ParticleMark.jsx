@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useRef } from "react";
+import { useEffect, useRef } from "react";
 
 import markSrc from "../assets/logo-mark.png";
 
@@ -18,13 +18,6 @@ import markSrc from "../assets/logo-mark.png";
  * WHY A CANVAS AND NOT DOM. A few thousand elements is a few thousand layout
  * boxes; the same points on a canvas is one. This is the one place on the site
  * where a canvas is the cheap option rather than the expensive one.
- *
- * TWO GROUNDS, ONE COMPONENT. The hero sits on the coral field, where the
- * cloud has to read as shadow inside the brand colour. The orbit diagram sits
- * on white, where that same single dark tone would read as a smudge. So the
- * palette is a prop, and so is the optional frosted body behind it: on a light
- * ground the glyph needs its own silhouette to hold its edges, and on the
- * coral field it emphatically does not.
  *
  * THE COSTS, AND WHAT THEY BUY:
  *   • The loop is capped at ~45fps. At 60 it is indistinguishable here and
@@ -52,38 +45,14 @@ const FADE_IN_FRAMES = 16; /* a recycled bubble ramps up rather than popping in.
 const ENTER_EASE = 0.055; /* how hard the opening assembly pulls a bubble home. */
 const FRAME_MS = 1000 / 45;
 
-/* The hero's original single tone. Deeper than the coral field, so the cloud
-   reads as shadow inside the brand colour rather than as a second hue. */
-const DEFAULT_COLORS = ["#8f1f10"];
-
-export default function ParticleMark({
-  className = "",
-  colors = DEFAULT_COLORS,
-  /* `{ color, alpha }` — a flat fill of the glyph drawn beneath the bubbles.
-     Off by default: the hero does not want it. */
-  silhouette = null,
-  /* How much of the box the glyph fills. The hero wants it edge to edge; a
-     diagram wants air around it. */
-  fit = 0.86,
-}) {
+export default function ParticleMark({ className = "" }) {
   const canvasRef = useRef(null);
-
-  /* Flattened to strings first. A caller passing a fresh array or object
-     literal — which is the normal way to pass these — would otherwise hand the
-     effect a new reference on every render and restart the animation each
-     time, which reads as the mark flickering for no reason. */
-  const colorKey = colors.join("|");
-  const silKey = silhouette ? `${silhouette.color}|${silhouette.alpha}` : "";
-  const palette = useMemo(() => colorKey.split("|"), [colorKey]);
 
   useEffect(() => {
     const canvas = canvasRef.current;
     if (!canvas) return;
     const ctx = canvas.getContext("2d", { alpha: true });
     if (!ctx) return;
-
-    const [silColor, silAlphaRaw] = silKey ? silKey.split("|") : [];
-    const silAlpha = silKey ? Number(silAlphaRaw) : 0;
 
     const reduced = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
     const small = window.matchMedia("(max-width: 767px)").matches;
@@ -95,7 +64,6 @@ export default function ParticleMark({
     let offsetX = 0;
     let offsetY = 0;
     let spawns = []; /* every inside point, subsampled — see build() */
-    let body = null; /* the frosted silhouette, pre-tinted. See build(). */
     let raf = 0;
     let last = 0;
     let visible = true;
@@ -144,7 +112,7 @@ export default function ParticleMark({
       canvas.height = Math.round(rect.height * dpr);
       ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
 
-      const scale = Math.min(rect.width / image.width, rect.height / image.height) * fit;
+      const scale = Math.min(rect.width / image.width, rect.height / image.height) * 0.86;
       maskW = Math.max(1, Math.round(image.width * scale));
       maskH = Math.max(1, Math.round(image.height * scale));
       offsetX = (rect.width - maskW) / 2;
@@ -175,25 +143,6 @@ export default function ParticleMark({
       }
       if (!insideCount) return;
 
-      /* THE FROSTED BODY. The artwork ships white-on-transparent, so a plain
-         drawImage could only ever give white. `source-in` keeps its alpha and
-         replaces the colour, which turns the one asset into a silhouette in
-         any tone. Built once per resize and then drawn with a single
-         drawImage per frame — re-tinting every frame would be the expensive
-         way to produce an image that never changes. */
-      body = null;
-      if (silColor) {
-        const tinted = document.createElement("canvas");
-        tinted.width = Math.max(1, Math.round(maskW * dpr));
-        tinted.height = Math.max(1, Math.round(maskH * dpr));
-        const bctx = tinted.getContext("2d");
-        bctx.drawImage(image, 0, 0, tinted.width, tinted.height);
-        bctx.globalCompositeOperation = "source-in";
-        bctx.fillStyle = silColor;
-        bctx.fillRect(0, 0, tinted.width, tinted.height);
-        body = tinted;
-      }
-
       /* EVERY inside pixel is a candidate, not just the bottom band.
          Restricting spawns to the lower third looked right on paper — bubbles
          rise from a floor — but this glyph is not one connected column. Strokes
@@ -209,27 +158,14 @@ export default function ParticleMark({
       }
 
       /* Count follows the glyph's actual area, so the density reads the same
-         whether the canvas is 400px or 860px wide.
-
-         THE STEP HAS TO FOLLOW THE CANVAS TOO, WHICH THE FIRST VERSION MISSED.
-         Area falls with the square of the size while a bubble stays the same
-         two or three pixels, so one step for every canvas leaves a small mark
-         visibly under-filled — the hero's is ~860px across and the orbit's is
-         ~180px, a 22× difference in count. Below 320px the step tightens
-         instead of loosening; the phone-battery thinning above it is aimed at
-         the hero's full-height canvas, and applying it to a mark this small
-         would be paying for nothing. */
-      const step = rect.width < 320 ? FILL_STEP - 1 : small ? FILL_STEP + 2 : FILL_STEP;
+         whether the canvas is 400px or 860px wide. */
+      const step = small ? FILL_STEP + 2 : FILL_STEP;
       const count = Math.max(120, Math.round(insideCount / (step * step)));
 
       bubbles = new Array(count);
       for (let i = 0; i < count; i++) {
         const b = {};
         recycle(b, true);
-        /* Tone is fixed for the bubble's whole life rather than re-rolled on
-           recycle, so the draw can walk one tone at a time and set `fillStyle`
-           once per palette entry instead of once per bubble. */
-        b.ci = (Math.random() * palette.length) | 0;
         /* The opening assembly: start scattered across the field and fly in.
            `entering` hands over to the rising flow on arrival. */
         b.entering = !reduced;
@@ -243,69 +179,55 @@ export default function ParticleMark({
       }
     };
 
-    /* The frosted glyph beneath the cloud. */
-    const drawBody = () => {
-      if (!body) return;
-      ctx.globalAlpha = silAlpha;
-      ctx.drawImage(body, offsetX, offsetY, maskW, maskH);
-      ctx.globalAlpha = 1;
-    };
-
-    /* One tone at a time, so `fillStyle` is assigned once per colour per frame
-       rather than once per bubble. */
-    const paint = (moving) => {
-      for (let c = 0; c < palette.length; c++) {
-        ctx.fillStyle = palette[c];
-        for (const b of bubbles) {
-          if (b.ci !== c) continue;
-          const x = moving ? b.x + Math.cos(b.phase) * b.sway : b.x;
-          ctx.globalAlpha = moving ? b.alpha * Math.min(1, b.age / FADE_IN_FRAMES) : b.alpha;
-          ctx.beginPath();
-          ctx.arc(x, b.y, b.r, 0, Math.PI * 2);
-          ctx.fill();
-        }
-      }
-      ctx.globalAlpha = 1;
-    };
-
     const draw = () => {
       const rect = canvas.getBoundingClientRect();
       ctx.clearRect(0, 0, rect.width, rect.height);
-      drawBody();
+      /* Deeper than the field, so the cloud reads as shadow inside the brand
+         colour rather than as a second hue laid over it. */
+      ctx.fillStyle = "#8f1f10";
 
-      /* Advance every bubble first, paint second — the two loops are split so
-         the paint can be grouped by tone. */
       for (const b of bubbles) {
         if (b.entering) {
           b.x += (b.ex - b.x) * ENTER_EASE;
           b.y += (b.ey - b.y) * ENTER_EASE;
           if (Math.abs(b.ex - b.x) < 1.5 && Math.abs(b.ey - b.y) < 1.5) b.entering = false;
-          continue;
+        } else {
+          /* Rise, and sway around the line of the rise. */
+          b.y -= b.rise;
+          b.phase += b.swaySpeed;
+          b.age++;
+
+          /* Containment is tested on the base position, not the swayed one.
+             Testing the swayed point meant a bubble in a narrow stroke was
+             thrown out the side almost immediately, so thin parts of the glyph
+             could never hold any — the sway is a drawing offset, and letting it
+             overhang the stroke edge by a few px reads as organic rather than
+             as spill. */
+          if (!inside(b.x, b.y)) recycle(b, false);
         }
 
-        /* Rise, and sway around the line of the rise. */
-        b.y -= b.rise;
-        b.phase += b.swaySpeed;
-        b.age++;
-
-        /* Containment is tested on the base position, not the swayed one.
-           Testing the swayed point meant a bubble in a narrow stroke was
-           thrown out the side almost immediately, so thin parts of the glyph
-           could never hold any — the sway is a drawing offset, and letting it
-           overhang the stroke edge by a few px reads as organic rather than
-           as spill. */
-        if (!inside(b.x, b.y)) recycle(b, false);
+        const x = b.x + Math.cos(b.phase) * b.sway;
+        const fade = Math.min(1, b.age / FADE_IN_FRAMES);
+        ctx.globalAlpha = b.alpha * fade;
+        ctx.beginPath();
+        ctx.arc(x, b.y, b.r, 0, Math.PI * 2);
+        ctx.fill();
       }
-
-      paint(true);
+      ctx.globalAlpha = 1;
     };
 
     /* One static frame of the filled glyph, for reduced motion. */
     const drawStill = () => {
       const rect = canvas.getBoundingClientRect();
       ctx.clearRect(0, 0, rect.width, rect.height);
-      drawBody();
-      paint(false);
+      ctx.fillStyle = "#8f1f10";
+      for (const b of bubbles) {
+        ctx.globalAlpha = b.alpha;
+        ctx.beginPath();
+        ctx.arc(b.x, b.y, b.r, 0, Math.PI * 2);
+        ctx.fill();
+      }
+      ctx.globalAlpha = 1;
     };
 
     const tick = (now) => {
@@ -360,7 +282,7 @@ export default function ParticleMark({
       window.removeEventListener("resize", onResize);
       io.disconnect();
     };
-  }, [palette, silKey, fit]);
+  }, []);
 
   return <canvas ref={canvasRef} className={className} aria-hidden="true" />;
 }
