@@ -116,6 +116,7 @@ src/
     Icon.jsx         the Lucide glyphs actually used, inline
     Reveal.jsx       one short scroll entrance, reused everywhere
     BubbleField.jsx  the hero's drift of soap bubbles — 50 of them, CSS only
+    Anatomy.jsx      six disciplines wired into one build, on the service page
     ParticleMark.jsx the monogram as a body of rising bubbles (currently unused)
     Orbit.jsx        the six disciplines drawn as one system, on one centre
     ui/SectionIndex  the numbered spec-sheet index each section opens with
@@ -153,6 +154,23 @@ colour can only restore that; a darker one adds contrast back. Every value in it
 is the loosest that passed a measurement taken at the pixels glyphs actually
 paint, sampled across the drift cycle at seven viewports. Lighten it and the
 12px rail goes under AA. The numbers are in `coral.css` §2.1.
+
+`Anatomy` is the diagram on a service page — six disciplines wired into a
+browser frame, with a dot travelling each wire into the centre. It renders only
+where a service defines an `anatomy` array in `services.js`, which today is the
+website build alone.
+
+Two things about it are worth knowing before editing. **The stage's aspect ratio
+is load-bearing, not styling.** The wires are SVG in viewBox units and the cards
+are HTML in percentages; those are only the same distance while the box's
+proportions are fixed, so unlocking the ratio detaches every wire from its card
+at every width but one. `VIEW` in the component and the `aspect-ratio` in
+`coral.css` §8 must change together. **And the section numbers and band colours
+are positional.** Both the diagram and the work section are conditional, so
+hard-coded numbers were one missing project away from printing 01, 02, 04, 05 on
+a live page, and a hard-coded band would put two identical grounds side by side
+the moment a section was inserted. Both now derive from the list of sections that
+actually render.
 
 `Orbit` is the one section that is not a list of anything. The services grid
 above it can say what the six disciplines are but not why they belong in one
