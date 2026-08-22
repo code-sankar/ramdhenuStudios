@@ -5,7 +5,6 @@ import Blueprint from "../components/Blueprint";
 import Icon from "../components/Icon";
 import Layout from "../components/Layout";
 import Plate from "../components/Plate";
-import PrismField from "../components/PrismField";
 import Reveal from "../components/Reveal";
 import Seo from "../components/Seo";
 import SectionIndex from "../components/ui/SectionIndex";
@@ -44,23 +43,21 @@ export default function WorkPage() {
       {/* --------------------------------------------------------------------
           MASTHEAD
       -------------------------------------------------------------------- */}
-      <section className="masthead relative overflow-hidden bg-ink-950 pb-[clamp(56px,7vw,96px)]">
-        <PrismField intensity={0.7} />
-        <div className="hero__grid" aria-hidden="true" />
+      <section className="masthead field-fade grain relative overflow-hidden pb-[clamp(56px,7vw,96px)]">
 
         <div className="shell relative">
           <nav aria-label="Breadcrumb" className="mb-8">
-            <ol className="flex list-none flex-wrap items-center gap-x-2 p-0 text-[12px] tracking-[0.08em] text-paper/55 uppercase max-md:text-[12.5px]">
+            <ol className="flex list-none flex-wrap items-center gap-x-2 p-0 text-[12px] tracking-[0.08em] text-white uppercase max-md:text-[12.5px]">
               <li>
                 <Link
                   to="/"
-                  className="inline-block py-2 text-paper/70 no-underline transition-colors duration-150 hover:text-paper"
+                  className="inline-block py-2 text-white no-underline transition-colors duration-150 hover:text-white"
                 >
                   Home
                 </Link>
               </li>
               <li aria-hidden="true">/</li>
-              <li aria-current="page" className="text-paper/85">
+              <li aria-current="page" className="text-white">
                 Work
               </li>
             </ol>
@@ -68,26 +65,26 @@ export default function WorkPage() {
 
           <div className="grid items-end gap-[clamp(28px,4vw,64px)] lg:grid-cols-[minmax(0,1.4fr)_minmax(0,1fr)]">
             <div>
-              <p className="mb-4 flex items-center gap-3 font-display text-[13px] tracking-[0.1em] text-steel-300">
-                <span aria-hidden="true" className="h-px w-8 bg-paper/30" />
+              <p className="mb-4 flex items-center gap-3 font-display text-[13px] tracking-[0.1em] text-white">
+                <span aria-hidden="true" className="h-px w-8 bg-white/35" />
                 <span>Portfolio</span>
               </p>
-              <h1 className="display on-steel text-[clamp(34px,5.6vw,72px)] leading-[0.98] tracking-[-0.022em]">
+              <h1 className="display text-white text-[clamp(34px,5.6vw,72px)] leading-[0.98] tracking-[-0.022em]">
                 Our Work
               </h1>
             </div>
 
-            <p className="text-[16.5px] leading-[1.6] text-paper/75">
+            <p className="text-[16.5px] leading-[1.6] text-white">
               One example from each of our six disciplines — websites, photography, social
               content, campaigns, Google Business profiles and branding, built for local
               businesses in Assam.
             </p>
           </div>
 
-          <div className="mt-[clamp(32px,4vw,52px)] flex flex-wrap items-center gap-3 border-t border-paper/20 pt-[clamp(24px,3vw,34px)]">
+          <div className="mt-[clamp(32px,4vw,52px)] flex flex-wrap items-center gap-3 border-t border-white/25 pt-[clamp(24px,3vw,34px)]">
             <Link
               to="/#contact"
-              className="btn-prism inline-flex items-center gap-[9px] rounded-full px-[26px] py-[15px] font-display text-[15px] no-underline"
+              className="btn-on-field inline-flex items-center gap-[9px] rounded-full px-[26px] py-[15px] font-display text-[15px] no-underline"
             >
               <Icon name="plus" size={15} strokeWidth={2} />
               Start a Project
@@ -97,7 +94,7 @@ export default function WorkPage() {
               target="_blank"
               rel="noreferrer"
               onClick={() => track("WhatsApp click", { from: "work" })}
-              className="inline-flex items-center gap-[9px] rounded-full border border-paper/20 px-[26px] py-[15px] font-display text-[15px] text-paper/85 no-underline transition duration-200 hover:border-paper/40 hover:bg-paper/8 hover:text-paper"
+              className="inline-flex items-center gap-[9px] rounded-full border border-white/25 px-[26px] py-[15px] font-display text-[15px] text-white no-underline transition duration-200 hover:border-paper/40 hover:bg-paper/8 hover:text-white"
             >
               <Icon name="whatsapp" size={16} />
               Ask a question
@@ -109,7 +106,7 @@ export default function WorkPage() {
       {/* --------------------------------------------------------------------
           THE PROJECTS
       -------------------------------------------------------------------- */}
-      <section id="work-body" className="section-y bg-paper">
+      <section id="work-body" className="section-y bg-lav-50">
         <div className="shell">
           <Reveal>
             <SectionIndex num="01" label="Selected projects" />
@@ -203,21 +200,20 @@ export default function WorkPage() {
       {/* --------------------------------------------------------------------
           CLOSING ASK
       -------------------------------------------------------------------- */}
-      <section className="relative overflow-hidden bg-ink-950 py-[clamp(56px,7vw,100px)]">
-        <PrismField intensity={0.5} />
+      <section className="relative overflow-hidden bg-char-900 py-[clamp(56px,7vw,100px)]">
         <div className="shell relative z-[2] flex flex-wrap items-end justify-between gap-8">
           <div>
-            <h2 className="display on-steel text-[clamp(28px,4vw,48px)] leading-[1.05]">
+            <h2 className="display text-white text-[clamp(28px,4vw,48px)] leading-[1.05]">
               Want to see your business here?
             </h2>
-            <p className="mt-4 max-w-[46ch] text-[16px] text-paper/70">
+            <p className="mt-4 max-w-[46ch] text-[16px] text-white">
               Tell us where it is now. We&apos;ll tell you which of our six disciplines is worth
               starting with.
             </p>
           </div>
           <Link
             to="/#contact"
-            className="btn-prism inline-flex flex-none items-center gap-[9px] rounded-full px-[28px] py-[16px] font-display text-[16px] no-underline"
+            className="btn-on-field inline-flex flex-none items-center gap-[9px] rounded-full px-[28px] py-[16px] font-display text-[16px] no-underline"
           >
             <Icon name="plus" size={16} strokeWidth={2} />
             Start a Project
@@ -242,7 +238,7 @@ function FilterChip({ active, onClick, children }) {
       className={`rounded-full border px-[14px] py-[8px] font-display text-[12px] tracking-[0.04em] uppercase transition-colors duration-150 max-md:min-h-[44px] ${
         active
           ? "border-steel-700 bg-steel-700 text-paper"
-          : "border-line text-ink/75 hover:border-steel/45 hover:text-steel-700"
+          : "border-line text-ink/75 hover:border-steel/45 hover:text-coral-700"
       }`}
     >
       {children}

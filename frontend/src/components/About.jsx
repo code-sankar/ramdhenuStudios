@@ -16,7 +16,7 @@ import { industryPath } from "../data/seo";
  */
 export default function About() {
   return (
-    <section id="about" className="section-y bg-paper">
+    <section id="about" className="section-y bg-lav-50">
       <div className="shell">
         <Reveal>
           <SectionIndex num="01" label="Who we are" />
@@ -47,7 +47,7 @@ export default function About() {
                     {page ? (
                       <Link
                         to={industryPath(page.slug)}
-                        className={`${chip} border-steel/45 text-steel-700 no-underline transition-colors duration-150 hover:border-steel hover:bg-steel hover:text-paper`}
+                        className={`${chip} border-steel/45 text-coral-700 no-underline transition-colors duration-150 hover:border-steel hover:bg-steel hover:text-paper`}
                       >
                         {item}
                       </Link>

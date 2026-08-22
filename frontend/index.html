@@ -3,7 +3,7 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <meta name="theme-color" content="#1d2d3d" />
+    <meta name="theme-color" content="#d83a25" />
     <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32.png" />
     <link rel="icon" type="image/png" sizes="192x192" href="/favicon-192.png" />
     <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
@@ -35,7 +35,7 @@
     <!-- The hero fills the first screen with the steel field; paint it before
          React mounts so there is no paper-white flash. -->
     <style>
-      html { background-color: #1d2d3d; }
+      html { background-color: #d83a25; }
     </style>
 
   </head>
@@ -66,15 +66,17 @@
          — no browser API reports "app readiness" — so it eases toward 90% and
          only completes when the splash is actually on its way out.
 
-         Colours are hard-coded because the token sheet has not loaded yet;
-         they are --color-accent-900 and --spectrum from src/styles.
+         Colours are hard-coded because the token sheet has not loaded yet:
+         #d83a25 is --color-coral-500 from src/styles/theme.css. If that token
+         ever moves, this has to move with it — a splash in the previous brand
+         colour is the first thing every new visitor would see.
          ══════════════════════════════════════════════════════════════════════ -->
     <style>
       #boot {
         position: fixed;
         inset: 0;
         z-index: 9999;
-        background: #1d2d3d;
+        background: #d83a25;
         display: grid;
         place-items: center;
         transition: opacity 0.45s cubic-bezier(0.16, 1, 0.3, 1);
@@ -121,27 +123,27 @@
         font-size: 13px;
         letter-spacing: 0.08em;
         text-transform: uppercase;
-        color: rgba(242, 242, 243, 0.75);
+        color: rgba(255, 255, 255, 0.82);
         background: transparent;
-        border: 1px solid rgba(242, 242, 243, 0.28);
+        border: 1px solid rgba(255, 255, 255, 0.4);
         border-radius: 0;
         cursor: pointer;
         opacity: 0;
         transition: opacity 0.3s ease-out, color 0.15s, border-color 0.15s;
       }
       #boot-skip[data-shown] { opacity: 1; }
-      #boot-skip:hover { color: #f2f2f3; border-color: rgba(242, 242, 243, 0.6); }
+      #boot-skip:hover { color: #fff; border-color: #fff; }
       #boot-bar {
         position: absolute;
         left: 0; right: 0; bottom: 0;
         height: 2px;
-        background: rgba(242, 242, 243, 0.12);
+        background: rgba(255, 255, 255, 0.22);
       }
       #boot-bar > i {
         display: block;
         height: 100%;
         width: 0;
-        background: linear-gradient(90deg, #7b2ff7 0%, #4361ee 18%, #12b6d8 37%, #2ecc71 55%, #f7b733 78%, #fc4a1a 100%);
+        background: #fff;
         transition: width 0.3s ease-out;
       }
       /* Without JavaScript nothing can ever take this down, so it must not go up. */

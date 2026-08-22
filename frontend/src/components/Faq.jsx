@@ -27,7 +27,7 @@ export default function Faq() {
     });
 
   return (
-    <section id="faq" className="section-y bg-panel">
+    <section id="faq" className="section-y bg-lav-100">
       {/* Answered from how the business is set up, so the markup is the single
           source and the schema can never drift from what is on the page.
           Note: since 2023 Google shows FAQ rich results only for authoritative
@@ -85,15 +85,15 @@ export default function Faq() {
                       onClick={() => toggle(i)}
                       className="group flex w-full cursor-pointer items-start gap-4 py-5 text-left focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-steel"
                     >
-                      <span className="mt-0.5 w-6 flex-none font-display text-[13px] text-steel-700">
+                      <span className="mt-0.5 w-6 flex-none font-display text-[13px] text-coral-700">
                         {String(i + 1).padStart(2, "0")}
                       </span>
-                      <span className="flex-1 font-display text-[clamp(16px,1.5vw,20px)] uppercase transition-colors duration-150 group-hover:text-steel-700">
+                      <span className="flex-1 font-display text-[clamp(16px,1.5vw,20px)] uppercase transition-colors duration-150 group-hover:text-coral-700">
                         {item.q}
                       </span>
                       <span
                         aria-hidden="true"
-                        className={`mt-0.5 flex-none text-steel-700 transition-transform duration-300 ${
+                        className={`mt-0.5 flex-none text-coral-700 transition-transform duration-300 ${
                           isOpen ? "rotate-45" : ""
                         }`}
                       >

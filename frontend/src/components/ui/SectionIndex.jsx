@@ -23,7 +23,7 @@ export default function SectionIndex({ num, label, onSteel = false }) {
     <p className="mb-[clamp(28px,3.4vw,44px)] flex items-center gap-[14px]">
       <span
         className={`font-display text-[12px] tracking-[0.1em] ${
-          onSteel ? "text-steel-300" : "text-steel-700"
+          onSteel ? "text-white/75" : "text-coral-700"
         }`}
       >
         {num}
@@ -47,7 +47,7 @@ export default function SectionIndex({ num, label, onSteel = false }) {
           near-black field, measuring 3.1:1. */}
       <span
         className={`text-[12px] tracking-[0.12em] uppercase ${
-          onSteel ? "text-steel-300" : "text-steel-700"
+          onSteel ? "text-white/75" : "text-coral-700"
         }`}
       >
         {label}

@@ -1,5 +1,4 @@
 import Blueprint from "./Blueprint";
-import PrismField from "./PrismField";
 import BookCall from "./BookCall";
 import EnquiryForm from "./EnquiryForm";
 import Icon from "./Icon";
@@ -21,9 +20,8 @@ export default function Contact() {
   return (
     <section
       id="contact"
-      className="relative overflow-hidden bg-ink-950 py-[clamp(64px,8vw,120px)]"
+      className="relative overflow-hidden bg-char-900 py-[clamp(64px,8vw,120px)]"
     >
-      <PrismField intensity={0.55} />
       <div className="shell relative z-[2]">
         <div className="grid items-start gap-[clamp(32px,5vw,72px)] lg:grid-cols-2">
           <Reveal>
@@ -81,12 +79,12 @@ export default function Contact() {
 function Channel({ label, value, href, onClick }) {
   return (
     <li className="flex flex-col gap-[3px]">
-      <span className="text-[11px] tracking-[0.08em] text-steel-300 uppercase">{label}</span>
+      <span className="text-[11px] tracking-[0.08em] text-white/75 uppercase">{label}</span>
       {href ? (
         <a
           href={href}
           onClick={onClick}
-          className="inline-block text-[15px] on-steel no-underline hover:text-steel-300 hover:underline max-md:py-1.5"
+          className="inline-block text-[15px] on-steel no-underline hover:text-white/75 hover:underline max-md:py-1.5"
         >
           {value}
         </a>

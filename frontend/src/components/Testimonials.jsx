@@ -36,7 +36,7 @@ export default function Testimonials({ autoplay = true }) {
   return (
     <section
       id="testimonials"
-      className="section-y bg-paper"
+      className="section-y bg-lav-50"
       onMouseEnter={() => setPaused(true)}
       onMouseLeave={() => setPaused(false)}
       onFocusCapture={() => setPaused(true)}
@@ -134,7 +134,7 @@ function Avatar({ person, small = false }) {
   return (
     <span
       aria-hidden="true"
-      className={`absolute inset-0 grid place-items-center bg-panel font-display text-steel-700 ${
+      className={`absolute inset-0 grid place-items-center bg-panel font-display text-coral-700 ${
         small ? "text-[11px]" : "text-[15px]"
       }`}
     >

@@ -22,7 +22,7 @@ import { services } from "../data/services";
  */
 export default function Services() {
   return (
-    <section id="services" className="section-y bg-panel">
+    <section id="services" className="section-y bg-lav-100">
       <div className="shell">
         <Reveal>
           <SectionIndex num="02" label="What we do" />
@@ -41,18 +41,18 @@ export default function Services() {
             <StaggerItem as="li" key={service.slug}>
               <Link
                 to={servicePath(service.slug)}
-                className="rimlight group flex h-full flex-col gap-3 rounded-lg border border-ink/8 bg-paper-bright p-[clamp(20px,2.4vw,28px)] no-underline shadow-xs transition duration-300 hover:-translate-y-1 hover:shadow-lg"
+                className="rimlight group flex h-full flex-col gap-3 rounded-lg border border-ink/8 bg-white p-[clamp(20px,2.4vw,28px)] no-underline shadow-xs transition duration-300 hover:-translate-y-1 hover:shadow-lg"
               >
                 <span className="flex items-center justify-between">
-                  <span className="font-display text-[12.5px] tracking-[0.12em] text-prism-indigo">
+                  <span className="font-display text-[12.5px] tracking-[0.12em] text-coral-700">
                     {service.num}
                   </span>
-                  <span className="text-ink/25 transition-all duration-300 group-hover:translate-x-1 group-hover:text-prism-indigo">
+                  <span className="text-ink/25 transition-all duration-300 group-hover:translate-x-1 group-hover:text-coral-700">
                     <Icon name="arrowRight" size={17} />
                   </span>
                 </span>
 
-                <span className="font-display text-[clamp(19px,1.8vw,24px)] leading-[1.14] text-ink uppercase transition-colors duration-300 group-hover:text-prism-indigo">
+                <span className="font-display text-[clamp(19px,1.8vw,24px)] leading-[1.14] text-ink uppercase transition-colors duration-300 group-hover:text-coral-700">
                   {service.title}
                 </span>
 

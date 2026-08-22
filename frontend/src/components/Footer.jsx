@@ -18,7 +18,7 @@ export default function Footer() {
   const [openDoc, setOpenDoc] = useState(null);
 
   return (
-    <footer className="footer relative overflow-hidden bg-paper pt-[clamp(56px,7vw,96px)] [&_a]:text-inherit [&_a]:no-underline [&_a:hover]:text-steel-700">
+    <footer className="footer relative overflow-hidden bg-paper pt-[clamp(56px,7vw,96px)] [&_a]:text-inherit [&_a]:no-underline [&_a:hover]:text-coral-700">
       <div className="shell">
         <div className="grid gap-[clamp(32px,5vw,56px)] border-b border-line pb-[clamp(40px,6vw,72px)] md:grid-cols-2 lg:grid-cols-[1.4fr_1fr_1fr_1fr]">
           <div>
@@ -57,13 +57,13 @@ export default function Footer() {
 
           <div>
             <span className={`text-muted ${colHead}`}>Contact</span>
-            <span className="mb-0.5 block text-[11px] tracking-[0.08em] text-steel-700 uppercase">
+            <span className="mb-0.5 block text-[11px] tracking-[0.08em] text-coral-700 uppercase">
               Email
             </span>
             <a href={contact.emailHref} className="mb-3 block max-md:py-[10px]">
               {contact.email}
             </a>
-            <span className="mb-0.5 block text-[11px] tracking-[0.08em] text-steel-700 uppercase">
+            <span className="mb-0.5 block text-[11px] tracking-[0.08em] text-coral-700 uppercase">
               Phone
             </span>
             <a
@@ -73,7 +73,7 @@ export default function Footer() {
             >
               {contact.phone}
             </a>
-            <span className="mb-0.5 block text-[11px] tracking-[0.08em] text-steel-700 uppercase">
+            <span className="mb-0.5 block text-[11px] tracking-[0.08em] text-coral-700 uppercase">
               Studio
             </span>
             <span className="block">{contact.studio}</span>

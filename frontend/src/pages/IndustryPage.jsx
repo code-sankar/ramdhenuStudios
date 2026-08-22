@@ -3,7 +3,6 @@ import { Link, useParams } from "react-router-dom";
 import Blueprint from "../components/Blueprint";
 import Icon from "../components/Icon";
 import Layout from "../components/Layout";
-import PrismField from "../components/PrismField";
 import Reveal from "../components/Reveal";
 import Seo from "../components/Seo";
 import SectionIndex from "../components/ui/SectionIndex";
@@ -43,26 +42,24 @@ export default function IndustryPage() {
       {/* --------------------------------------------------------------------
           MASTHEAD
       -------------------------------------------------------------------- */}
-      <section className="masthead relative overflow-hidden bg-ink-950 pb-[clamp(56px,7vw,96px)]">
-        <PrismField intensity={0.7} />
-        <div className="hero__grid" aria-hidden="true" />
+      <section className="masthead field-fade grain relative overflow-hidden pb-[clamp(56px,7vw,96px)]">
 
         <div className="shell relative">
           <nav aria-label="Breadcrumb" className="mb-8">
-            <ol className="flex list-none flex-wrap items-center gap-x-2 p-0 text-[12px] tracking-[0.08em] text-paper/55 uppercase max-md:text-[12.5px]">
+            <ol className="flex list-none flex-wrap items-center gap-x-2 p-0 text-[12px] tracking-[0.08em] text-white uppercase max-md:text-[12.5px]">
               <li>
-                <Link to="/" className="inline-block py-2 text-paper/70 no-underline transition-colors duration-150 hover:text-paper">
+                <Link to="/" className="inline-block py-2 text-white no-underline transition-colors duration-150 hover:text-white">
                   Home
                 </Link>
               </li>
               <li aria-hidden="true">/</li>
               <li>
-                <Link to="/#about" className="inline-block py-2 text-paper/70 no-underline transition-colors duration-150 hover:text-paper">
+                <Link to="/#about" className="inline-block py-2 text-white no-underline transition-colors duration-150 hover:text-white">
                   Industries
                 </Link>
               </li>
               <li aria-hidden="true">/</li>
-              <li aria-current="page" className="text-paper/85">
+              <li aria-current="page" className="text-white">
                 {industry.short}
               </li>
             </ol>
@@ -70,23 +67,23 @@ export default function IndustryPage() {
 
           <div className="grid items-end gap-[clamp(28px,4vw,64px)] lg:grid-cols-[minmax(0,1.4fr)_minmax(0,1fr)]">
             <div>
-              <p className="mb-4 flex items-center gap-3 font-display text-[13px] tracking-[0.1em] text-steel-300">
+              <p className="mb-4 flex items-center gap-3 font-display text-[13px] tracking-[0.1em] text-white">
                 <span>{industry.num}</span>
-                <span aria-hidden="true" className="h-px w-8 bg-paper/30" />
+                <span aria-hidden="true" className="h-px w-8 bg-white/35" />
                 <span>Industry</span>
               </p>
-              <h1 className="display on-steel text-[clamp(30px,5vw,64px)] leading-[1] tracking-[-0.022em]">
+              <h1 className="display text-white text-[clamp(30px,5vw,64px)] leading-[1] tracking-[-0.022em]">
                 {industry.name} in {contact.region}
               </h1>
             </div>
 
-            <p className="text-[16.5px] leading-[1.6] text-paper/75">{industry.lede}</p>
+            <p className="text-[16.5px] leading-[1.6] text-white">{industry.lede}</p>
           </div>
 
-          <div className="mt-[clamp(32px,4vw,52px)] flex flex-wrap items-center gap-3 border-t border-paper/20 pt-[clamp(24px,3vw,34px)]">
+          <div className="mt-[clamp(32px,4vw,52px)] flex flex-wrap items-center gap-3 border-t border-white/25 pt-[clamp(24px,3vw,34px)]">
             <Link
               to="/#contact"
-              className="btn-prism inline-flex items-center gap-[9px] rounded-full px-[26px] py-[15px] font-display text-[15px] no-underline"
+              className="btn-on-field inline-flex items-center gap-[9px] rounded-full px-[26px] py-[15px] font-display text-[15px] no-underline"
             >
               <Icon name="plus" size={15} strokeWidth={2} />
               Start a Project
@@ -96,7 +93,7 @@ export default function IndustryPage() {
               target="_blank"
               rel="noreferrer"
               onClick={() => track("WhatsApp click", { from: "industry", industry: industry.name })}
-              className="inline-flex items-center gap-[9px] rounded-full border border-paper/20 px-[26px] py-[15px] font-display text-[15px] text-paper/85 no-underline transition duration-200 hover:border-paper/40 hover:bg-paper/8 hover:text-paper"
+              className="inline-flex items-center gap-[9px] rounded-full border border-white/25 px-[26px] py-[15px] font-display text-[15px] text-white no-underline transition duration-200 hover:border-paper/40 hover:bg-paper/8 hover:text-white"
             >
               <Icon name="whatsapp" size={16} />
               Ask a question
@@ -108,7 +105,7 @@ export default function IndustryPage() {
       {/* --------------------------------------------------------------------
           WHAT IS DIFFERENT ABOUT THIS TRADE
       -------------------------------------------------------------------- */}
-      <section id="industry-body" className="section-y bg-paper">
+      <section id="industry-body" className="section-y bg-lav-50">
         <div className="shell grid items-start gap-[clamp(32px,5vw,80px)] lg:grid-cols-[minmax(0,1.35fr)_minmax(0,1fr)]">
           <div>
             <SectionIndex num="01" label="What's different here" />
@@ -125,7 +122,7 @@ export default function IndustryPage() {
           {/* Which services matter, in order — the spine of the page */}
           <Reveal delay={0.08} className="lg:sticky lg:top-32">
             <Blueprint className="block bg-panel p-[clamp(22px,2.6vw,30px)]">
-              <p className="mb-1 font-display text-[11px] tracking-[0.14em] text-steel-700 uppercase">
+              <p className="mb-1 font-display text-[11px] tracking-[0.14em] text-coral-700 uppercase">
                 Where we'd start
               </p>
               <p className="text-muted mt-2 mb-5 text-[13.5px] leading-relaxed">
@@ -138,11 +135,11 @@ export default function IndustryPage() {
                       to={servicePath(service.slug)}
                       className="group flex items-start gap-3 py-3.5 no-underline"
                     >
-                      <span className="mt-0.5 font-display text-[12px] tracking-[0.1em] text-steel-700">
+                      <span className="mt-0.5 font-display text-[12px] tracking-[0.1em] text-coral-700">
                         {String(i + 1).padStart(2, "0")}
                       </span>
                       <span className="flex-1">
-                        <span className="block font-display text-[15.5px] uppercase transition-colors duration-150 group-hover:text-steel-700">
+                        <span className="block font-display text-[15.5px] uppercase transition-colors duration-150 group-hover:text-coral-700">
                           {service.title}
                         </span>
                         <span className="text-muted mt-0.5 block text-[13.5px] leading-snug">
@@ -152,7 +149,7 @@ export default function IndustryPage() {
                       <Icon
                         name="arrowRight"
                         size={15}
-                        className="mt-1 flex-none text-steel-700 transition-transform duration-200 group-hover:translate-x-1"
+                        className="mt-1 flex-none text-coral-700 transition-transform duration-200 group-hover:translate-x-1"
                       />
                     </Link>
                   </li>
@@ -166,7 +163,7 @@ export default function IndustryPage() {
       {/* --------------------------------------------------------------------
           THE FIRST MOVES
       -------------------------------------------------------------------- */}
-      <section className="section-y bg-panel">
+      <section className="section-y bg-lav-100">
         <div className="shell">
           <Reveal>
             <SectionIndex num="02" label="Where it starts" />
@@ -186,7 +183,7 @@ export default function IndustryPage() {
                   key={move.step}
                   className="border-line pt-6 pr-6 pb-6 sm:border-r sm:last:border-r-0"
                 >
-                  <span className="font-display text-[12px] tracking-[0.12em] text-steel-700">
+                  <span className="font-display text-[12px] tracking-[0.12em] text-coral-700">
                     {String(i + 1).padStart(2, "0")}
                   </span>
                   <h3 className="display mt-2 mb-2 text-[clamp(17px,1.8vw,21px)]">{move.step}</h3>
@@ -203,7 +200,7 @@ export default function IndustryPage() {
             <ul className="grid list-none gap-x-10 gap-y-3 p-0 sm:grid-cols-2">
               {industry.outcomes.map((o) => (
                 <li key={o} className="flex items-start gap-3 text-[15.5px] leading-relaxed">
-                  <Icon name="arrowRight" size={16} className="mt-1 flex-none text-steel-700" />
+                  <Icon name="arrowRight" size={16} className="mt-1 flex-none text-coral-700" />
                   {o}
                 </li>
               ))}
@@ -215,7 +212,7 @@ export default function IndustryPage() {
       {/* --------------------------------------------------------------------
           FAQ
       -------------------------------------------------------------------- */}
-      <section className="section-y bg-paper">
+      <section className="section-y bg-lav-50">
         <div className="shell grid items-start gap-[clamp(32px,5vw,80px)] lg:grid-cols-[minmax(0,0.8fr)_minmax(0,1.4fr)]">
           <Reveal>
             <SectionIndex num="03" label="Before you ask" />
@@ -239,7 +236,7 @@ export default function IndustryPage() {
       {/* --------------------------------------------------------------------
           THE OTHER TRADES
       -------------------------------------------------------------------- */}
-      <section className="section-y bg-panel">
+      <section className="section-y bg-lav-100">
         <div className="shell">
           <Reveal>
             <SectionIndex num="04" label="Also from us" />
@@ -255,10 +252,10 @@ export default function IndustryPage() {
                     to={industryPath(i.slug)}
                     className="group flex items-center gap-[clamp(16px,3vw,40px)] py-5 no-underline"
                   >
-                    <span className="w-7 flex-none font-display text-[13px] text-steel-700">
+                    <span className="w-7 flex-none font-display text-[13px] text-coral-700">
                       {i.num}
                     </span>
-                    <span className="flex-1 font-display text-[clamp(17px,2vw,26px)] uppercase transition-colors duration-150 group-hover:text-steel-700">
+                    <span className="flex-1 font-display text-[clamp(17px,2vw,26px)] uppercase transition-colors duration-150 group-hover:text-coral-700">
                       {i.name}
                     </span>
                     <span className="text-muted hidden max-w-[320px] flex-1 text-sm min-[900px]:block">
@@ -278,21 +275,20 @@ export default function IndustryPage() {
       {/* --------------------------------------------------------------------
           CLOSING ASK
       -------------------------------------------------------------------- */}
-      <section className="relative overflow-hidden bg-ink-950 py-[clamp(56px,7vw,100px)]">
-        <PrismField intensity={0.5} />
+      <section className="relative overflow-hidden bg-char-900 py-[clamp(56px,7vw,100px)]">
         <div className="shell relative z-[2] flex flex-wrap items-end justify-between gap-8">
           <div>
-            <h2 className="display on-steel text-[clamp(28px,4vw,48px)] leading-[1.05]">
+            <h2 className="display text-white text-[clamp(28px,4vw,48px)] leading-[1.05]">
               Run a {industry.singular} in {contact.region}?
             </h2>
-            <p className="mt-4 max-w-[46ch] text-[16px] text-paper/70">
+            <p className="mt-4 max-w-[46ch] text-[16px] text-white">
               Tell us where it is now. We&apos;ll tell you which of these is worth doing first —
               and which of them you can skip.
             </p>
           </div>
           <Link
             to="/#contact"
-            className="btn-prism inline-flex flex-none items-center gap-[9px] rounded-full px-[28px] py-[16px] font-display text-[16px] no-underline"
+            className="btn-on-field inline-flex flex-none items-center gap-[9px] rounded-full px-[28px] py-[16px] font-display text-[16px] no-underline"
           >
             <Icon name="plus" size={16} strokeWidth={2} />
             Start a Project
