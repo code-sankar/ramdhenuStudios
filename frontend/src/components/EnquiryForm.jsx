@@ -1,4 +1,7 @@
 import { useId, useRef, useState } from "react";
+import { AnimatePresence, motion, useReducedMotion } from "motion/react";
+
+import { duration, ease } from "../lib/motion";
 import Blueprint from "./Blueprint";
 import Icon from "./Icon";
 import { contact, enquiry } from "../data/site";
@@ -19,7 +22,12 @@ import { services } from "../data/services";
  */
 
 const FIELDS = {
-  name: { label: "Your name", required: true, autoComplete: "name", placeholder: "Full name" },
+  name: {
+    label: "Your name",
+    required: true,
+    autoComplete: "name",
+    placeholder: "Full name",
+  },
   business: {
     label: "Business name",
     required: false,
@@ -40,7 +48,8 @@ function validate(values) {
   if (!values.name.trim()) errors.name = "Please tell us your name.";
   const digits = values.phone.replace(/\D/g, "");
   if (!values.phone.trim()) errors.phone = "We need a number to reach you on.";
-  else if (digits.length < 10) errors.phone = "That doesn't look like a complete number.";
+  else if (digits.length < 10)
+    errors.phone = "That doesn't look like a complete number.";
   return errors;
 }
 
@@ -57,9 +66,16 @@ function composeMessage(values) {
   ].join("\n");
 }
 
-const EMPTY = { name: "", business: "", phone: "", service: "Not sure yet", message: "" };
+const EMPTY = {
+  name: "",
+  business: "",
+  phone: "",
+  service: "Not sure yet",
+  message: "",
+};
 
 export default function EnquiryForm() {
+  const reduced = useReducedMotion();
   const uid = useId();
   const formRef = useRef(null);
   const [values, setValues] = useState(EMPTY);
@@ -69,7 +85,9 @@ export default function EnquiryForm() {
   const update = (field) => (event) => {
     setValues((current) => ({ ...current, [field]: event.target.value }));
     /* Clear a field's error as soon as the visitor starts fixing it. */
-    setErrors((current) => (current[field] ? { ...current, [field]: undefined } : current));
+    setErrors((current) =>
+      current[field] ? { ...current, [field]: undefined } : current,
+    );
   };
 
   const handleSubmit = async (event) => {
@@ -79,7 +97,9 @@ export default function EnquiryForm() {
     setErrors(found);
     const firstBad = Object.keys(found)[0];
     if (firstBad) {
-      formRef.current?.querySelector(`#${CSS.escape(`${uid}-${firstBad}`)}`)?.focus();
+      formRef.current
+        ?.querySelector(`#${CSS.escape(`${uid}-${firstBad}`)}`)
+        ?.focus();
       setStatus({ state: "idle", message: "" });
       return;
     }
@@ -91,7 +111,10 @@ export default function EnquiryForm() {
       try {
         const response = await fetch(enquiry.endpoint, {
           method: "POST",
-          headers: { "Content-Type": "application/json", Accept: "application/json" },
+          headers: {
+            "Content-Type": "application/json",
+            Accept: "application/json",
+          },
           body: JSON.stringify({ ...values, text }),
         });
         if (!response.ok) throw new Error(String(response.status));
@@ -99,7 +122,8 @@ export default function EnquiryForm() {
         setValues(EMPTY);
         setStatus({
           state: "sent",
-          message: "Thanks — your enquiry is in. We reply the same working day.",
+          message:
+            "Thanks — your enquiry is in. We reply the same working day.",
         });
       } catch {
         /* Worth measuring: a form that quietly fails looks identical to one
@@ -107,7 +131,8 @@ export default function EnquiryForm() {
         track("Enquiry failed", { service: values.service });
         setStatus({
           state: "error",
-          message: "That didn't send. Try WhatsApp below, or email us directly.",
+          message:
+            "That didn't send. Try WhatsApp below, or email us directly.",
         });
       }
       return;
@@ -133,9 +158,15 @@ export default function EnquiryForm() {
   };
 
   return (
-    <Blueprint as="div" reversed className="relative bg-paper p-[clamp(24px,3vw,36px)]">
+    <Blueprint
+      as="div"
+      reversed
+      className="relative bg-paper p-[clamp(24px,3vw,36px)]"
+    >
       <form ref={formRef} onSubmit={handleSubmit} noValidate>
-        <h3 className="display mb-2 text-[22px]">Tell us about your business</h3>
+        <h3 className="display mb-2 text-[22px]">
+          Tell us about your business
+        </h3>
         <p className="text-muted mb-6 text-sm">
           Takes under a minute. We reply the same working day.
         </p>
@@ -163,11 +194,39 @@ export default function EnquiryForm() {
                   aria-invalid={invalid || undefined}
                   aria-describedby={invalid ? `${id}-error` : undefined}
                 />
-                {invalid && (
-                  <span className="mt-[5px] block text-xs text-steel-800" id={`${id}-error`}>
-                    {errors[key]}
-                  </span>
-                )}
+                {/* A VALIDATION MESSAGE THAT APPEARS IN ONE FRAME ALSO SHOVES
+                    EVERY FIELD BELOW IT DOWN IN THAT SAME FRAME, and on a form
+                    with two bad fields the reader's target moves twice while
+                    they are looking at it. Growing the message out of zero
+                    height means the shove is something they can watch happen
+                    and follow, rather than something that has already happened.
+
+                    `role="alert"` and the `aria-describedby` above are what
+                    actually deliver this to a screen reader; the animation is
+                    only for the people watching. */}
+                <AnimatePresence initial={false}>
+                  {invalid && (
+                    <motion.span
+                      className="block overflow-hidden text-xs text-steel-800"
+                      id={`${id}-error`}
+                      role="alert"
+                      initial={
+                        reduced
+                          ? { opacity: 0 }
+                          : { opacity: 0, height: 0, marginTop: 0 }
+                      }
+                      animate={{ opacity: 1, height: "auto", marginTop: 5 }}
+                      exit={
+                        reduced
+                          ? { opacity: 0 }
+                          : { opacity: 0, height: 0, marginTop: 0 }
+                      }
+                      transition={{ duration: duration.short, ease: ease.out }}
+                    >
+                      {errors[key]}
+                    </motion.span>
+                  )}
+                </AnimatePresence>
               </p>
             );
           })}
@@ -197,7 +256,9 @@ export default function EnquiryForm() {
           </p>
 
           <p className="field col-span-full m-0">
-            <label htmlFor={`${uid}-message`}>What would you like to achieve?</label>
+            <label htmlFor={`${uid}-message`}>
+              What would you like to achieve?
+            </label>
             <textarea
               id={`${uid}-message`}
               name="message"
@@ -220,25 +281,55 @@ export default function EnquiryForm() {
         </button>
 
         <p className="text-muted mt-3 mb-0 text-center text-xs">
-          {enquiry.endpoint ? "Prefer email?" : "Opens WhatsApp with your details filled in."}{" "}
-          <button type="button" className="linkish max-md:inline-block max-md:py-2" onClick={emailFallback}>
+          {enquiry.endpoint
+            ? "Prefer email?"
+            : "Opens WhatsApp with your details filled in."}{" "}
+          <button
+            type="button"
+            className="linkish max-md:inline-block max-md:py-2"
+            onClick={emailFallback}
+          >
             Email it instead
           </button>
         </p>
 
-        {/* Both states are announced, so the result is never visual-only. */}
-        <p
-          role="status"
-          aria-live="polite"
-          hidden={!status.message}
-          className={`mt-4 mb-0 border p-3 text-[13px] text-steel-900 ${
-            status.state === "error"
-              ? "border-steel-800 bg-mute-100"
-              : "border-steel bg-steel-100"
-          }`}
-        >
-          {status.message}
-        </p>
+        {/* Both states are announced, so the result is never visual-only.
+
+            THE `key` IS WHAT MAKES THIS WORTH ANIMATING AT ALL. Keyed on the
+            state, a failure replacing a success is a genuine swap — the old
+            message leaves and the new one arrives — rather than the same box
+            silently changing colour and wording, which is the one way a reader
+            can miss that anything happened on the most important element of the
+            page. `mode="wait"` holds the arrival until the departure is done,
+            so the two are never overlaid and unreadable. */}
+        <AnimatePresence mode="wait" initial={false}>
+          {status.message && (
+            <motion.p
+              key={status.state}
+              role="status"
+              aria-live="polite"
+              className={`mb-0 overflow-hidden border p-3 text-[13px] text-steel-900 ${
+                status.state === "error"
+                  ? "border-steel-800 bg-mute-100"
+                  : "border-steel bg-steel-100"
+              }`}
+              initial={
+                reduced
+                  ? { opacity: 0 }
+                  : { opacity: 0, height: 0, marginTop: 0 }
+              }
+              animate={{ opacity: 1, height: "auto", marginTop: 16 }}
+              exit={
+                reduced
+                  ? { opacity: 0 }
+                  : { opacity: 0, height: 0, marginTop: 0 }
+              }
+              transition={{ duration: duration.short, ease: ease.out }}
+            >
+              {status.message}
+            </motion.p>
+          )}
+        </AnimatePresence>
       </form>
     </Blueprint>
   );

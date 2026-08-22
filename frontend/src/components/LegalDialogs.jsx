@@ -6,13 +6,32 @@ const documents = { privacy, terms };
 /**
  * Renders whichever legal document the footer asked for. Kept as one component
  * so both documents share the same dialog behaviour and markup.
+ *
+ * BOTH DIALOGS ARE ALWAYS MOUNTED, WHICH LOOKS WASTEFUL AND IS NOT.
+ *
+ * `Dialog` animates its own exit, and an exit needs the component to still
+ * exist while it runs. This used to return `null` the moment `openDoc` cleared,
+ * which tore the dialog down — and its `<AnimatePresence>` with it — in the same
+ * frame the close was requested. Measured, that was six frames of movement
+ * opening and exactly one closing.
+ *
+ * Rendering one dialog per document and letting each own its `open` flag fixes
+ * that without a scrap of bookkeeping. The obvious alternative — keep one
+ * dialog mounted and remember which document was last shown — needs either an
+ * effect or a ref written during render, and both exist only to answer "what
+ * was in here a moment ago". Giving each document its own dialog means neither
+ * ever has to forget, so the question never comes up. A closed one renders
+ * `<AnimatePresence>` around nothing and costs no DOM at all.
  */
 export default function LegalDialogs({ openDoc, onClose }) {
-  const doc = documents[openDoc];
-  if (!doc) return null;
-
-  return (
-    <Dialog open onClose={onClose} title={doc.title} labelledBy={`legal-${openDoc}`}>
+  return Object.entries(documents).map(([key, doc]) => (
+    <Dialog
+      key={key}
+      open={openDoc === key}
+      onClose={onClose}
+      title={doc.title}
+      labelledBy={`legal-${key}`}
+    >
       <p className="text-muted mb-4 text-xs">{doc.updated}</p>
 
       {LEGAL_NEEDS_REVIEW && (
@@ -29,5 +48,5 @@ export default function LegalDialogs({ openDoc, onClose }) {
         </section>
       ))}
     </Dialog>
-  );
+  ));
 }

@@ -245,6 +245,21 @@ export const enquiry = {
 };
 ```
 
+## Dialogs
+
+`Dialog` animates its own entrance and exit, which means **callers must keep it
+mounted and toggle `open`.** A caller that writes `{isOpen && <Dialog open …/>}`,
+or returns `null` when its own state clears, destroys the subtree in the same
+frame the close is requested — the dialog will fade in and vanish instantly,
+however much animation is declared inside it.
+
+`LegalDialogs` had exactly that shape. It now renders one dialog per document
+and lets each own its `open` flag, which is why both are always mounted: a
+closed one renders `<AnimatePresence>` around nothing and costs no DOM, and
+neither ever has to remember what it was showing a moment ago. The alternative —
+one dialog plus a ref or an effect holding the last document through the close —
+exists only to answer a question this shape never asks.
+
 ## The logo
 
 The official artwork ships **white-on-transparent**, which is right for the steel
@@ -464,11 +479,28 @@ case-study template later, once a project has earned one.
 
 ### Filtering
 
-Client-side, no route change — a `useState` and a plain filter, deliberately
-not animated on toggle. Framer's `whileInView` fires once per element the
-first time it enters the viewport; refiring it on every chip click would mean
-fighting that lifecycle for an effect nobody would notice mid-toggle. The page
-load is what gets the staggered entrance; the filter itself is instant.
+Client-side, no route change — a `useState` and a plain filter.
+
+**This used to be instant, deliberately, and the reasoning was half right.** The
+note here said that `whileInView` fires once per element and that refiring it on
+every chip click would mean fighting that lifecycle. That part is true, and it
+is why the grid is no longer a `Stagger` at all. The conclusion drawn from it —
+that the filter should therefore not animate — only followed while the grid
+stayed inside a component built to reveal a list once.
+
+The other half of the old note, that it was "an effect nobody would notice
+mid-toggle", did not survive being measured. Pressing a chip took the grid from
+six cards to one in a single frame with no transition: not an effect nobody
+notices, a page that becomes a different page under the reader's hands.
+
+So the grid is now `AnimatePresence` in `popLayout` mode with `layout` on each
+card. `popLayout` takes leaving cards out of flow before the survivors move, so
+the ones that remain slide to their new grid positions instead of jumping into
+the gaps — without it the exits and the reflow fight each other and the result
+is worse than no animation at all. Under `prefers-reduced-motion` the cards
+leave the layout system entirely and only cross-fade, because a layout animation
+is the one kind that cannot be shortened to nothing: a card crossing a column in
+1ms is still a card crossing the screen.
 
 Same placeholder discipline as everywhere else on the site: each project
 carries its own `placeholder`, the card marks itself "Sample" individually,
