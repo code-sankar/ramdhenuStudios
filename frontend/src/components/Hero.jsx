@@ -1,8 +1,8 @@
 import { Link } from "react-router-dom";
 import { motion, useReducedMotion } from "motion/react";
 
+import BubbleField from "./BubbleField";
 import Icon from "./Icon";
-import ParticleMark from "./ParticleMark";
 import { duration, ease } from "../lib/motion";
 import { brand, disciplines, socials } from "../data/site";
 
@@ -10,11 +10,22 @@ import { brand, disciplines, socials } from "../data/site";
  * HERO — the coral field, with the brand monogram made of moving bubbles.
  *
  * THE COMPOSITION:
- *   the field      flat coral, edge to edge. Flat on purpose — a gradient
- *                  behind the particle cloud turns the cloud into noise.
- *   the mark       <ParticleMark/>, centre-right, huge and half off the grid
+ *   the field      flat coral, edge to edge. Flat on purpose — it is the one
+ *                  value every bubble's lighting is calibrated against.
+ *   the bubbles    <BubbleField/>, a drift of soap bubbles across the whole
+ *                  field, big and out of focus on the right, small and thin
+ *                  on the left
  *   the copy       eyebrow · headline · one action, hard left
  *   the rail       disciplines bottom-left, socials bottom-centre
+ *
+ * THE BUBBLES REPLACED THE PARTICLE MONOGRAM RATHER THAN JOINING IT, WHICH WAS
+ * NOT A CLOSE CALL. Both are made of bubbles. Forty photographic soap bubbles
+ * behind a monogram assembled from two thousand small ones is not two effects,
+ * it is one texture — the glyph stops being legible as a glyph and the field
+ * stops reading as depth, and each was the whole point of the other. The mark
+ * still opens the page from the header, where it sits on a clean ground and
+ * actually reads. <ParticleMark/> is intact and unused; the hero simply is not
+ * the place for two arguments about bubbles.
  *
  * ONE ACTION, NOT TWO. The old hero offered "Start a Project" and "See our
  * work" side by side, which splits the decision at exactly the moment the
@@ -43,12 +54,9 @@ export default function Hero({ showAvailability = true }) {
       id="/"
       className="hero field-coral grain relative box-border flex min-h-[100svh] flex-col justify-center overflow-hidden pt-[clamp(96px,15vh,150px)] pb-[clamp(88px,12vh,120px)]"
     >
-      {/* The mark. Oversized and pushed right so the headline crosses it —
-          the type and the glyph should occupy one space, not sit side by side.
-          Its bubbles rise and recycle continuously; see ParticleMark.
-          Hidden below md: at 390px it would sit directly under the headline
-          and turn it into texture. */}
-      <ParticleMark className="pointer-events-none absolute top-1/2 right-[-6%] hidden h-[min(92vh,860px)] w-[min(58vw,860px)] -translate-y-1/2 md:block" />
+      {/* The bubbles, and the scrim that keeps the headline off them. Sits
+          under the grain (z-1) and the copy (z-2); see coral.css §2.1. */}
+      <BubbleField />
 
       <div className="shell relative z-[2] flex flex-col gap-[clamp(20px,3.4vw,38px)]">
         {showAvailability && (

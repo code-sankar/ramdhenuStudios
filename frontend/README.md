@@ -115,7 +115,8 @@ src/
     Logo.jsx         the wordmark — swap in the official artwork here
     Icon.jsx         the Lucide glyphs actually used, inline
     Reveal.jsx       one short scroll entrance, reused everywhere
-    ParticleMark.jsx the monogram as a body of continuously rising bubbles
+    BubbleField.jsx  the hero's drift of soap bubbles — 50 of them, CSS only
+    ParticleMark.jsx the monogram as a body of rising bubbles (currently unused)
     Orbit.jsx        the six disciplines drawn as one system, on one centre
     ui/SectionIndex  the numbered spec-sheet index each section opens with
     EnquiryForm.jsx  the conversion point — validation + WhatsApp/POST delivery
@@ -128,6 +129,30 @@ Routing lives in `src/App.jsx`: `/` → `HomePage`, `/services/:slug` → `Servi
 `/industries/:slug` → `IndustryPage`, `/work` → `WorkPage`, anything else →
 `NotFoundPage`. Sections follow the artboard:
 **Hero → About → Services → Orbit → Testimonials → FAQ → Contact.**
+
+The hero's background is `BubbleField`: fifty soap bubbles drifting gently over
+the coral, each one built from seven stacked radial gradients — rim, specular,
+bloom, bounce, and the three thin-film interference hues soap actually makes.
+Three things about it are worth knowing before changing it.
+
+**No `filter: blur()`, anywhere, deliberately.** Depth of field is carried by
+`--soft`, which widens and dims the rim's gradient stops instead. Measured on a
+software rasteriser, real filters ran the hero at 27fps against 60 without them,
+and the cost is per *element*, not per pixel of radius — half a pixel of blur
+costs what four do. Reintroducing a filter here will halve the frame rate.
+
+**Nothing animates but `transform`.** Two nested elements per bubble, so the rise
+and the sway run on their own unrelated clocks and trace a path that takes
+minutes to repeat. The drift is bounded — bubbles breathe around their placed
+position rather than rising and wrapping, so the composition stays composed.
+
+**The scrim is load-bearing, and it is mixed from `coral-700` on purpose.** White
+on flat coral-500 is 4.61:1 — it passes AA with a tenth of a point to spare, so
+the hero had no headroom for texture of any kind. A scrim in the field's own
+colour can only restore that; a darker one adds contrast back. Every value in it
+is the loosest that passed a measurement taken at the pixels glyphs actually
+paint, sampled across the drift cycle at seven viewports. Lighten it and the
+12px rail goes under AA. The numbers are in `coral.css` §2.1.
 
 `Orbit` is the one section that is not a list of anything. The services grid
 above it can say what the six disciplines are but not why they belong in one
