@@ -111,44 +111,12 @@ h3 {
 /* --------------------------------------------------------------------------
    HERO FIELD
    -------------------------------------------------------------------------- */
-/* THE AURORA — the spectrum blooming up out of the steel field. Two things
-   keep it from washing the page out: the scrim below, and the header going
-   opaque on scroll. */
-.hero__aurora {
-  position: absolute;
-  left: 0;
-  right: 0;
-  bottom: -44px;
-  height: 46%;
-  z-index: 0;
-  pointer-events: none;
-  background: var(--spectrum);
-  -webkit-mask-image: linear-gradient(to top, #000 2%, rgba(0, 0, 0, 0.5) 34%, transparent 84%);
-  mask-image: linear-gradient(to top, #000 2%, rgba(0, 0, 0, 0.5) 34%, transparent 84%);
-  filter: blur(56px) saturate(1.08);
-  opacity: 0.92;
-}
-
-/* The scrim. Weighted to the left, where the headline and lede sit, and
-   clearing to nothing on the right so the bloom stays saturated there. */
-.hero__veil {
-  position: absolute;
-  inset: 0;
-  z-index: 0;
-  pointer-events: none;
-  background:
-    linear-gradient(
-      100deg,
-      color-mix(in srgb, var(--color-accent-900) 82%, transparent) 0%,
-      color-mix(in srgb, var(--color-accent-900) 46%, transparent) 46%,
-      transparent 78%
-    ),
-    linear-gradient(
-      to top,
-      color-mix(in srgb, var(--color-accent-900) 42%, transparent) 0%,
-      transparent 40%
-    );
-}
+/* The hero's aurora and its scrim used to live here — one static gradient
+   under a mask, plus a veil to hold the type's contrast. Both are gone: the
+   hero now renders <PrismField/>, which is a drifting five-body field with its
+   own veil and grain in prism.css. The service masthead keeps its own
+   `.service-hero__veil` below, because that one is holding contrast against a
+   photograph rather than against drawn light. */
 
 /* The blueprint grid, barely there — it gives the field texture at the scale
    the headline is set, so the type is not floating on flat colour. */
@@ -334,7 +302,7 @@ h3 {
   );
 }
 
-/* The scrim that buys the contrast back. Same role as .hero__veil, tuned for
+/* The scrim that buys the contrast back. Same role as `.prism-veil`, tuned for
    this composition: heaviest bottom-left under the breadcrumb and headline. */
 .service-hero__veil {
   position: absolute;

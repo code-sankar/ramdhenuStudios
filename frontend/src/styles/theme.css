@@ -13,6 +13,11 @@
    order: the system supplies defaults, utilities override them. */
 @import "./industry.css" layer(components);
 
+/* The rebrand layer. Same layer as Industry and imported second, so where the
+   two disagree — corners, elevation, button behaviour — Prism wins on order
+   alone, and Tailwind utilities still beat both. */
+@import "./prism.css" layer(components);
+
 /* ==========================================================================
    TAILWIND ↔ INDUSTRY BRIDGE
    --------------------------------------------------------------------------
@@ -89,6 +94,74 @@
 
   --font-display: var(--font-heading);
   --font-sans: var(--font-body);
+
+  /* ========================================================================
+     PRISM — the rebrand layer
+     ------------------------------------------------------------------------
+     "Ramdhenu" is Assamese for rainbow. The original build treated that as a
+     2px hairline at three moments in the page and monochrome everywhere else
+     — the brand's one real piece of equity, spent like an apology.
+
+     Prism promotes it to a material. The spectrum is light: it blooms behind
+     the hero, rims the interactive objects, and picks out the word the page
+     is actually about. The ground goes deep enough for that light to read.
+     ======================================================================== */
+
+  /* The ink ground. Deeper and bluer than steel-900 (#1d2d3d), which was too
+     grey to sit coloured light on — the aurora muddied instead of glowing. */
+  --color-ink-950: #05070b;
+  --color-ink-900: #090d14;
+  --color-ink-850: #0e141e;
+  --color-ink-800: #141c29;
+  --color-ink-750: #1a2434;
+  --color-ink-700: #223045;
+  --color-ink-600: #2d3e57;
+
+  /* The six stops of the spectrum, as addressable colours. These are the same
+     hues as --spectrum, pulled out so a single one can rim a button or tint a
+     glow without dragging the whole rainbow along. */
+  --color-prism-violet: #7c3aed;
+  --color-prism-indigo: #4361ee;
+  --color-prism-cyan: #06b6d4;
+  --color-prism-emerald: #10b981;
+  --color-prism-amber: #f59e0b;
+  --color-prism-coral: #fb7185;
+
+  /* Warmer and brighter than the old flat #f2f2f3, so the light sections read
+     as lit rather than as unpainted. */
+  --color-paper-bright: #fbfcfd;
+  --color-paper-warm: #f4f6f9;
+
+  /* RADIUS IS BACK, AND THAT IS THE HEADLINE CHANGE.
+     theme.css used to clear this namespace on purpose: Industry is a wireframe
+     and a wireframe has square corners. That reads as technical, which is the
+     opposite of what an agency selling taste to a restaurant owner needs. The
+     scale is tight — nothing here is a pill except what should be. */
+  --radius-xs: 6px;
+  --radius-sm: 10px;
+  --radius-md: 14px;
+  --radius-lg: 20px;
+  --radius-xl: 28px;
+  --radius-2xl: 36px;
+  --radius-full: 999px;
+
+  /* Elevation, tinted with the ground rather than pure black — black shadows
+     on a blue-black field go grey and dirty. The last two are objects, not
+     depths: `glow` is prism light escaping an element, `lift` is the inner
+     top highlight that makes a dark surface read as raised. */
+  --shadow-xs: 0 1px 2px rgb(5 7 11 / 0.06);
+  --shadow-sm: 0 2px 8px -2px rgb(5 7 11 / 0.1), 0 1px 3px -1px rgb(5 7 11 / 0.07);
+  --shadow-md: 0 8px 24px -6px rgb(5 7 11 / 0.14), 0 2px 8px -2px rgb(5 7 11 / 0.08);
+  --shadow-lg: 0 20px 48px -12px rgb(5 7 11 / 0.2), 0 6px 16px -6px rgb(5 7 11 / 0.1);
+  --shadow-xl: 0 32px 72px -16px rgb(5 7 11 / 0.28), 0 10px 24px -8px rgb(5 7 11 / 0.12);
+  --shadow-glow: 0 0 0 1px rgb(124 58 237 / 0.16), 0 10px 36px -10px rgb(124 58 237 / 0.4);
+  --shadow-lift: inset 0 1px 0 0 rgb(255 255 255 / 0.07), 0 14px 36px -14px rgb(5 7 11 / 0.55);
+
+  /* Motion, shared with src/lib/motion.js so CSS transitions and framer
+     variants land on the same curve. */
+  --ease-out-expo: cubic-bezier(0.16, 1, 0.3, 1);
+  --ease-out-back: cubic-bezier(0.34, 1.4, 0.64, 1);
+  --ease-in-out-soft: cubic-bezier(0.65, 0, 0.35, 1);
 }
 
 /* ==========================================================================

@@ -1,4 +1,5 @@
 import Blueprint from "./Blueprint";
+import PrismField from "./PrismField";
 import BookCall from "./BookCall";
 import EnquiryForm from "./EnquiryForm";
 import Icon from "./Icon";
@@ -18,8 +19,12 @@ import { track } from "../lib/track";
  */
 export default function Contact() {
   return (
-    <section id="contact" className="bg-steel-900 py-[clamp(64px,8vw,120px)]">
-      <div className="shell">
+    <section
+      id="contact"
+      className="relative overflow-hidden bg-ink-950 py-[clamp(64px,8vw,120px)]"
+    >
+      <PrismField intensity={0.55} />
+      <div className="shell relative z-[2]">
         <div className="grid items-start gap-[clamp(32px,5vw,72px)] lg:grid-cols-2">
           <Reveal>
             <SectionIndex num="05" label="Start here" onSteel />

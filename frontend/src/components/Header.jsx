@@ -1,22 +1,41 @@
 import { useEffect, useMemo, useState } from "react";
 import { Link, useLocation } from "react-router-dom";
-import Blueprint from "./Blueprint";
+import { AnimatePresence, motion, useReducedMotion } from "motion/react";
+
 import Icon from "./Icon";
 import Logo from "./Logo";
 import NavMenu from "./NavMenu";
+import { duration, ease, stagger } from "../lib/motion";
 import { servicePath } from "../data/seo";
 import { services } from "../data/services";
 import { brand, nav, navHref } from "../data/site";
 
 /**
- * Sticky header. Translucent paper ground with a blur, a hairline base rule,
- * and the one solid accent object on the bar — the primary button.
+ * HEADER — a floating capsule that flips theme as it leaves the opening field.
  *
- * The spectrum rule and the opaque-on-scroll swap stay in app.css: both hang
- * off `data-scrolled`, and the rule is a ::after with the gradient token.
+ * At rest it is transparent with light type, sitting over the dark hero every
+ * page opens on. Past 40px of scroll it becomes light glass with a shadow and
+ * the type goes to ink. Both halves hang off one `data-scrolled` attribute, so
+ * there is one source of truth and no way for the capsule and its type to
+ * disagree mid-transition. The styling itself is in prism.css.
+ *
+ * It is `fixed`, which is the cost of floating: the bar reserves no space in
+ * flow, so every page's opening section carries a `masthead` class supplying
+ * the clearance by hand. Add a page that opens on something else and it needs
+ * that class too.
+ *
+ * THE ACTIVE PILL SLIDES. The current item is marked by a pill that travels
+ * between links rather than appearing under each one — a shared `layoutId`, so
+ * framer animates the real distance between the two positions. It is the one
+ * piece of chrome on the site allowed a little overshoot.
+ *
+ * ON A PHONE the links become a full-screen drawer. A capsule cannot hold six
+ * links and a CTA at 360px, and the half-measure — a panel dropping out of the
+ * bar — leaves the visitor reading a menu through a 40px gap.
  */
 export default function Header({ showAvailability = true }) {
   const { pathname } = useLocation();
+  const reduced = useReducedMotion();
   const [open, setOpen] = useState(false);
   const [active, setActive] = useState("");
   const [scrolled, setScrolled] = useState(false);
@@ -25,24 +44,19 @@ export default function Header({ showAvailability = true }) {
      or a real route, current while the URL matches it. */
   const isCurrent = (item) => (item.path ? pathname === item.path : active === item.id);
 
-  /* The dropdown's contents. "All services" keeps the destination the trigger
-     used to point at — a menu that replaces a link has to give that link back
-     somewhere, or the section becomes unreachable from the bar. */
+  /* The mega-menu's cards. `blurb` is what makes it a mega-menu rather than a
+     tall dropdown — six titles alone would not earn the extra width. */
   const serviceMenu = useMemo(
-    () => [
-      { label: "All services", to: "/#services" },
-      ...services.map((service) => ({
+    () =>
+      services.map((service) => ({
         label: service.short,
+        blurb: service.blurb,
         to: servicePath(service.slug),
         num: service.num,
       })),
-    ],
     [],
   );
 
-  /* The spectrum rule under the bar only appears once the page has moved, so
-     it reads as a response to scrolling rather than as permanent chrome.
-     Passive listener + rAF so it never blocks the scroll itself. */
   useEffect(() => {
     let frame = 0;
     const onScroll = () => {
@@ -62,9 +76,7 @@ export default function Header({ showAvailability = true }) {
 
   /* Highlight the section currently in view. */
   useEffect(() => {
-    const sections = nav
-      .map((item) => document.getElementById(item.id))
-      .filter(Boolean);
+    const sections = nav.map((item) => document.getElementById(item.id)).filter(Boolean);
     if (!sections.length) return;
 
     const observer = new IntersectionObserver(
@@ -80,87 +92,186 @@ export default function Header({ showAvailability = true }) {
     return () => observer.disconnect();
   }, []);
 
-  return (
-    <header
-      className="header sticky top-0 z-50 border-b border-line bg-paper/85 backdrop-blur-[10px] [&_a]:text-inherit [&_a]:no-underline"
-      data-scrolled={scrolled}
-    >
-      {/* From tablet up the bar is three true columns — brand · links · actions —
-          so the links stay centred regardless of how wide either side runs. */}
-      <nav
-        className="nav mx-auto max-w-[1320px] flex-wrap gap-y-3 px-[clamp(20px,4vw,64px)] py-4 max-md:gap-y-0 md:grid md:grid-cols-[1fr_auto_1fr] md:items-center md:gap-x-6 md:py-3.5"
-        aria-label="Primary"
-      >
+  /* An open drawer must not leave the page scrolling behind it. Restoring the
+     previous value rather than clearing it keeps this safe if anything else
+     ever locks scroll at the same time (the boot splash does, on first load). */
+  useEffect(() => {
+    if (!open) return;
+    const previous = document.documentElement.style.overflow;
+    document.documentElement.style.overflow = "hidden";
+    return () => {
+      document.documentElement.style.overflow = previous;
+    };
+  }, [open]);
+
+  /* Escape closes the drawer from anywhere inside it. */
+  useEffect(() => {
+    if (!open) return;
+    const onKey = (event) => {
+      if (event.key === "Escape") setOpen(false);
+    };
+    document.addEventListener("keydown", onKey);
+    return () => document.removeEventListener("keydown", onKey);
+  }, [open]);
+
+  const closeDrawer = () => setOpen(false);
+
+  /* Rendered in both the capsule and the drawer, so the two can never drift.
+     `inDrawer` only decides layout — the state and handlers are shared. */
+  const links = (inDrawer = false) =>
+    nav.map((item) =>
+      item.menu ? (
+        <NavMenu
+          key={item.label}
+          label={item.label}
+          items={serviceMenu}
+          footer={{ label: "All services", to: "/#services" }}
+          currentPath={pathname}
+          active={isCurrent(item) || pathname.startsWith("/services/")}
+          onNavigate={closeDrawer}
+        />
+      ) : (
         <Link
-          to="/#top"
-          className="nav-brand flex items-center max-md:min-h-[44px] md:mr-0"
-          aria-label={`${brand.name} — home`}
-          onClick={() => setOpen(false)}
+          key={item.label}
+          to={navHref(item)}
+          aria-current={isCurrent(item) ? "true" : undefined}
+          className="nav-link"
+          onClick={closeDrawer}
         >
-          <Logo withName className="md:hidden" />
-          <Logo
-            variant="lockup"
-            className="hidden h-[62px] w-[155px] md:block lg:h-[68px] lg:w-[170px]"
-          />
+          {/* The travelling pill. Only the current item renders it, so framer
+              sees one element moving rather than several fading. */}
+          {!inDrawer && !reduced && isCurrent(item) && (
+            <motion.span
+              layoutId="nav-pill"
+              className="nav-pill"
+              transition={{ duration: duration.short, ease: ease.outBack }}
+            />
+          )}
+          <span className="relative z-[1]">{item.label}</span>
         </Link>
+      ),
+    );
 
-        {/* Below md the links collapse into a panel under the bar. */}
-        <div
-          id="primary-nav"
-          data-open={open}
-          className="flex items-center gap-4 max-md:order-4 max-md:mt-3 max-md:hidden max-md:w-full max-md:flex-col max-md:items-start max-md:border-t max-md:border-line max-md:pt-3 max-md:data-[open=true]:flex md:justify-center"
-        >
-          {nav.map((item) =>
-            item.menu ? (
-              <NavMenu
-                key={item.label}
-                label={item.label}
-                items={serviceMenu}
-                currentPath={pathname}
-                active={isCurrent(item) || pathname.startsWith("/services/")}
-                onNavigate={() => setOpen(false)}
+  return (
+    <>
+      {/* FIXED, NOT STICKY. The capsule has to float over the dark field each
+          page opens on — sticky would reserve 96px of light body above it and
+          land light type on a light ground. Every opening section carries the
+          matching top padding; see `masthead` in prism.css. */}
+      <header
+        className="fixed inset-x-0 top-0 z-50 [&_a]:no-underline"
+        data-scrolled={scrolled}
+        data-drawer={open}
+      >
+        <div className="shell pt-[clamp(10px,1.4vw,18px)] pb-2">
+          <nav
+            className="nav-capsule flex items-center justify-between gap-4 py-2 pr-2 pl-[clamp(12px,1.6vw,20px)] md:grid md:grid-cols-[1fr_auto_1fr]"
+            aria-label="Primary"
+          >
+            <Link
+              to="/#top"
+              className="nav-brand flex flex-none items-center max-md:min-h-[44px]"
+              aria-label={`${brand.name} — home`}
+              onClick={closeDrawer}
+            >
+              <Logo withName className="md:hidden" />
+              <Logo
+                variant="lockup"
+                className="hidden h-[52px] w-[130px] md:block lg:h-[56px] lg:w-[142px]"
               />
-            ) : (
+            </Link>
+
+            {/* The links, centre column, from md up. */}
+            <div className="hidden items-center gap-0.5 md:flex md:justify-center">
+              {links()}
+            </div>
+
+            <div className="flex flex-none items-center gap-2 md:justify-self-end">
+              {showAvailability && (
+                <span className="nav-badge hidden items-center gap-2 rounded-full px-3.5 py-2 text-[11px] tracking-[0.1em] uppercase lg:inline-flex">
+                  <span className="hero__pulse" aria-hidden="true" />
+                  Available
+                </span>
+              )}
+
               <Link
-                key={item.label}
-                to={navHref(item)}
-                aria-current={isCurrent(item) ? "true" : undefined}
-                className="text-[15.5px] tracking-[0.005em] transition-colors duration-150 hover:text-steel-700 aria-[current=true]:text-steel-700 max-md:text-[17px]"
-                onClick={() => setOpen(false)}
+                to="/#contact"
+                className="btn-prism inline-flex items-center gap-2 rounded-full px-[18px] py-[11px] font-display text-[14px] tracking-[0.01em] no-underline max-md:px-4 max-md:py-2.5 max-md:text-[13px]"
+                onClick={closeDrawer}
               >
-                {item.label}
+                <Icon name="plus" size={14} strokeWidth={2} />
+                <span className="max-[380px]:hidden">Start a Project</span>
+                <span className="hidden max-[380px]:inline">Start</span>
               </Link>
-            ),
-          )}
+
+              <button
+                type="button"
+                className="nav-brand inline-flex h-11 w-11 items-center justify-center rounded-full border border-current/20 bg-transparent transition-colors duration-200 hover:bg-current/10 md:hidden"
+                aria-expanded={open}
+                aria-controls="primary-nav"
+                aria-label={open ? "Close menu" : "Open menu"}
+                onClick={() => setOpen((value) => !value)}
+              >
+                <Icon name={open ? "close" : "menu"} />
+              </button>
+            </div>
+          </nav>
         </div>
+      </header>
 
-        <div className="flex items-center gap-3 md:justify-self-end">
-          {showAvailability && (
-            <span className="tag tag-outline max-md:hidden">● Available for new projects</span>
-          )}
-
-          <Blueprint
-            as={Link}
-            to="/#contact"
-            className="btn btn-primary relative px-5 py-2.5 text-[14.5px] no-underline max-md:order-2 max-md:px-3 max-md:py-2 max-md:text-[13px]"
-            onClick={() => setOpen(false)}
+      {/* ── The phone drawer ── */}
+      <AnimatePresence>
+        {open && (
+          <motion.div
+            id="primary-nav"
+            className="nav-drawer md:hidden"
+            initial={reduced ? false : { opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={reduced ? undefined : { opacity: 0 }}
+            transition={{ duration: duration.short, ease: ease.out }}
           >
-            <Icon name="plus" size={14} strokeWidth={2} />
-            Start a Project
-          </Blueprint>
+            <div className="shell flex min-h-full flex-col gap-8 pt-[clamp(76px,16vh,120px)] pb-10">
+              <motion.div
+                className="flex flex-col items-start gap-1 border-t border-paper/12 pt-6"
+                initial={reduced ? false : "hidden"}
+                animate="show"
+                variants={{ show: { transition: { staggerChildren: stagger.base } } }}
+              >
+                {links(true).map((link, i) => (
+                  <motion.div
+                    key={i}
+                    className="w-full border-b border-paper/8 last:border-b-0"
+                    variants={{
+                      hidden: { opacity: 0, y: 12 },
+                      show: {
+                        opacity: 1,
+                        y: 0,
+                        transition: { duration: duration.base, ease: ease.out },
+                      },
+                    }}
+                  >
+                    {link}
+                  </motion.div>
+                ))}
+              </motion.div>
 
-          <button
-            type="button"
-            className="btn btn-secondary btn-icon hidden max-md:order-3 max-md:inline-flex"
-            aria-expanded={open}
-            aria-controls="primary-nav"
-            aria-label={open ? "Close menu" : "Open menu"}
-            onClick={() => setOpen((value) => !value)}
-          >
-            <Icon name={open ? "close" : "menu"} />
-          </button>
-        </div>
-      </nav>
-    </header>
+              <div className="mt-auto flex flex-col gap-3">
+                <Link
+                  to="/#contact"
+                  className="btn-prism inline-flex items-center justify-center gap-2 rounded-full px-6 py-4 font-display text-[16px] no-underline"
+                  onClick={closeDrawer}
+                >
+                  <Icon name="plus" size={16} strokeWidth={2} />
+                  Start a Project
+                </Link>
+                <p className="m-0 text-center text-[12.5px] tracking-[0.08em] text-paper/45 uppercase">
+                  {brand.tagline}
+                </p>
+              </div>
+            </div>
+          </motion.div>
+        )}
+      </AnimatePresence>
+    </>
   );
 }

@@ -52,12 +52,12 @@ export default function About() {
                         {item}
                       </Link>
                     ) : (
-                      <span className={`${chip} border-line text-ink/60`}>{item}</span>
+                      <span className={`${chip} border-line text-ink/72`}>{item}</span>
                     )}
                   </li>
                 );
               })}
-              <li className="border border-line px-[10px] py-[5px] font-display text-[11.5px] tracking-[0.04em] text-ink/45 uppercase">
+              <li className="border border-line px-[10px] py-[5px] font-display text-[11.5px] tracking-[0.04em] text-ink/68 uppercase">
                 + more
               </li>
             </ul>

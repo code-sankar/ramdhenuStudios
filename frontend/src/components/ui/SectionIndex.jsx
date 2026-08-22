@@ -42,7 +42,16 @@ export default function SectionIndex({ num, label, onSteel = false }) {
         />
       )}
 
-      <span className="text-[12px] tracking-[0.12em] text-steel-700 uppercase">{label}</span>
+      {/* The label has to invert with the number. It did not, and every
+          `onSteel` section shipped its label in steel-700 — a dark blue on the
+          near-black field, measuring 3.1:1. */}
+      <span
+        className={`text-[12px] tracking-[0.12em] uppercase ${
+          onSteel ? "text-steel-300" : "text-steel-700"
+        }`}
+      >
+        {label}
+      </span>
     </p>
   );
 }

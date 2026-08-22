@@ -3,6 +3,7 @@ import { Link, useParams } from "react-router-dom";
 import Blueprint from "../components/Blueprint";
 import Icon from "../components/Icon";
 import Layout from "../components/Layout";
+import PrismField from "../components/PrismField";
 import Reveal from "../components/Reveal";
 import Seo from "../components/Seo";
 import SectionIndex from "../components/ui/SectionIndex";
@@ -42,7 +43,8 @@ export default function IndustryPage() {
       {/* --------------------------------------------------------------------
           MASTHEAD
       -------------------------------------------------------------------- */}
-      <section className="relative overflow-hidden bg-steel-900 py-[clamp(56px,7vw,96px)]">
+      <section className="masthead relative overflow-hidden bg-ink-950 pb-[clamp(56px,7vw,96px)]">
+        <PrismField intensity={0.7} />
         <div className="hero__grid" aria-hidden="true" />
 
         <div className="shell relative">
@@ -84,7 +86,7 @@ export default function IndustryPage() {
           <div className="mt-[clamp(32px,4vw,52px)] flex flex-wrap items-center gap-3 border-t border-paper/20 pt-[clamp(24px,3vw,34px)]">
             <Link
               to="/#contact"
-              className="inline-flex items-center gap-[9px] border border-steel bg-steel px-[26px] py-[15px] font-display text-[15px] on-steel no-underline transition duration-200 hover:-translate-y-px hover:bg-steel-400"
+              className="btn-prism inline-flex items-center gap-[9px] rounded-full px-[26px] py-[15px] font-display text-[15px] no-underline"
             >
               <Icon name="plus" size={15} strokeWidth={2} />
               Start a Project
@@ -94,7 +96,7 @@ export default function IndustryPage() {
               target="_blank"
               rel="noreferrer"
               onClick={() => track("WhatsApp click", { from: "industry", industry: industry.name })}
-              className="inline-flex items-center gap-[9px] border border-paper/25 px-[26px] py-[15px] font-display text-[15px] text-paper/90 no-underline transition duration-200 hover:border-paper/45 hover:bg-paper/10"
+              className="inline-flex items-center gap-[9px] rounded-full border border-paper/20 px-[26px] py-[15px] font-display text-[15px] text-paper/85 no-underline transition duration-200 hover:border-paper/40 hover:bg-paper/8 hover:text-paper"
             >
               <Icon name="whatsapp" size={16} />
               Ask a question
@@ -276,8 +278,9 @@ export default function IndustryPage() {
       {/* --------------------------------------------------------------------
           CLOSING ASK
       -------------------------------------------------------------------- */}
-      <section className="bg-steel-900 py-[clamp(56px,7vw,100px)]">
-        <div className="shell flex flex-wrap items-end justify-between gap-8">
+      <section className="relative overflow-hidden bg-ink-950 py-[clamp(56px,7vw,100px)]">
+        <PrismField intensity={0.5} />
+        <div className="shell relative z-[2] flex flex-wrap items-end justify-between gap-8">
           <div>
             <h2 className="display on-steel text-[clamp(28px,4vw,48px)] leading-[1.05]">
               Run a {industry.singular} in {contact.region}?
@@ -289,7 +292,7 @@ export default function IndustryPage() {
           </div>
           <Link
             to="/#contact"
-            className="inline-flex flex-none items-center gap-[9px] border border-steel bg-steel px-[28px] py-[16px] font-display text-[16px] on-steel no-underline transition duration-200 hover:-translate-y-px hover:bg-steel-400"
+            className="btn-prism inline-flex flex-none items-center gap-[9px] rounded-full px-[28px] py-[16px] font-display text-[16px] no-underline"
           >
             <Icon name="plus" size={16} strokeWidth={2} />
             Start a Project
