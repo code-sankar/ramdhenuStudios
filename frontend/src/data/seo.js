@@ -24,6 +24,7 @@ import { brand, contact, siteUrl } from "./site.js";
 export const servicePath = (slug) => `/services/${slug}/`;
 export const industryPath = (slug) => `/industries/${slug}/`;
 export const workPath = () => "/work/";
+export const projectPath = (slug) => `/work/${slug}/`;
 
 export const absoluteUrl = (path = "/") => `${siteUrl}${path}`;
 
@@ -81,7 +82,14 @@ export const homeSeo = () => ({
       openingHoursSpecification: [
         {
           "@type": "OpeningHoursSpecification",
-          dayOfWeek: ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"],
+          dayOfWeek: [
+            "Monday",
+            "Tuesday",
+            "Wednesday",
+            "Thursday",
+            "Friday",
+            "Saturday",
+          ],
           opens: "10:00",
           closes: "19:00",
         },
@@ -135,8 +143,18 @@ export const serviceSeo = (service) => {
         "@context": "https://schema.org",
         "@type": "BreadcrumbList",
         itemListElement: [
-          { "@type": "ListItem", position: 1, name: "Home", item: absoluteUrl("/") },
-          { "@type": "ListItem", position: 2, name: "Services", item: absoluteUrl("/#services") },
+          {
+            "@type": "ListItem",
+            position: 1,
+            name: "Home",
+            item: absoluteUrl("/"),
+          },
+          {
+            "@type": "ListItem",
+            position: 2,
+            name: "Services",
+            item: absoluteUrl("/#services"),
+          },
           { "@type": "ListItem", position: 3, name: service.short, item: url },
         ],
       },
@@ -165,7 +183,9 @@ export const industrySeo = (industry) => {
         "@type": "Service",
         name: `Digital marketing for ${industry.name}`,
         description: industry.metaDescription,
-        serviceType: industry.priority.map((slug) => serviceBySlug(slug)?.title).filter(Boolean),
+        serviceType: industry.priority
+          .map((slug) => serviceBySlug(slug)?.title)
+          .filter(Boolean),
         url,
         provider,
         areaServed: { "@type": "State", name: contact.region },
@@ -175,8 +195,18 @@ export const industrySeo = (industry) => {
         "@context": "https://schema.org",
         "@type": "BreadcrumbList",
         itemListElement: [
-          { "@type": "ListItem", position: 1, name: "Home", item: absoluteUrl("/") },
-          { "@type": "ListItem", position: 2, name: "Industries", item: absoluteUrl("/#about") },
+          {
+            "@type": "ListItem",
+            position: 1,
+            name: "Home",
+            item: absoluteUrl("/"),
+          },
+          {
+            "@type": "ListItem",
+            position: 2,
+            name: "Industries",
+            item: absoluteUrl("/#about"),
+          },
           { "@type": "ListItem", position: 3, name: industry.short, item: url },
         ],
       },
@@ -215,7 +245,8 @@ export const workSeo = () => {
         "@context": "https://schema.org",
         "@type": "CollectionPage",
         name: `${brand.name} — Our Work`,
-        description: "A look at the work behind each of Ramdhenu's six disciplines.",
+        description:
+          "A look at the work behind each of Ramdhenu's six disciplines.",
         url,
         about: provider,
       },
@@ -223,7 +254,12 @@ export const workSeo = () => {
         "@context": "https://schema.org",
         "@type": "BreadcrumbList",
         itemListElement: [
-          { "@type": "ListItem", position: 1, name: "Home", item: absoluteUrl("/") },
+          {
+            "@type": "ListItem",
+            position: 1,
+            name: "Home",
+            item: absoluteUrl("/"),
+          },
           { "@type": "ListItem", position: 2, name: "Work", item: url },
         ],
       },
@@ -234,8 +270,63 @@ export const workSeo = () => {
           "@type": "ListItem",
           position: i + 1,
           name: project.name,
-          url: absoluteUrl(servicePath(project.services[0])),
+          url: absoluteUrl(projectPath(project.slug)),
         })),
+      },
+    ],
+  };
+};
+
+/**
+ * One project's case study.
+ *
+ * A PLACEHOLDER PROJECT IS `noindex`, WHICH IS THE WHOLE REASON THESE PAGES CAN
+ * EXIST AT ALL. The objection to a page per project was always that six
+ * illustrative projects would mean six public pages of sample disclaimers.
+ * `noindex` answers it exactly: the template can be built, seen and reviewed
+ * now, and nothing unearned is ever filed by a search engine. Drop `placeholder`
+ * from an entry and its page becomes indexable in the same commit that makes it
+ * true — there is no second step to forget.
+ */
+export const projectSeo = (project) => {
+  const url = absoluteUrl(projectPath(project.slug));
+  const service = services.find((s) => s.slug === project.services[0]);
+
+  return {
+    title: `${project.name} — ${project.category} ${service ? service.short.toLowerCase() : "project"} | ${brand.name}`,
+    description: project.desc,
+    canonical: url,
+    robots: project.placeholder ? "noindex, follow" : undefined,
+    og: { image: project.image || shareImage },
+    jsonLd: [
+      {
+        "@context": "https://schema.org",
+        "@type": "CreativeWork",
+        name: project.name,
+        description: project.desc,
+        url,
+        creator: provider,
+        ...(project.image ? { image: project.image } : {}),
+        ...(project.year ? { dateCreated: project.year } : {}),
+      },
+      {
+        "@context": "https://schema.org",
+        "@type": "BreadcrumbList",
+        itemListElement: [
+          {
+            "@type": "ListItem",
+            position: 1,
+            name: "Home",
+            item: absoluteUrl("/"),
+          },
+          {
+            "@type": "ListItem",
+            position: 2,
+            name: "Work",
+            item: absoluteUrl(workPath()),
+          },
+          { "@type": "ListItem", position: 3, name: project.name, item: url },
+        ],
       },
     ],
   };
@@ -244,7 +335,8 @@ export const workSeo = () => {
 /** Nothing here should ever be indexed, and it has no canonical of its own. */
 export const notFoundSeo = () => ({
   title: `Page not found — ${brand.name}`,
-  description: "That page has moved or never existed. The six services are listed here.",
+  description:
+    "That page has moved or never existed. The six services are listed here.",
   robots: "noindex, follow",
 });
 
@@ -272,6 +364,19 @@ export const staticRoutes = () => [
     seo: workSeo(),
     priority: "0.8",
   },
+  /* A file per project, so /work/<slug>/ resolves on any static host without a
+     rewrite rule. Nothing here has to opt out of the sitemap: the generator
+     already skips any route whose head carries `robots`, and `projectSeo` puts
+     `noindex` on a placeholder — so an illustrative project is written and
+     served but never advertised, and drops into the sitemap on the same commit
+     that drops its `placeholder`. One flag, one mechanism, no second step to
+     forget. */
+  ...work.map((project) => ({
+    path: projectPath(project.slug),
+    file: `work/${project.slug}/index.html`,
+    seo: projectSeo(project),
+    priority: "0.6",
+  })),
   /* Not in the sitemap: the host's 404 document, and the SPA fallback for any
      path the router does not know. */
   { path: null, file: "404.html", seo: notFoundSeo() },
@@ -320,7 +425,11 @@ export const headTags = (meta) => {
   meta_("name", "twitter:image", og.image);
 
   for (const block of meta.jsonLd ?? []) {
-    push("script", { type: "application/ld+json" }, JSON.stringify(block, null, 2));
+    push(
+      "script",
+      { type: "application/ld+json" },
+      JSON.stringify(block, null, 2),
+    );
   }
 
   return tags;

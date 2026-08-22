@@ -1055,3 +1055,34 @@ figcaption,
     max-width: none;
   }
 }
+
+/* --------------------------------------------------------------------------
+   9. THE COVERING CARD LINK
+   ---------------------------------------------------------------------------
+   A work card has to do two things a single anchor cannot: open the case study
+   when anywhere on it is clicked, and let the "Visit site" link inside it be
+   clicked on its own. Wrapping the card in a link would make that second one an
+   anchor inside an anchor — invalid HTML, which browsers resolve by discarding
+   one of them, and which leaves a screen reader announcing a link whose name is
+   the entire card.
+
+   So the link goes on the heading, where its accessible name is exactly the
+   project, and its `::after` stretches over the card to catch the pointer.
+   Anything that needs to stay clickable is raised above that layer with
+   `position: relative; z-index: 1` in the markup.
+
+   THE CARD MUST BE A CONTAINING BLOCK or the cover escapes to the nearest
+   positioned ancestor and swallows half the grid — the card carries `relative`
+   in its own class list for that reason alone.
+
+   THE COST, STATED PLAINLY: text inside a covered card cannot be selected by
+   dragging, because the cover is over it. That is inherent to the pattern and
+   there is no fix that keeps the whole card clickable — the description is one
+   line repeated on the case study itself, so it is the right thing to lose. */
+.card-cover::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  border-radius: inherit;
+}

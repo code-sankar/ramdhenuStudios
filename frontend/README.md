@@ -102,6 +102,7 @@ src/
     ServicePage.jsx  the template behind every /services/<slug>/
     IndustryPage.jsx the template behind every /industries/<slug>/
     WorkPage.jsx     every project in one filterable grid, at /work/
+    ProjectPage.jsx  one case study, at /work/<slug>/
     NotFoundPage.jsx unknown paths, and unknown slugs
   components/
     Layout.jsx       skip link · header · <main> · footer, worn by every page
@@ -127,8 +128,8 @@ src/
 ```
 
 Routing lives in `src/App.jsx`: `/` → `HomePage`, `/services/:slug` → `ServicePage`,
-`/industries/:slug` → `IndustryPage`, `/work` → `WorkPage`, anything else →
-`NotFoundPage`. Sections follow the artboard:
+`/industries/:slug` → `IndustryPage`, `/work` → `WorkPage`, `/work/:slug` →
+`ProjectPage`, anything else → `NotFoundPage`. Sections follow the artboard:
 **Hero → About → Services → Orbit → Testimonials → FAQ → Contact.**
 
 The hero's background is `BubbleField`: fifty soap bubbles drifting gently over
@@ -470,12 +471,37 @@ picks the representative example for a service page; `workCategories()` drives
 the filter chips from whichever disciplines are actually represented, so a
 chip never appears for a discipline the catalog has nothing to show.
 
-### Why there is no page per project
+### The page per project
 
-Six illustrative projects do not justify six more pages of "Sample"
-disclaimers. Each card links instead to the service page behind it, which is
-where the real depth about that discipline already lives. Add a dedicated
-case-study template later, once a project has earned one.
+Every project has one, at `/work/<slug>/`, built from `ProjectPage.jsx`.
+
+This section used to say there should not be one — "six illustrative projects
+do not justify six more pages of Sample disclaimers" — and ended "add a
+dedicated case-study template later, once a project has earned one". The
+objection was about what a search engine and a visitor would *find*, not about
+the template being wrong, so it is answered rather than overruled: **a project
+whose entry still carries `placeholder` gets `noindex, follow` and is left out
+of the sitemap.** The template can be seen working now; nothing unearned is ever
+filed. Drop `placeholder` and the page becomes indexable in the same commit that
+makes it true, because the sitemap generator already skips any route whose head
+carries `robots` — one flag, one mechanism, no second step to forget.
+
+The page runs **brief → approach → shipped**, and that order is the argument.
+Opening with what was made reads as a portfolio; opening with the problem the
+client walked in with reads as a diagnosis, and the deliverables afterwards then
+answer something. There is deliberately **no results section**: an outcome
+nobody has agreed to be quoted on is a claim, and this site does not make claims
+it cannot source.
+
+### Live links
+
+`liveUrl` on a work entry renders a "Visit site" link on the card and a "Visit
+the live site" button on the case study. **It is `null` on every entry today and
+that is deliberate.** A link to a client's site is a claim that we built it, so
+there is no placeholder URL, no "coming soon" and no disabled button — where the
+field is null nothing renders at all, so there is no broken state to tidy up
+later. Fill it in with a real URL for a real project the client has agreed to be
+named for, and the link appears in both places at once.
 
 ### Filtering
 
