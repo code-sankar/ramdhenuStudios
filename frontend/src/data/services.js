@@ -36,20 +36,24 @@ export const services = [
       "Coaching centres",
     ],
 
-    /* The six faces of a build, for the diagram on this page. They are labels
-       on a figure rather than prose, so they are short by design — the sections
-       below carry the explanation. Order is the diagram's reading order: top
-       pair, middle pair, bottom pair, and each is paired with its opposite
-       rather than its neighbour (design opposite front end, search opposite
-       back end), which is what makes the figure balance. */
-    anatomy: [
-      { label: "UX & UI Design", icon: "design" },
-      { label: "Frontend Development", icon: "frontend" },
-      { label: "SEO & Security", icon: "seo" },
-      { label: "Backend Development", icon: "backend" },
-      { label: "Responsive & Performance", icon: "performance" },
-      { label: "Database & APIs", icon: "data" },
-    ],
+    /* THE FIGURE ON THIS PAGE. `kind` picks the drawing; the rest is the copy
+       that frames it, which lives here with the other copy rather than in the
+       page component. Six services, six different shapes — see
+       src/components/figures/index.jsx for why they are not one shape reused. */
+    figure: {
+      kind: "anatomy",
+      label: "What goes into it",
+      heading: "Six disciplines, one build",
+      body: "None of these is an add-on. A site with the design but not the performance work is slow and beautiful; one with the back end but not the search groundwork is a shop with no street. They ship together or the site does not do its job.",
+      nodes: [
+        { label: "UX & UI Design", icon: "design" },
+        { label: "Frontend Development", icon: "frontend" },
+        { label: "SEO & Security", icon: "seo" },
+        { label: "Backend Development", icon: "backend" },
+        { label: "Responsive & Performance", icon: "performance" },
+        { label: "Database & APIs", icon: "data" },
+      ],
+    },
     sections: [
       {
         heading: "What we actually build",
@@ -137,6 +141,18 @@ export const services = [
       "Boutiques",
       "Local retail",
     ],
+    figure: {
+      kind: "pipeline",
+      label: "The four stages",
+      heading: "The camera is one stage of four",
+      body: "Most of the work happens when the camera is in its bag. What we agree beforehand decides what there is to shoot, and what happens afterwards decides whether you can actually use any of it. The shutter is the short part.",
+      nodes: [
+        { label: "Brief & Shotlist", icon: "brief" },
+        { label: "The Shoot", icon: "camera" },
+        { label: "Edit & Grade", icon: "edit" },
+        { label: "Delivery & Rights", icon: "deliver" },
+      ],
+    },
     sections: [
       {
         heading: "Shot for where it will be used",
@@ -223,6 +239,19 @@ export const services = [
       "Boutiques",
       "Coaching centres",
     ],
+    figure: {
+      kind: "loop",
+      label: "The monthly cycle",
+      heading: "A cycle, not a campaign",
+      body: "This is the one service with no finish line, and that is the argument for paying monthly rather than once. What the last month taught changes what the next month plans — break the loop anywhere and the rest of it stops compounding.",
+      nodes: [
+        { label: "Plan", icon: "plan" },
+        { label: "Create", icon: "create" },
+        { label: "Publish", icon: "publish" },
+        { label: "Listen", icon: "listen" },
+        { label: "Learn", icon: "learn" },
+      ],
+    },
     sections: [
       {
         heading: "Two channels, properly",
@@ -308,6 +337,18 @@ export const services = [
       "Hotels & resorts",
       "Local retail",
     ],
+    figure: {
+      kind: "funnel",
+      label: "Where the money goes",
+      heading: "Most of it falls away, and that is the job",
+      body: "Anyone can buy impressions. Almost all of them go nowhere, which is normal and not a failure — the work is making the narrow end wider, and being honest about which number you are actually being charged for.",
+      nodes: [
+        { label: "Impressions", icon: "reach" },
+        { label: "Clicks", icon: "click" },
+        { label: "Enquiries", icon: "enquiry" },
+        { label: "Customers", icon: "customer" },
+      ],
+    },
     sections: [
       {
         heading: "Measured on enquiries, not impressions",
@@ -393,6 +434,18 @@ export const services = [
       "Gyms",
       "Local retail",
     ],
+    figure: {
+      kind: "catchment",
+      label: "Why it works",
+      heading: "You, and everyone searching near you",
+      body: "This one is not really about a website. It is about being the result when somebody a few streets away searches for what you sell — a listing that is kept current reaches further, and the searches inside that radius arrive on their own.",
+      nodes: [
+        { label: "Profile & Hours", icon: "profile" },
+        { label: "Photos", icon: "photos" },
+        { label: "Reviews", icon: "reviews" },
+        { label: "Posts & Offers", icon: "posts" },
+      ],
+    },
     sections: [
       {
         heading: "The profile is the storefront",
@@ -478,6 +531,20 @@ export const services = [
       "Hotels & resorts",
       "Coaching centres",
     ],
+    figure: {
+      kind: "radiate",
+      label: "What you are buying",
+      heading: "One decision, six surfaces",
+      body: "A logo is not the deliverable. The deliverable is a decision made once and then held on a shopfront, a menu, a phone screen and a printed card — surfaces with nothing in common except that the same identity has to survive all of them.",
+      nodes: [
+        { label: "Logo & Mark", icon: "logo" },
+        { label: "Colour", icon: "palette" },
+        { label: "Typography", icon: "type" },
+        { label: "Signage", icon: "signage" },
+        { label: "Print & Menus", icon: "print" },
+        { label: "Social Kit", icon: "social" },
+      ],
+    },
     sections: [
       {
         heading: "A system, not a single file",

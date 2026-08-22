@@ -809,128 +809,94 @@ figcaption,
 }
 
 /* --------------------------------------------------------------------------
-   8. THE ANATOMY DIAGRAM
+   8. THE SERVICE FIGURES
    ---------------------------------------------------------------------------
-   Six disciplines wired into one build — see src/components/Anatomy.jsx for the
-   geometry, which is generated from a single coordinate table shared by the SVG
-   and the HTML.
+   One diagram per service page, six different shapes — see
+   src/components/figures/. The shared parts live here: the stage, the cards and
+   the hairline vocabulary every figure draws with. Only the pieces unique to a
+   single figure carry its own name.
 
-   THE STAGE'S ASPECT RATIO IS LOAD-BEARING, NOT STYLING. The cards are
-   positioned in percentages and the wires in viewBox units. Those are only the
-   same distance while the box's proportions are fixed — unlock the ratio and
-   every wire detaches from its card at every width but one. If this needs to be
-   a different shape, change `VIEW` in the component and this ratio together.
+   THE STAGE'S PROPORTIONS COME FROM THE COMPONENT, NOT FROM HERE. Cards are
+   HTML in percentages and wires are SVG in viewBox units, which are the same
+   distance only while the box's ratio is fixed — so the ratio is load-bearing.
+   It used to live in this file while the viewBox lived in the component, two
+   numbers a hundred lines apart that had to agree or every wire detached from
+   its card. `Stage` now sets `aspect-ratio` inline from its own `view`, so
+   there is one number. Do not add an `aspect-ratio` here.
    -------------------------------------------------------------------------- */
-.anatomy-stage {
+.fig-stage {
   position: relative;
-  aspect-ratio: 1000 / 720;
   width: 100%;
   max-width: 1040px;
   margin-inline: auto;
 }
+.fig-stage[data-kind="loop"],
+.fig-stage[data-kind="radiate"],
+.fig-stage[data-kind="catchment"] {
+  max-width: 900px;
+}
 
-.anatomy-wires {
+.fig-art {
   position: absolute;
   inset: 0;
   width: 100%;
   height: 100%;
-}
-
-/* The browser. Its box is the same FRAME rectangle the wires terminate on,
-   expressed as a percentage of the stage. */
-.anatomy-frame {
-  position: absolute;
-  left: 35.2%;
-  top: 29.722%;
-  width: 29.6%;
-  height: 40.556%;
   overflow: visible;
-  filter: drop-shadow(
-    0 18px 40px color-mix(in srgb, var(--color-coral-500) 14%, transparent)
-  );
-}
-.anatomy-chrome {
-  fill: #fff;
-  stroke: color-mix(in srgb, var(--color-coral-500) 26%, transparent);
-}
-.anatomy-ink {
-  fill: var(--color-coral-500);
-}
-.anatomy-cta {
-  fill: color-mix(in srgb, var(--color-coral-500) 62%, transparent);
 }
 
-/* A HAIRLINE IS A HAIRLINE AT EVERY SIZE, WHICH IS WHY THE STROKE DOES NOT
-   SCALE. The stage is 1040px at its widest and about 300px on a tablet; a
-   stroke expressed in viewBox units would be three times heavier at one end of
-   that range than the other, and the whole figure would read as a different
-   weight of drawing. `non-scaling-stroke` in the markup pins it to device
-   pixels instead. */
-.anatomy-line {
+/* THE HAIRLINE VOCABULARY. Every figure draws with these four, which is most of
+   why six different shapes still read as one family. `non-scaling-stroke` is
+   set in the markup rather than here: the stages range from about 300px wide on
+   a tablet to 1040px, and a stroke in viewBox units would be three times heavier
+   at one end of that than the other. */
+.fig-line {
   stroke: color-mix(in srgb, var(--color-coral-500) 46%, transparent);
   stroke-width: 1.2;
+  fill: none;
   transition:
     stroke 240ms var(--ease-out-expo),
     stroke-width 240ms var(--ease-out-expo);
 }
-.anatomy-port {
+.fig-port {
   fill: var(--color-coral-500);
   opacity: 0.72;
   transition: opacity 240ms var(--ease-out-expo);
 }
-.anatomy-pulse {
+.fig-pulse {
   fill: var(--color-coral-500);
+}
+.fig-arrow {
+  fill: color-mix(in srgb, var(--color-coral-500) 62%, transparent);
+}
+.fig-solid {
+  fill: color-mix(in srgb, var(--color-coral-500) 78%, transparent);
 }
 
 /* THE HOVER IS `:has()`, NOT REACT STATE. Lighting a wire when its card is
-   hovered is presentational — it re-states the connection the wire already
-   draws, and hides nothing behind itself, so it needs no keyboard equivalent.
-   Driving it from `useState` would re-render the whole figure on every move
-   between cards to change two stroke values. Six rules, no JavaScript, and the
-   diagram never re-renders after mount. */
-.anatomy-stage:has(.anatomy-node[data-i="0"]:hover)
-  .anatomy-wire[data-i="0"]
-  .anatomy-line,
-.anatomy-stage:has(.anatomy-node[data-i="1"]:hover)
-  .anatomy-wire[data-i="1"]
-  .anatomy-line,
-.anatomy-stage:has(.anatomy-node[data-i="2"]:hover)
-  .anatomy-wire[data-i="2"]
-  .anatomy-line,
-.anatomy-stage:has(.anatomy-node[data-i="3"]:hover)
-  .anatomy-wire[data-i="3"]
-  .anatomy-line,
-.anatomy-stage:has(.anatomy-node[data-i="4"]:hover)
-  .anatomy-wire[data-i="4"]
-  .anatomy-line,
-.anatomy-stage:has(.anatomy-node[data-i="5"]:hover)
-  .anatomy-wire[data-i="5"]
-  .anatomy-line {
+   hovered re-states what the wire already draws and hides nothing behind
+   itself, so it needs no keyboard equivalent — and driving it from `useState`
+   would re-render a whole figure on every move between cards to change two
+   stroke values. Written out to six because CSS has no loop; the figures with
+   four or five nodes simply never match the last rules. */
+.fig-stage:has(.fig-node[data-i="0"]:hover) .fig-wire[data-i="0"] .fig-line,
+.fig-stage:has(.fig-node[data-i="1"]:hover) .fig-wire[data-i="1"] .fig-line,
+.fig-stage:has(.fig-node[data-i="2"]:hover) .fig-wire[data-i="2"] .fig-line,
+.fig-stage:has(.fig-node[data-i="3"]:hover) .fig-wire[data-i="3"] .fig-line,
+.fig-stage:has(.fig-node[data-i="4"]:hover) .fig-wire[data-i="4"] .fig-line,
+.fig-stage:has(.fig-node[data-i="5"]:hover) .fig-wire[data-i="5"] .fig-line {
   stroke: var(--color-coral-500);
   stroke-width: 2;
 }
-.anatomy-stage:has(.anatomy-node[data-i="0"]:hover)
-  .anatomy-wire[data-i="0"]
-  .anatomy-port,
-.anatomy-stage:has(.anatomy-node[data-i="1"]:hover)
-  .anatomy-wire[data-i="1"]
-  .anatomy-port,
-.anatomy-stage:has(.anatomy-node[data-i="2"]:hover)
-  .anatomy-wire[data-i="2"]
-  .anatomy-port,
-.anatomy-stage:has(.anatomy-node[data-i="3"]:hover)
-  .anatomy-wire[data-i="3"]
-  .anatomy-port,
-.anatomy-stage:has(.anatomy-node[data-i="4"]:hover)
-  .anatomy-wire[data-i="4"]
-  .anatomy-port,
-.anatomy-stage:has(.anatomy-node[data-i="5"]:hover)
-  .anatomy-wire[data-i="5"]
-  .anatomy-port {
+.fig-stage:has(.fig-node[data-i="0"]:hover) .fig-wire[data-i="0"] .fig-port,
+.fig-stage:has(.fig-node[data-i="1"]:hover) .fig-wire[data-i="1"] .fig-port,
+.fig-stage:has(.fig-node[data-i="2"]:hover) .fig-wire[data-i="2"] .fig-port,
+.fig-stage:has(.fig-node[data-i="3"]:hover) .fig-wire[data-i="3"] .fig-port,
+.fig-stage:has(.fig-node[data-i="4"]:hover) .fig-wire[data-i="4"] .fig-port,
+.fig-stage:has(.fig-node[data-i="5"]:hover) .fig-wire[data-i="5"] .fig-port {
   opacity: 1;
 }
 
-.anatomy-node {
+.fig-node {
   position: absolute;
   display: flex;
   flex-direction: column;
@@ -949,14 +915,27 @@ figcaption,
     border-color 260ms var(--ease-out-expo),
     box-shadow 260ms var(--ease-out-expo);
 }
-.anatomy-node:hover {
+.fig-node:hover {
   transform: translateY(-3px);
   border-color: color-mix(in srgb, var(--color-coral-500) 62%, transparent);
   box-shadow: 0 14px 30px -18px
     color-mix(in srgb, var(--color-coral-700) 46%, transparent);
 }
 
-.anatomy-badge {
+/* The funnel's cards are wide rather than tall, so their contents run in a row
+   instead of stacking — the same card, turned on its side. */
+.fig-stage[data-kind="funnel"] .fig-node {
+  flex-direction: row;
+  gap: 16px;
+  justify-content: flex-start;
+  padding: 10px 20px;
+  text-align: left;
+}
+.fig-stage[data-kind="funnel"] .fig-label {
+  max-width: none;
+}
+
+.fig-badge {
   display: grid;
   place-items: center;
   width: 46px;
@@ -966,27 +945,25 @@ figcaption,
   background: color-mix(in srgb, var(--color-coral-500) 11%, transparent);
   color: var(--color-coral-700);
 }
-.anatomy-badge svg {
+.fig-badge svg {
   stroke: currentColor;
   stroke-linecap: round;
   stroke-linejoin: round;
 }
 
-/* THE WIDTH IS WHAT MAKES THESE WRAP, AND THEY ARE MEANT TO. A two-word
+/* THE MEASURE IS WHAT MAKES THESE WRAP, AND THEY ARE MEANT TO. A two-word
    discipline set on one line runs the full width of its card and leaves the
-   short labels looking lost beside it; broken over two, all six read as the
-   same object at a glance. Capping the measure rather than the font size means
-   the type stays one size across the figure and the line breaks do the work —
-   `balance` then splits them evenly instead of leaving one word stranded.
+   short labels looking lost beside it; broken over two, they all read as the
+   same object. Capping the measure rather than the size keeps the type one size
+   across every figure and lets the line breaks do the work.
 
-   The measure is 96px rather than the ~112px the labels actually occupy: the
-   heading face is Barlow *Condensed*, narrow enough that "Frontend Development"
-   fits on one line at any cap loose enough to look generous. The cap has to be
-   tighter than the text wants, or it does nothing at all. */
-.anatomy-label {
-  /* `display: block` is not cosmetic here: `max-width` has no effect on a
-     non-replaced inline element, so as a bare span the cap below was silently
-     ignored and only the longest label wrapped — by hitting the card edge. */
+   96px is tighter than the labels actually need, on purpose: the heading face is
+   Barlow *Condensed*, narrow enough that "Frontend Development" fits on one line
+   at any cap loose enough to look generous. The cap has to be tighter than the
+   text wants, or it does nothing at all. And `display: block` is not cosmetic —
+   `max-width` has no effect on a non-replaced inline element, so as a bare span
+   the cap below is silently ignored. */
+.fig-label {
   display: block;
   max-width: 96px;
   font-family: var(--font-heading);
@@ -998,46 +975,83 @@ figcaption,
   text-wrap: balance;
 }
 
-/* BELOW lg THE DIAGRAM STOPS BEING A DIAGRAM. Six wires converging on a centre
-   is an argument about structure; the same six stacked in one column is a list
-   with decoration draped over it, and the wires would have to bend through the
-   cards to reach anything. So the figure becomes what it honestly is at that
-   width — the build, and the six things that go into it — and the drawing is
-   dropped rather than contorted. */
+/* ── pieces belonging to one figure each ── */
+
+/* anatomy: the browser at the centre */
+.fig-chrome {
+  fill: #fff;
+  stroke: color-mix(in srgb, var(--color-coral-500) 26%, transparent);
+}
+.fig-ink {
+  fill: var(--color-coral-500);
+}
+.fig-stage[data-kind="anatomy"] .fig-art {
+  filter: drop-shadow(
+    0 18px 40px color-mix(in srgb, var(--color-coral-500) 10%, transparent)
+  );
+}
+
+/* pipeline: the travelling frame */
+.fig-frame-mark {
+  fill: #fff;
+  stroke: var(--color-coral-500);
+  stroke-width: 1.6;
+}
+.fig-frame-eye {
+  fill: var(--color-coral-500);
+}
+
+/* loop + radiate: what sits at the centre */
+.fig-core-mark {
+  stroke: color-mix(in srgb, var(--color-coral-500) 55%, transparent);
+  fill: none;
+  stroke-linecap: round;
+}
+.fig-core-disc {
+  fill: var(--color-coral-500);
+}
+
+/* funnel: the tiers */
+.fig-tier {
+  fill: var(--color-coral-500);
+}
+
+/* catchment: the expanding reach */
+.fig-ring {
+  stroke: var(--color-coral-500);
+  stroke-width: 1.4;
+  fill: none;
+}
+
+/* BELOW lg EVERY FIGURE STOPS BEING A FIGURE. A hub, a ring, a funnel and a
+   spine all become the same thing in a single column — a list with decoration
+   draped over it — and their wires would have to bend through the cards to
+   reach anything. So the drawing is dropped rather than contorted and the cards
+   become an honest grid. One rule for all six, because at that width there is
+   nothing left to tell them apart. */
 @media (max-width: 1023px) {
-  .anatomy-stage {
-    aspect-ratio: auto;
+  .fig-stage {
+    aspect-ratio: auto !important;
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: clamp(10px, 2vw, 16px);
     max-width: 560px;
   }
-  .anatomy-wires {
+  .fig-art {
     display: none;
   }
-  .anatomy-frame {
-    position: static;
-    display: block;
-    width: min(100%, 340px);
-    height: auto;
-    margin: 0 auto clamp(28px, 5vw, 44px);
-  }
-  .anatomy-node {
+  .fig-node,
+  .fig-stage[data-kind="funnel"] .fig-node {
     position: static !important;
     width: auto !important;
     height: auto !important;
     min-height: 116px;
+    flex-direction: column;
+    justify-content: center;
     padding: 18px 12px;
+    text-align: center;
   }
-  .anatomy-label {
+  .fig-label {
     max-width: none;
-  }
-  .anatomy-stage :is(.anatomy-node) {
-    grid-column: span 1;
-  }
-  .anatomy-stage {
-    display: grid;
-    grid-template-columns: repeat(2, minmax(0, 1fr));
-    gap: clamp(10px, 2vw, 16px);
-  }
-  .anatomy-frame {
-    grid-column: 1 / -1;
   }
 }
