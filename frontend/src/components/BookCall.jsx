@@ -168,7 +168,7 @@ export default function BookCall({ from = "contact" }) {
               key={item}
               className="flex items-start gap-2.5 border-b border-line py-2.5 text-[14px] leading-snug"
             >
-              <Icon name="check" size={15} className="mt-0.5 flex-none text-steel-700" />
+              <Icon name="check" size={15} className="mt-0.5 flex-none text-coral-700" />
               {item}
             </li>
           ))}

@@ -14,9 +14,9 @@
 @import "./industry.css" layer(components);
 
 /* The rebrand layer. Same layer as Industry and imported second, so where the
-   two disagree — corners, elevation, button behaviour — Prism wins on order
+   two disagree — corners, elevation, button behaviour — this wins on order
    alone, and Tailwind utilities still beat both. */
-@import "./prism.css" layer(components);
+@import "./coral.css" layer(components);
 
 /* ==========================================================================
    TAILWIND ↔ INDUSTRY BRIDGE
@@ -96,47 +96,46 @@
   --font-sans: var(--font-body);
 
   /* ========================================================================
-     PRISM — the rebrand layer
+     THE PALETTE — coral, lavender, charcoal
      ------------------------------------------------------------------------
-     "Ramdhenu" is Assamese for rainbow. The original build treated that as a
-     2px hairline at three moments in the page and monochrome everywhere else
-     — the brand's one real piece of equity, spent like an apology.
+     Three grounds and nothing else. A coral field carries the brand, a pale
+     lavender carries the reading, and a charcoal bar closes each page.
 
-     Prism promotes it to a material. The spectrum is light: it blooms behind
-     the hero, rims the interactive objects, and picks out the word the page
-     is actually about. The ground goes deep enough for that light to read.
+     ON THE CORAL, AND WHY IT IS NOT THE REFERENCE HEX. The site this is drawn
+     from runs roughly #F9503C. White text on that measures 3.4:1, which fails
+     WCAG AA for anything that is not large display type — so their own eyebrow
+     line and nav links are technically inaccessible. Deepening the same hue to
+     #D83A25 buys 4.66:1, which passes at every size, and at a glance the two
+     are hard to tell apart. The vivid original survives as coral-400 for
+     decoration only, where no text sits on it.
      ======================================================================== */
 
-  /* The ink ground. Deeper and bluer than steel-900 (#1d2d3d), which was too
-     grey to sit coloured light on — the aurora muddied instead of glowing. */
-  --color-ink-950: #05070b;
-  --color-ink-900: #090d14;
-  --color-ink-850: #0e141e;
-  --color-ink-800: #141c29;
-  --color-ink-750: #1a2434;
-  --color-ink-700: #223045;
-  --color-ink-600: #2d3e57;
+  --color-coral-400: #f0563f; /* decorative only — never behind text */
+  /* THE FIELD. White on it measures 4.61:1 — which passes AA, but only at
+     FULL opacity. text-white/95 is already 4.29 and text-white/85 is 3.70, so
+     there is no headroom at all: text on the coral field is pure white, and
+     hierarchy comes from size, weight and letter-spacing rather than from
+     transparency. Borders and rules may still use alpha; they are not text. */
+  --color-coral-500: #d83a25;
+  --color-coral-600: #c4331f; /* pressed / hover */
+  --color-coral-700: #b22d1b; /* coral AS text on a light ground: 5.6:1 */
 
-  /* The six stops of the spectrum, as addressable colours. These are the same
-     hues as --spectrum, pulled out so a single one can rim a button or tint a
-     glow without dragging the whole rainbow along. */
-  --color-prism-violet: #7c3aed;
-  --color-prism-indigo: #4361ee;
-  --color-prism-cyan: #06b6d4;
-  --color-prism-emerald: #10b981;
-  --color-prism-amber: #f59e0b;
-  --color-prism-coral: #fb7185;
+  /* The reading ground. Cool enough to make the coral sing without ever
+     reading as blue. */
+  --color-lav-50: #f7f7fc;
+  --color-lav-100: #ededf5;
+  --color-lav-200: #e2e2ee;
+  --color-lav-300: #d2d2e2;
 
-  /* Warmer and brighter than the old flat #f2f2f3, so the light sections read
-     as lit rather than as unpainted. */
-  --color-paper-bright: #fbfcfd;
-  --color-paper-warm: #f4f6f9;
+  /* The closing bar, and the heading colour on light grounds. */
+  --color-char-900: #232327;
+  --color-char-800: #303036;
+  --color-char-700: #45454d;
 
-  /* RADIUS IS BACK, AND THAT IS THE HEADLINE CHANGE.
-     theme.css used to clear this namespace on purpose: Industry is a wireframe
-     and a wireframe has square corners. That reads as technical, which is the
-     opposite of what an agency selling taste to a restaurant owner needs. The
-     scale is tight — nothing here is a pill except what should be. */
+  /* RADIUS. Industry cleared this namespace on purpose — a wireframe has
+     square corners — and that single decision was most of why the old build
+     read as a technical drawing. The reference is soft everywhere: pill
+     buttons, 20px cards, a 28px menu panel. */
   --radius-xs: 6px;
   --radius-sm: 10px;
   --radius-md: 14px;
@@ -145,17 +144,14 @@
   --radius-2xl: 36px;
   --radius-full: 999px;
 
-  /* Elevation, tinted with the ground rather than pure black — black shadows
-     on a blue-black field go grey and dirty. The last two are objects, not
-     depths: `glow` is prism light escaping an element, `lift` is the inner
-     top highlight that makes a dark surface read as raised. */
-  --shadow-xs: 0 1px 2px rgb(5 7 11 / 0.06);
-  --shadow-sm: 0 2px 8px -2px rgb(5 7 11 / 0.1), 0 1px 3px -1px rgb(5 7 11 / 0.07);
-  --shadow-md: 0 8px 24px -6px rgb(5 7 11 / 0.14), 0 2px 8px -2px rgb(5 7 11 / 0.08);
-  --shadow-lg: 0 20px 48px -12px rgb(5 7 11 / 0.2), 0 6px 16px -6px rgb(5 7 11 / 0.1);
-  --shadow-xl: 0 32px 72px -16px rgb(5 7 11 / 0.28), 0 10px 24px -8px rgb(5 7 11 / 0.12);
-  --shadow-glow: 0 0 0 1px rgb(124 58 237 / 0.16), 0 10px 36px -10px rgb(124 58 237 / 0.4);
-  --shadow-lift: inset 0 1px 0 0 rgb(255 255 255 / 0.07), 0 14px 36px -14px rgb(5 7 11 / 0.55);
+  /* Neutral elevation — the grounds are warm and cool by turns, so a tinted
+     shadow would go muddy on one of them. */
+  --shadow-xs: 0 1px 2px rgb(35 35 39 / 0.05);
+  --shadow-sm: 0 2px 8px -2px rgb(35 35 39 / 0.08), 0 1px 3px -1px rgb(35 35 39 / 0.06);
+  --shadow-md: 0 8px 24px -6px rgb(35 35 39 / 0.1), 0 2px 8px -2px rgb(35 35 39 / 0.06);
+  --shadow-lg: 0 20px 48px -12px rgb(35 35 39 / 0.14), 0 6px 16px -6px rgb(35 35 39 / 0.08);
+  --shadow-xl: 0 32px 72px -16px rgb(35 35 39 / 0.2), 0 10px 24px -8px rgb(35 35 39 / 0.1);
+  --shadow-panel: 0 40px 90px -24px rgb(35 35 39 / 0.28), 0 12px 28px -10px rgb(35 35 39 / 0.12);
 
   /* Motion, shared with src/lib/motion.js so CSS transitions and framer
      variants land on the same curve. */

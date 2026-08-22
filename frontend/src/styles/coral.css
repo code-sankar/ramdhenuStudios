@@ -1,0 +1,437 @@
+/* ==========================================================================
+   THE CORAL SYSTEM — the site's visual language
+   --------------------------------------------------------------------------
+   Three grounds, one accent, soft corners, and almost no decoration:
+
+     coral      the brand field. Hero, mastheads, primary actions.
+     lavender   the reading ground. Every section of body content.
+     charcoal   the closing bar, and headings on the light ground.
+
+   The discipline that makes it work is restraint about where coral appears.
+   It is a *field* and an *action*, never a highlight — the moment coral shows
+   up as a third thing (a border here, an icon there) the field stops reading
+   as the brand and starts reading as a colour scheme.
+
+   WHAT SURVIVED FROM INDUSTRY. The spacing scale, both type faces, the shell
+   measure and the section rhythm. This is a reskin of a system that worked.
+
+   NOTE — THERE IS NO `@layer components { }` WRAPPER IN THIS FILE, AND THAT IS
+   LOAD BEARING. It is already imported as `@import "./coral.css"
+   layer(components)`. Wrapping the rules again does not put them in that layer
+   twice — it creates the SUB-layer `components.components`, which loses to its
+   parent's own unlayered content. industry.css is that parent content, so
+   every override below would silently lose to the thing it was written to
+   override. Top-level rules here land in `components` proper, after
+   industry.css, and win on order. Tailwind utilities still beat all of it.
+   ========================================================================== */
+
+/* --------------------------------------------------------------------------
+   1. UN-SQUARING THE WIREFRAME
+   ---------------------------------------------------------------------------
+   industry.css squares every component on purpose — `.card, .btn, .input,
+   .tag, .seg, .dialog { border-radius: 0 }`. That one line is most of why the
+   old build read as a technical drawing.
+   -------------------------------------------------------------------------- */
+.card,
+.input,
+.seg,
+.dialog {
+  border-radius: var(--radius-lg);
+}
+
+/* Actions are pills. Nothing else is — a page where everything is round has no
+   hierarchy left to spend. */
+.btn,
+.tag {
+  border-radius: var(--radius-full);
+}
+
+.btn {
+  transition:
+    transform 180ms var(--ease-out-expo),
+    box-shadow 220ms var(--ease-out-expo),
+    background-color 180ms ease,
+    border-color 180ms ease,
+    color 180ms ease;
+}
+.btn:active {
+  transform: scale(0.985);
+}
+
+.btn-primary {
+  background: var(--color-coral-500);
+  border-color: transparent;
+  color: #fff;
+  box-shadow: var(--shadow-sm);
+}
+.btn-primary:hover {
+  background: var(--color-coral-600);
+  transform: translateY(-1px);
+  box-shadow: var(--shadow-md);
+}
+
+.card {
+  background: #fff;
+  border-color: color-mix(in srgb, var(--color-char-900) 8%, transparent);
+  box-shadow: var(--shadow-sm);
+  transition:
+    transform 260ms var(--ease-out-expo),
+    box-shadow 260ms var(--ease-out-expo);
+}
+
+/* SECONDARY TEXT FAILED AA, AND HAD BEEN FAILING ALL ALONG.
+   Industry sets muted copy to `--color-text` at 55%, which lands at 3.6:1 —
+   under the 4.5 body text needs. It carries section ledes, captions and
+   attributions, so it is some of the most read text on the site. 68% measures
+   5.4:1 and still reads clearly as secondary. */
+.text-muted,
+figcaption,
+.caption {
+  color: color-mix(in srgb, var(--color-text) 68%, transparent);
+}
+
+/* Industry sets both border and text of an outline tag to `--color-accent`,
+   which is 3.7:1 on paper — and these are 11px labels, the size that needs
+   contrast most. */
+.tag-outline {
+  border-color: color-mix(in srgb, var(--color-char-900) 18%, transparent);
+  color: var(--color-char-700);
+}
+
+.input {
+  border-radius: var(--radius-md);
+  transition:
+    border-color 160ms ease,
+    box-shadow 160ms ease;
+}
+.input:focus,
+.input:focus-visible {
+  border-color: var(--color-coral-500);
+  box-shadow: 0 0 0 3px color-mix(in srgb, var(--color-coral-500) 18%, transparent);
+  outline: none;
+}
+
+/* The focus ring, everywhere. Industry's was the old steel accent. */
+:focus-visible {
+  outline-color: var(--color-coral-500);
+}
+::selection {
+  background: color-mix(in srgb, var(--color-coral-500) 22%, transparent);
+}
+
+/* --------------------------------------------------------------------------
+   2. THE CORAL FIELD
+   ---------------------------------------------------------------------------
+   Flat colour, not a gradient — the reference is confident enough to use one
+   value across a whole viewport, and that flatness is most of why the particle
+   cloud reads. A gradient behind it would turn the cloud into noise.
+
+   `--field-fade` is the one exception: the service mastheads dissolve downward
+   into the lavender that follows them, so the page reads as one surface
+   changing state rather than as two blocks stacked.
+   -------------------------------------------------------------------------- */
+.field-coral {
+  background: var(--color-coral-500);
+  color: #fff;
+}
+
+.field-fade {
+  background: linear-gradient(
+    to bottom,
+    var(--color-coral-500) 0%,
+    var(--color-coral-500) 34%,
+    color-mix(in srgb, var(--color-coral-500) 52%, var(--color-lav-100)) 68%,
+    var(--color-lav-100) 100%
+  );
+}
+
+/* Grain. The single cheapest thing separating a page that looks designed from
+   one that looks generated: a flat 1400px field is unnaturally clean, and the
+   eye reads that cleanness as unfinished. Turbulence at 3.5% breaks it up.
+   Inline SVG, so it costs no request. */
+.grain::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+  pointer-events: none;
+  opacity: 0.035;
+  mix-blend-mode: overlay;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='200' height='200'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='200' height='200' filter='url(%23n)'/%3E%3C/svg%3E");
+}
+
+/* --------------------------------------------------------------------------
+   3. THE NAV
+   ---------------------------------------------------------------------------
+   Transparent white-on-coral at rest; a solid white bar once the page has
+   scrolled past the field; and white again — instantly, not on the scroll
+   transition — while the mega-menu is open, because the menu is a white panel
+   hanging off it and a coral bar over a white panel is two objects, not one.
+
+   It stays `position: fixed`. That is what lets it float over the field, and
+   the cost is that every page's opening section carries `.masthead` for the
+   clearance the bar no longer reserves in flow.
+   -------------------------------------------------------------------------- */
+.site-bar {
+  transition:
+    background-color 360ms var(--ease-out-expo),
+    box-shadow 360ms var(--ease-out-expo),
+    color 360ms var(--ease-out-expo);
+  background: transparent;
+  color: #fff;
+}
+
+[data-scrolled="true"] .site-bar,
+[data-menu="true"] .site-bar {
+  background: #fff;
+  color: var(--color-char-900);
+  box-shadow: var(--shadow-sm);
+}
+/* An open menu owns the bar outright — no shadow between the two, so the
+   panel and the bar read as one sheet. */
+[data-menu="true"] .site-bar {
+  box-shadow: none;
+  transition-duration: 0ms;
+}
+
+/* The brand link takes the bar's colour. Without this it inherits nothing —
+   industry.css sets `a { color: var(--color-accent) }`, so the mask-filled
+   logo rendered in the old steel blue on the coral field. Scoped to the brand
+   rather than to `.site-bar a`, which would also outrank `.btn-cta`'s own
+   colour and repaint the button. */
+.nav-brand {
+  color: inherit;
+}
+
+.nav-link {
+  position: relative;
+  padding: 8px 12px;
+  border-radius: var(--radius-full);
+  font-size: 14.5px;
+  /* FULL OPACITY, NOT 0.86 — see the note on the coral token. White at 86% on
+     this field measures 3.7:1, under the 4.5 a 14.5px link needs. The rest and
+     hover states are told apart by a ground behind the pill instead, which
+     costs no contrast at all. */
+  color: currentColor;
+  transition:
+    background-color 200ms ease,
+    color 200ms ease;
+  cursor: pointer;
+}
+.nav-link:hover {
+  background: color-mix(in srgb, currentColor 12%, transparent);
+}
+/* On the white bar the current item takes the brand colour, the way the
+   reference marks its open menu. */
+[data-scrolled="true"] .nav-link[aria-current="true"],
+[data-scrolled="true"] .nav-link[aria-expanded="true"],
+[data-menu="true"] .nav-link[aria-current="true"],
+[data-menu="true"] .nav-link[aria-expanded="true"] {
+  color: var(--color-coral-700);
+}
+
+/* The bar's own CTA inverts with it: white pill on the coral field, coral pill
+   once the bar goes white. Either way it is the highest-contrast object on the
+   bar, which is the whole point of it. */
+.btn-cta {
+  background: #fff;
+  color: var(--color-coral-700);
+  transition:
+    background-color 360ms var(--ease-out-expo),
+    color 360ms var(--ease-out-expo),
+    transform 180ms var(--ease-out-expo);
+}
+.btn-cta:hover {
+  transform: translateY(-1px);
+}
+[data-scrolled="true"] .btn-cta,
+[data-menu="true"] .btn-cta {
+  background: var(--color-coral-500);
+  color: #fff;
+}
+[data-scrolled="true"] .btn-cta:hover,
+[data-menu="true"] .btn-cta:hover {
+  background: var(--color-coral-600);
+}
+
+/* The primary action wherever it sits on a coloured field — the coral
+   mastheads and the charcoal closing bar. White is the highest-contrast object
+   either ground can hold, and using one class for both means a visitor meets
+   the same button on every page. */
+.btn-on-field {
+  background: #fff;
+  color: var(--color-coral-700);
+  box-shadow: var(--shadow-sm);
+  transition:
+    transform 180ms var(--ease-out-expo),
+    box-shadow 220ms var(--ease-out-expo);
+}
+.btn-on-field:hover {
+  transform: translateY(-1px);
+  box-shadow: var(--shadow-md);
+}
+
+/* The availability dot. `currentColor` so it inverts with the bar for free. */
+.availability-dot {
+  width: 6px;
+  height: 6px;
+  flex: none;
+  border-radius: 50%;
+  background: currentColor;
+  animation: availability-pulse 2.6s ease-out infinite;
+}
+@keyframes availability-pulse {
+  0% {
+    box-shadow: 0 0 0 0 currentColor;
+    opacity: 1;
+  }
+  70% {
+    box-shadow: 0 0 0 7px transparent;
+    opacity: 0.7;
+  }
+  100% {
+    box-shadow: 0 0 0 0 transparent;
+    opacity: 1;
+  }
+}
+
+/* THE MEGA-MENU PANEL.
+   Opaque, not glass. The panel hangs over 160px display type on a saturated
+   field, and at anything short of full opacity the headline ghosts straight
+   through it. Depth comes from the shadow. A menu's first job is being read. */
+.menu-panel {
+  background: #fff;
+  border-radius: var(--radius-xl);
+  box-shadow: var(--shadow-panel);
+  overflow: hidden;
+}
+
+/* The sub-item rail down the left. The active row is marked by ground and a
+   coral edge rather than by colour alone. */
+.menu-rail-item {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 13px 20px;
+  font-size: 14.5px;
+  color: var(--color-char-700);
+  border-bottom: 1px solid color-mix(in srgb, var(--color-char-900) 7%, transparent);
+  box-shadow: inset 3px 0 0 transparent;
+  transition:
+    background-color 180ms ease,
+    color 180ms ease,
+    box-shadow 180ms ease;
+  cursor: pointer;
+}
+.menu-rail-item:last-child {
+  border-bottom: 0;
+}
+.menu-rail-item:hover {
+  background: var(--color-lav-50);
+  color: var(--color-char-900);
+}
+.menu-rail-item[data-active="true"] {
+  background: var(--color-lav-100);
+  color: var(--color-char-900);
+  box-shadow: inset 3px 0 0 var(--color-coral-500);
+}
+
+/* The charcoal strip closing the panel — the reference's "need something
+   tailored?" bar, and the one place a phone number belongs in a menu. */
+.menu-foot {
+  background: var(--color-char-900);
+  color: #fff;
+}
+
+/* The page dims and softens behind an open menu. */
+.menu-scrim {
+  position: fixed;
+  inset: 0;
+  z-index: 40;
+  background: color-mix(in srgb, var(--color-char-900) 28%, transparent);
+  backdrop-filter: blur(3px);
+  -webkit-backdrop-filter: blur(3px);
+}
+
+/* The phone drawer. Full-screen coral: a 360px column has no room for a panel
+   that is also trying to be a page. */
+.nav-drawer {
+  position: fixed;
+  inset: 0;
+  z-index: 45;
+  background: var(--color-coral-500);
+  overflow-y: auto;
+  overscroll-behavior: contain;
+}
+.nav-drawer .nav-link {
+  color: #fff;
+  font-size: 19px;
+  padding: 14px 0;
+}
+
+/* The header clearance. The bar is fixed, so it reserves no space in flow and
+   every page's opening section would start underneath it. Add a page that
+   opens on something else and it needs this class too. */
+.masthead {
+  padding-top: clamp(104px, 13vw, 172px);
+}
+
+/* --------------------------------------------------------------------------
+   4. THE FLOATING CONTACT CARD
+   ---------------------------------------------------------------------------
+   Bottom-right, over the field. It is the reference's one piece of persistent
+   chrome, and it earns its place here for the same reason: this site's whole
+   job is producing an enquiry, and the enquiry route should never be more than
+   one thumb away.
+
+   Below md it drops to a single round button — the full card at 360px covers
+   the CTA it is competing with.
+   -------------------------------------------------------------------------- */
+.contact-dock {
+  position: fixed;
+  right: clamp(14px, 2.4vw, 30px);
+  bottom: clamp(14px, 2.4vw, 30px);
+  z-index: 30;
+  background: #fff;
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-lg);
+}
+
+/* --------------------------------------------------------------------------
+   5. SEGMENTED TOGGLE + FILTER CHIPS
+   -------------------------------------------------------------------------- */
+.seg-track {
+  display: inline-flex;
+  gap: 4px;
+  padding: 4px;
+  background: #fff;
+  border-radius: var(--radius-full);
+  box-shadow: var(--shadow-xs);
+}
+.seg-option {
+  padding: 9px 22px;
+  border-radius: var(--radius-full);
+  font-size: 14px;
+  color: var(--color-char-700);
+  transition:
+    background-color 220ms var(--ease-out-expo),
+    color 220ms var(--ease-out-expo);
+  cursor: pointer;
+}
+.seg-option[data-active="true"] {
+  background: var(--color-coral-500);
+  color: #fff;
+}
+
+/* --------------------------------------------------------------------------
+   6. REDUCED MOTION
+   ---------------------------------------------------------------------------
+   app.css flattens every transition and animation globally under this query.
+   ParticleMark handles itself in JS: it draws one static assembled frame and
+   never starts a loop.
+   -------------------------------------------------------------------------- */
+@media (prefers-reduced-motion: reduce) {
+  .site-bar {
+    transition: none;
+  }
+}

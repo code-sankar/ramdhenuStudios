@@ -4,7 +4,6 @@ import Blueprint from "../components/Blueprint";
 import Icon from "../components/Icon";
 import Layout from "../components/Layout";
 import Plate from "../components/Plate";
-import PrismField from "../components/PrismField";
 import Reveal from "../components/Reveal";
 import Seo from "../components/Seo";
 import SectionIndex from "../components/ui/SectionIndex";
@@ -48,30 +47,24 @@ export default function ServicePage() {
       {/* --------------------------------------------------------------------
           MASTHEAD — steel field, same as the home hero
       -------------------------------------------------------------------- */}
-      <section className="service-hero masthead relative overflow-hidden bg-ink-950 pb-[clamp(56px,7vw,96px)]">
-        {/* The spectrum field, back to front: the blueprint grid, the
-            photograph screened over it, then the veil that holds the type's
-            contrast. See SERVICE MASTHEAD FIELD in app.css. */}
-        <div className="hero__grid" aria-hidden="true" />
-        <div className="service-hero__spectrum" aria-hidden="true" />
-        <div className="service-hero__veil" aria-hidden="true" />
+      <section className="masthead field-fade grain relative overflow-hidden pb-[clamp(56px,7vw,96px)]">
 
         <div className="shell relative">
           <nav aria-label="Breadcrumb" className="mb-8">
-            <ol className="flex list-none flex-wrap items-center gap-x-2 p-0 text-[12px] tracking-[0.08em] text-paper/55 uppercase max-md:text-[12.5px]">
+            <ol className="flex list-none flex-wrap items-center gap-x-2 p-0 text-[12px] tracking-[0.08em] text-white uppercase max-md:text-[12.5px]">
               <li>
-                <Link to="/" className="inline-block py-2 text-paper/70 no-underline transition-colors duration-150 hover:text-paper">
+                <Link to="/" className="inline-block py-2 text-white no-underline transition-colors duration-150 hover:text-white">
                   Home
                 </Link>
               </li>
               <li aria-hidden="true">/</li>
               <li>
-                <Link to="/#services" className="inline-block py-2 text-paper/70 no-underline transition-colors duration-150 hover:text-paper">
+                <Link to="/#services" className="inline-block py-2 text-white no-underline transition-colors duration-150 hover:text-white">
                   Services
                 </Link>
               </li>
               <li aria-hidden="true">/</li>
-              <li aria-current="page" className="text-paper/85">
+              <li aria-current="page" className="text-white">
                 {service.short}
               </li>
             </ol>
@@ -79,23 +72,23 @@ export default function ServicePage() {
 
           <div className="grid items-end gap-[clamp(28px,4vw,64px)] lg:grid-cols-[minmax(0,1.4fr)_minmax(0,1fr)]">
             <div>
-              <p className="mb-4 flex items-center gap-3 font-display text-[13px] tracking-[0.1em] text-steel-300">
+              <p className="mb-4 flex items-center gap-3 font-display text-[13px] tracking-[0.1em] text-white">
                 <span>{service.num}</span>
-                <span aria-hidden="true" className="h-px w-8 bg-paper/30" />
+                <span aria-hidden="true" className="h-px w-8 bg-white/35" />
                 <span>Service</span>
               </p>
-              <h1 className="display on-steel text-[clamp(34px,5.6vw,72px)] leading-[0.98] tracking-[-0.022em]">
+              <h1 className="display text-white text-[clamp(34px,5.6vw,72px)] leading-[0.98] tracking-[-0.022em]">
                 {service.title}
               </h1>
             </div>
 
-            <p className="text-[16.5px] leading-[1.6] text-paper/75">{service.lede}</p>
+            <p className="text-[16.5px] leading-[1.6] text-white">{service.lede}</p>
           </div>
 
-          <div className="mt-[clamp(32px,4vw,52px)] flex flex-wrap items-center gap-3 border-t border-paper/20 pt-[clamp(24px,3vw,34px)]">
+          <div className="mt-[clamp(32px,4vw,52px)] flex flex-wrap items-center gap-3 border-t border-white/25 pt-[clamp(24px,3vw,34px)]">
             <Link
               to="/#contact"
-              className="btn-prism inline-flex items-center gap-[9px] rounded-full px-[26px] py-[15px] font-display text-[15px] no-underline"
+              className="btn-on-field inline-flex items-center gap-[9px] rounded-full px-[26px] py-[15px] font-display text-[15px] no-underline"
             >
               <Icon name="plus" size={15} strokeWidth={2} />
               Start a Project
@@ -105,7 +98,7 @@ export default function ServicePage() {
               target="_blank"
               rel="noreferrer"
               onClick={() => track("WhatsApp click", { from: "service", service: service.title })}
-              className="inline-flex items-center gap-[9px] rounded-full border border-paper/20 px-[26px] py-[15px] font-display text-[15px] text-paper/85 no-underline transition duration-200 hover:border-paper/40 hover:bg-paper/8 hover:text-paper"
+              className="inline-flex items-center gap-[9px] rounded-full border border-white/25 px-[26px] py-[15px] font-display text-[15px] text-white no-underline transition duration-200 hover:border-paper/40 hover:bg-paper/8 hover:text-white"
             >
               <Icon name="whatsapp" size={16} />
               Ask a question
@@ -117,7 +110,7 @@ export default function ServicePage() {
       {/* --------------------------------------------------------------------
           THE EXPLANATION
       -------------------------------------------------------------------- */}
-      <section id="service-body" className="section-y bg-paper">
+      <section id="service-body" className="section-y bg-lav-50">
         <div className="shell grid items-start gap-[clamp(32px,5vw,80px)] lg:grid-cols-[minmax(0,1.35fr)_minmax(0,1fr)]">
           <div>
             <SectionIndex num="01" label="What this is" />
@@ -134,7 +127,7 @@ export default function ServicePage() {
           {/* Who it's for + what's included, as a spec panel */}
           <Reveal delay={0.08} className="lg:sticky lg:top-32">
             <Blueprint className="block bg-panel p-[clamp(22px,2.6vw,30px)]">
-              <p className="mb-3 font-display text-[11px] tracking-[0.14em] text-steel-700 uppercase">
+              <p className="mb-3 font-display text-[11px] tracking-[0.14em] text-coral-700 uppercase">
                 Typically for
               </p>
               <ul className="mb-8 flex list-none flex-wrap gap-[6px] p-0">
@@ -148,7 +141,7 @@ export default function ServicePage() {
                 ))}
               </ul>
 
-              <p className="mb-3 font-display text-[11px] tracking-[0.14em] text-steel-700 uppercase">
+              <p className="mb-3 font-display text-[11px] tracking-[0.14em] text-coral-700 uppercase">
                 What's included
               </p>
               <ul className="m-0 list-none p-0">
@@ -157,7 +150,7 @@ export default function ServicePage() {
                     key={item}
                     className="flex items-start gap-2.5 border-b border-line py-2.5 text-[14.5px] leading-snug last:border-b-0"
                   >
-                    <Icon name="check" size={15} className="mt-0.5 flex-none text-steel-700" />
+                    <Icon name="check" size={15} className="mt-0.5 flex-none text-coral-700" />
                     {item}
                   </li>
                 ))}
@@ -170,7 +163,7 @@ export default function ServicePage() {
       {/* --------------------------------------------------------------------
           HOW IT RUNS
       -------------------------------------------------------------------- */}
-      <section className="section-y bg-panel">
+      <section className="section-y bg-lav-100">
         <div className="shell">
           <Reveal>
             <SectionIndex num="02" label="How it runs" />
@@ -190,7 +183,7 @@ export default function ServicePage() {
                   key={stage.step}
                   className="border-line pt-6 pr-6 pb-6 sm:border-r sm:last:border-r-0"
                 >
-                  <span className="font-display text-[12px] tracking-[0.12em] text-steel-700">
+                  <span className="font-display text-[12px] tracking-[0.12em] text-coral-700">
                     {String(i + 1).padStart(2, "0")}
                   </span>
                   <h3 className="display mt-2 mb-2 text-[clamp(17px,1.8vw,21px)]">{stage.step}</h3>
@@ -208,7 +201,7 @@ export default function ServicePage() {
             <ul className="grid list-none gap-x-10 gap-y-3 p-0 sm:grid-cols-2">
               {service.outcomes.map((o) => (
                 <li key={o} className="flex items-start gap-3 text-[15.5px] leading-relaxed">
-                  <Icon name="arrowRight" size={16} className="mt-1 flex-none text-steel-700" />
+                  <Icon name="arrowRight" size={16} className="mt-1 flex-none text-coral-700" />
                   {o}
                 </li>
               ))}
@@ -224,7 +217,7 @@ export default function ServicePage() {
           rendering half a card if one is ever missing.
       -------------------------------------------------------------------- */}
       {project && (
-        <section className="section-y bg-paper">
+        <section className="section-y bg-lav-50">
           <div className="shell">
             <Reveal>
               <SectionIndex num="03" label="The work" />
@@ -278,7 +271,7 @@ export default function ServicePage() {
       {/* --------------------------------------------------------------------
           SERVICE FAQ
       -------------------------------------------------------------------- */}
-      <section className="section-y bg-panel">
+      <section className="section-y bg-lav-100">
         <div className="shell grid items-start gap-[clamp(32px,5vw,80px)] lg:grid-cols-[minmax(0,0.8fr)_minmax(0,1.4fr)]">
           <Reveal>
             <SectionIndex num="04" label="Before you ask" />
@@ -300,7 +293,7 @@ export default function ServicePage() {
       {/* --------------------------------------------------------------------
           THE OTHER FIVE
       -------------------------------------------------------------------- */}
-      <section className="section-y bg-paper">
+      <section className="section-y bg-lav-50">
         <div className="shell">
           <Reveal>
             <SectionIndex num="05" label="Also from us" />
@@ -316,8 +309,8 @@ export default function ServicePage() {
                     to={servicePath(s.slug)}
                     className="group flex items-center gap-[clamp(16px,3vw,40px)] py-5 no-underline"
                   >
-                    <span className="w-7 flex-none font-display text-[13px] text-steel-700">{s.num}</span>
-                    <span className="flex-1 font-display text-[clamp(17px,2vw,26px)] uppercase transition-colors duration-150 group-hover:text-steel-700">
+                    <span className="w-7 flex-none font-display text-[13px] text-coral-700">{s.num}</span>
+                    <span className="flex-1 font-display text-[clamp(17px,2vw,26px)] uppercase transition-colors duration-150 group-hover:text-coral-700">
                       {s.title}
                     </span>
                     <span className="text-muted hidden max-w-[300px] flex-1 text-sm min-[900px]:block">
@@ -337,21 +330,20 @@ export default function ServicePage() {
       {/* --------------------------------------------------------------------
           CLOSING ASK
       -------------------------------------------------------------------- */}
-      <section className="relative overflow-hidden bg-ink-950 py-[clamp(56px,7vw,100px)]">
-        <PrismField intensity={0.5} />
+      <section className="relative overflow-hidden bg-char-900 py-[clamp(56px,7vw,100px)]">
         <div className="shell relative z-[2] flex flex-wrap items-end justify-between gap-8">
           <div>
-            <h2 className="display on-steel text-[clamp(28px,4vw,48px)] leading-[1.05]">
+            <h2 className="display text-white text-[clamp(28px,4vw,48px)] leading-[1.05]">
               Let&apos;s talk about {service.short.toLowerCase()}.
             </h2>
-            <p className="mt-4 max-w-[46ch] text-[16px] text-paper/70">
+            <p className="mt-4 max-w-[46ch] text-[16px] text-white">
               Tell us where the business is now. We&apos;ll tell you whether this is the right
               place to start — and say so if it isn&apos;t.
             </p>
           </div>
           <Link
             to="/#contact"
-            className="btn-prism inline-flex flex-none items-center gap-[9px] rounded-full px-[28px] py-[16px] font-display text-[16px] no-underline"
+            className="btn-on-field inline-flex flex-none items-center gap-[9px] rounded-full px-[28px] py-[16px] font-display text-[16px] no-underline"
           >
             <Icon name="plus" size={16} strokeWidth={2} />
             Start a Project

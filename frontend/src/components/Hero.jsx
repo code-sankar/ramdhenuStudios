@@ -1,37 +1,32 @@
-import { useRef } from "react";
 import { Link } from "react-router-dom";
 import { motion, useReducedMotion } from "motion/react";
 
 import Icon from "./Icon";
-import KineticHeadline from "./KineticHeadline";
-import Parallax from "./Parallax";
-import PrismField from "./PrismField";
+import ParticleMark from "./ParticleMark";
 import { duration, ease } from "../lib/motion";
-import { brand, disciplines } from "../data/site";
+import { brand, disciplines, socials } from "../data/site";
 
 /**
- * HERO — the tagline over the living prism field.
+ * HERO — the coral field, with the brand monogram assembled out of particles.
  *
- * THE COMPOSITION, back to front:
- *   prism field    five drifting bodies of colour, grain, scrim  (prism.css)
- *   grid           the blueprint sheet, barely there             (app.css)
- *   content        eyebrow · headline · lede · actions
+ * THE COMPOSITION:
+ *   the field      flat coral, edge to edge. Flat on purpose — a gradient
+ *                  behind the particle cloud turns the cloud into noise.
+ *   the mark       <ParticleMark/>, centre-right, huge and half off the grid
+ *   the copy       eyebrow · headline · one action, hard left
+ *   the rail       disciplines bottom-left, socials bottom-centre
  *
- * The field and the grid move at different rates on scroll, so the hero has
- * depth as it leaves rather than sliding out as one flat plate. Total
- * separation across a full scroll-out is under 100px — enough to feel, not
- * enough to notice.
+ * ONE ACTION, NOT TWO. The old hero offered "Start a Project" and "See our
+ * work" side by side, which splits the decision at exactly the moment the
+ * visitor has the least information to split it with. The field gets one
+ * button; the work is a nav item and the whole second section.
  *
- * THE ENTRANCE RUNS ON A CLOCK, NOT ON SCROLL. Everything above the fold
- * animates on mount with hand-set delays: the eyebrow at 0.15s, the headline
- * from 0.3s, the lede and actions behind it. `whileInView` would be wrong here
- * — the hero is already in view on load, so it would fire everything at once.
+ * THE ENTRANCE RUNS ON A CLOCK, NOT ON SCROLL. Everything here is above the
+ * fold on load, so `whileInView` would fire it all in the same frame.
  */
 
-/* One shared entrance for the pieces around the headline. Written once so the
-   eyebrow, lede and actions cannot drift apart. */
 const rise = {
-  hidden: { opacity: 0, y: 18 },
+  hidden: { opacity: 0, y: 16 },
   show: (at = 0) => ({
     opacity: 1,
     y: 0,
@@ -40,106 +35,106 @@ const rise = {
 };
 
 export default function Hero({ showAvailability = true }) {
-  const field = useRef(null);
   const reduced = useReducedMotion();
-
-  /* Under reduced motion every delay collapses to zero and framer renders the
-     `show` state immediately — no staggered reveal, but also no flash of
-     invisible content, which is what `initial={false}` alone would give. */
   const at = (seconds) => (reduced ? 0 : seconds);
 
   return (
     <section
-      ref={field}
       id="/"
-      className="hero relative box-border flex min-h-[100svh] flex-col justify-center overflow-hidden bg-ink-950 pt-[clamp(48px,14vh,150px)] pb-[clamp(36px,7vh,72px)]"
+      className="hero field-coral grain relative box-border flex min-h-[100svh] flex-col justify-center overflow-hidden pt-[clamp(96px,15vh,150px)] pb-[clamp(88px,12vh,120px)]"
     >
-      {/* The field leads slightly and the grid lags, so the two planes separate
-          as the hero scrolls away. */}
-      <Parallax target={field} distance={-30} className="absolute inset-0 z-0" aria-hidden="true">
-        <PrismField />
-      </Parallax>
-      <Parallax target={field} distance={76} className="hero__grid" aria-hidden="true" />
+      {/* The mark. Oversized and pushed right so the headline crosses it —
+          the type and the glyph should occupy one space, not sit side by side.
+          Hidden below md: at 390px it would sit directly under the headline
+          and turn it into texture. */}
+      <ParticleMark className="pointer-events-none absolute top-1/2 right-[-6%] hidden h-[min(92vh,860px)] w-[min(58vw,860px)] -translate-y-1/2 md:block" />
 
-      <Parallax
-        target={field}
-        distance={44}
-        fadeTo={0.4}
-        className="shell relative z-[2] flex flex-col gap-[clamp(22px,4.4vw,54px)]"
+      <div className="shell relative z-[2] flex flex-col gap-[clamp(20px,3.4vw,38px)]">
+        {showAvailability && (
+          <motion.p
+            className="m-0 text-[13.5px] tracking-[0.02em] text-white"
+            variants={rise}
+            custom={at(0.12)}
+            initial="hidden"
+            animate="show"
+          >
+            We will take care of your digital presence
+          </motion.p>
+        )}
+
+        <motion.h1
+          className="display m-0 max-w-[15ch] text-[clamp(44px,7.4vw,104px)] leading-[1.06] tracking-[-0.02em] text-white"
+          variants={rise}
+          custom={at(0.24)}
+          initial="hidden"
+          animate="show"
+        >
+          A step towards digital presence
+        </motion.h1>
+
+        <motion.div
+          className="flex flex-wrap items-center gap-3"
+          variants={rise}
+          custom={at(0.4)}
+          initial="hidden"
+          animate="show"
+        >
+          {/* White pill on coral — the reference's one hero action, and the
+              highest-contrast object the field can hold. */}
+          <Link
+            to="/#contact"
+            className="inline-flex items-center gap-2.5 rounded-full bg-white px-[30px] py-[15px] font-display text-[15px] tracking-[0.01em] text-coral-700 no-underline shadow-sm transition duration-200 hover:-translate-y-px hover:shadow-md"
+          >
+            <Icon name="plus" size={15} strokeWidth={2} />
+            Start a Project
+          </Link>
+          <Link
+            to="/work/"
+            className="inline-flex items-center gap-2 rounded-full border border-white/40 px-[28px] py-[15px] font-display text-[15px] text-white no-underline transition duration-200 hover:border-white hover:bg-white/12"
+          >
+            See our work
+          </Link>
+        </motion.div>
+      </div>
+
+      {/* ── The bottom rail: what we deliver, and where to find us ── */}
+      <motion.div
+        className="shell relative z-[2] mt-12 flex flex-wrap items-end justify-between gap-5 md:absolute md:inset-x-0 md:bottom-[clamp(20px,3.4vh,38px)] md:mt-0"
+        variants={rise}
+        custom={at(0.56)}
+        initial="hidden"
+        animate="show"
       >
-        {/* ── Eyebrow row: availability left, disciplines right ── */}
-        <motion.div
-          className="flex flex-wrap items-start justify-between gap-6"
-          variants={rise}
-          custom={at(0.15)}
-          initial="hidden"
-          animate="show"
-        >
-          {showAvailability && (
-            <span className="glass inline-flex items-center gap-[9px] rounded-full px-[15px] py-[7px] text-[11px] tracking-[0.13em] text-paper/85 uppercase">
-              <span className="hero__pulse" aria-hidden="true" />
-              Digital agency — based in India
+        <div className="flex flex-wrap items-center gap-2.5">
+          <span className="text-[12.5px] tracking-[0.06em] text-white uppercase">
+            We deliver:
+          </span>
+          {disciplines.map((item) => (
+            <span
+              key={item}
+              className="rounded-full border border-white/35 px-[14px] py-[6px] font-display text-[12px] tracking-[0.04em] text-white uppercase"
+            >
+              {item}
             </span>
-          )}
+          ))}
+        </div>
 
-          <ol className="flex list-none flex-col items-start gap-[10px] p-0 sm:items-end">
-            {disciplines.map((item, i) => (
-              <motion.li
-                key={item}
-                className="flex items-center gap-[11px] font-display text-[12.5px] tracking-[0.07em] text-paper/85 uppercase"
-                variants={rise}
-                custom={at(0.3 + i * 0.08)}
-                initial="hidden"
-                animate="show"
+        <ul className="m-0 flex list-none items-center gap-2 p-0">
+          {socials.map((social) => (
+            <li key={social.label}>
+              <a
+                href={social.href}
+                target="_blank"
+                rel="noreferrer"
+                aria-label={social.label}
+                className="flex h-10 w-10 items-center justify-center rounded-full border border-white/35 text-white transition duration-200 hover:bg-white hover:text-coral-700"
               >
-                <span className="text-[10px] tracking-[0.1em] text-prism-cyan">
-                  {String(i + 1).padStart(2, "0")}
-                </span>
-                <span aria-hidden="true" className="h-px w-[26px] flex-none bg-paper/25" />
-                {item}
-              </motion.li>
-            ))}
-          </ol>
-        </motion.div>
-
-        {/* ── The headline. "Presence" is the word the spectrum picks out — it
-              is the promise the whole page is selling. ── */}
-        <KineticHeadline
-          lines={["A Step Towards", "Digital {Presence}"]}
-          delay={at(0.3)}
-          className="display m-0 on-steel text-[clamp(46px,10.2vw,164px)] leading-[0.92] tracking-[-0.024em]"
-        />
-
-        {/* ── Lede + actions ── */}
-        <motion.div
-          className="flex flex-wrap items-end justify-between gap-7 border-t border-paper/15 pt-[clamp(22px,2.6vw,32px)]"
-          variants={rise}
-          custom={at(0.95)}
-          initial="hidden"
-          animate="show"
-        >
-          <p className="m-0 max-w-[440px] text-[15.5px] leading-[1.65] text-paper/75">
-            Ramdhenu is a digital agency for local businesses that want more than a website —
-            strategy, visuals and campaigns, working as one.
-          </p>
-
-          <div className="flex flex-none flex-wrap items-center gap-3 max-[400px]:w-full max-[400px]:*:flex-1 max-[400px]:*:justify-center">
-            <Link
-              to="/#contact"
-              className="btn-prism inline-flex items-center gap-[9px] rounded-full px-[28px] py-[16px] font-display text-[15px] tracking-[0.01em] no-underline"
-            >
-              <Icon name="plus" size={15} strokeWidth={2} />
-              Start a Project
-            </Link>
-            <Link
-              to="/work/"
-              className="inline-flex items-center gap-[9px] rounded-full border border-paper/20 px-[28px] py-[16px] font-display text-[15px] tracking-[0.01em] text-paper/85 no-underline transition duration-200 hover:border-paper/40 hover:bg-paper/8 hover:text-paper"
-            >
-              See our work
-            </Link>
-          </div>
-        </motion.div>
-      </Parallax>
+                <Icon name={social.icon} size={16} />
+              </a>
+            </li>
+          ))}
+        </ul>
+      </motion.div>
 
       <span className="sr-only" hidden>
         {brand.tagline}

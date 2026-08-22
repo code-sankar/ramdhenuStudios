@@ -4,32 +4,22 @@
    What is left after the Tailwind conversion. Everything here is something a
    utility cannot express cleanly:
 
-     • layered gradients with masks (the aurora, its scrim, the field grid)
-     • the ::after / ::before spectrum rules
      • parent-state selectors (:has) and pseudo-element geometry
      • the logo's mask mechanics
+     • the skip link, the dialog, and the mobile ergonomics overrides
+
+   The rebrand's own visual language lives in coral.css.
 
    Component styling lives in the markup, and every value still comes from the
    Industry tokens by way of the bridge in theme.css. Nothing here introduces
    a colour, a font or a spacing step of its own.
    ========================================================================== */
 
-/* THE SPECTRUM — "Ramdhenu" is Assamese for rainbow, so the brand has a claim
-   on colour the Industry system otherwise forbids. It is honoured as a
-   signature, never as a field: a 2px rule at three structural moments in the
-   page, plus the hero bloom, and nowhere else. */
-:root {
-  --spectrum: linear-gradient(
-    90deg,
-    #7b2ff7 0%,
-    #4361ee 18%,
-    #12b6d8 37%,
-    #22c55e 55%,
-    #a3e635 69%,
-    #f4c020 84%,
-    #fb7c2d 100%
-  );
-}
+/* The `--spectrum` rainbow that used to be the brand's signature is gone. It
+   was honoured as a 2px rule under the header, closing the hero and opening
+   the footer; under the coral system those three rules were the old identity
+   showing through a new one. The boot splash in index.html carries its own
+   gradient and is updated separately. */
 
 html {
   scroll-behavior: smooth;
@@ -54,8 +44,8 @@ h3 {
   left: var(--space-3);
   z-index: 200;
   padding: var(--space-2) var(--space-4);
-  background: var(--color-accent);
-  color: var(--color-bg);
+  background: var(--color-coral-500);
+  color: #fff;
   font-family: var(--font-heading);
   font-weight: var(--font-heading-weight);
   text-decoration: none;
@@ -87,28 +77,6 @@ h3 {
 }
 
 /* --------------------------------------------------------------------------
-   HEADER — signature 2 of 3
-   -------------------------------------------------------------------------- */
-.header::after {
-  content: "";
-  position: absolute;
-  inset-inline: 0;
-  bottom: -1px;
-  height: 2px;
-  background: var(--spectrum);
-  opacity: 0;
-  transition: opacity 300ms ease;
-}
-.header[data-scrolled="true"]::after {
-  opacity: 1;
-}
-/* Opaque once the page moves, so the aurora never tints the bar. */
-.header[data-scrolled="true"] {
-  background: var(--color-bg);
-  backdrop-filter: none;
-}
-
-/* --------------------------------------------------------------------------
    HERO FIELD
    -------------------------------------------------------------------------- */
 /* The hero's aurora and its scrim used to live here — one static gradient
@@ -118,78 +86,6 @@ h3 {
    `.service-hero__veil` below, because that one is holding contrast against a
    photograph rather than against drawn light. */
 
-/* The blueprint grid, barely there — it gives the field texture at the scale
-   the headline is set, so the type is not floating on flat colour. */
-.hero__grid {
-  position: absolute;
-  inset: 0;
-  z-index: 0;
-  pointer-events: none;
-  background-image:
-    linear-gradient(to right, color-mix(in srgb, var(--color-bg) 6%, transparent) 1px, transparent 1px),
-    linear-gradient(to bottom, color-mix(in srgb, var(--color-bg) 6%, transparent) 1px, transparent 1px);
-  background-size: 92px 92px;
-  -webkit-mask-image: radial-gradient(120% 85% at 15% 20%, #000 10%, transparent 78%);
-  mask-image: radial-gradient(120% 85% at 15% 20%, #000 10%, transparent 78%);
-}
-
-/* Signature 1 of 3 — the spectrum closing the hero field. */
-.hero::after {
-  content: "";
-  position: absolute;
-  inset-inline: 0;
-  bottom: 0;
-  height: 2px;
-  z-index: 2;
-  background: var(--spectrum);
-}
-
-.hero__pulse {
-  width: 6px;
-  height: 6px;
-  flex: none;
-  background: var(--color-accent-300);
-  animation: hero-pulse 2.6s ease-out infinite;
-}
-@keyframes hero-pulse {
-  0% {
-    box-shadow: 0 0 0 0 color-mix(in srgb, var(--color-accent-300) 60%, transparent);
-  }
-  70% {
-    box-shadow: 0 0 0 7px transparent;
-  }
-  100% {
-    box-shadow: 0 0 0 0 transparent;
-  }
-}
-
-/* --------------------------------------------------------------------------
-   SERVICES — parent-state styling the row's own classes cannot reach
-   -------------------------------------------------------------------------- */
-.service:hover {
-  background: color-mix(in srgb, var(--color-text) 3%, transparent);
-}
-/* The open row is marked by an accent edge, so the list always shows where you
-   are without relying on the chevron alone. */
-.service:has(.service__toggle[aria-expanded="true"]) {
-  box-shadow: inset 3px 0 0 var(--color-accent);
-}
-.service__toggle:focus-visible {
-  outline: 2px solid var(--color-accent);
-  outline-offset: 2px;
-}
-
-/* --------------------------------------------------------------------------
-   FOOTER — signature 3 of 3
-   -------------------------------------------------------------------------- */
-.footer::before {
-  content: "";
-  position: absolute;
-  inset-inline: 0;
-  top: 0;
-  height: 2px;
-  background: var(--spectrum);
-}
 
 /* --------------------------------------------------------------------------
    DIALOG
@@ -221,15 +117,15 @@ h3 {
   .linkish {
     all: unset;
     cursor: pointer;
-    color: var(--color-accent-700);
+    color: var(--color-coral-700);
     text-decoration: underline;
     text-underline-offset: 3px;
   }
   .linkish:hover {
-    color: var(--color-accent-800);
+    color: var(--color-coral-600);
   }
   .linkish:focus-visible {
-    outline: 2px solid var(--color-accent);
+    outline: 2px solid var(--color-coral-500);
     outline-offset: 2px;
   }
   /* In the footer they sit among plain anchors, so they match them. */
@@ -239,101 +135,16 @@ h3 {
     font-size: 15px;
   }
   .footer .linkish:hover {
-    color: var(--color-accent-700);
+    color: var(--color-coral-700);
   }
 }
 
-/* --------------------------------------------------------------------------
-   SERVICE MASTHEAD FIELD
-   ---------------------------------------------------------------------------
-   The spectrum photograph behind every /services/<slug>/ masthead. Not on the
-   home hero, which keeps the drawn aurora — the two fields should not compete,
-   and the home page's first screen is the one that must never be busy.
-
-   WHY THIS DOES NOT FIGHT THE DESIGN SYSTEM. Industry is monochrome steel plus
-   one accent, so a full-spectrum photograph ought to be foreign to it. It is
-   not, because the system already runs `--spectrum` as its signature: the rule
-   under the header and the 2px edge closing the hero are both the same rainbow.
-   The photograph is that motif at scale, which is why it reads as the site's
-   own rather than as stock.
-
-   THE TECHNIQUE IS `screen`, AND IT IS DOING REAL WORK. The source is neon on
-   pure black. Screen blending maps black to transparent and leaves only the
-   light, so the steel ground survives underneath: no black rectangle dropped
-   into a steel section, no seam at the edges, and the field still reads as
-   --color-accent-900 rather than as a photo. Placing the same file as a plain
-   background-image would replace the field instead of lighting it.
-
-   CONTRAST IS THE CONSTRAINT, NOT THE OPACITY. The masthead sets a headline
-   over the left column and a 16.5px lede over the right, both reversed out in
-   paper. The veil below is therefore weighted to the left, where the type is
-   densest, and never clears entirely on the right. The numbers here are the
-   ones that measured clean against WCAG AA on every service page — treat them
-   as tested values rather than as taste, and re-measure if you change them.
-   -------------------------------------------------------------------------- */
-.service-hero__spectrum {
-  position: absolute;
-  inset: 0;
-  z-index: 0;
-  pointer-events: none;
-  background-image: url("/service-hero-spectrum.jpg");
-  background-size: cover;
-  background-position: 68% center;
-  /* Black falls out; only the neon adds to the steel underneath. */
-  mix-blend-mode: screen;
-  opacity: 0.42;
-  /* Fade the source out under the headline, and hold it back under the lede.
-     The right stays brightest in the gutter between the two columns. */
-  -webkit-mask-image: linear-gradient(
-    100deg,
-    transparent 0%,
-    rgba(0, 0, 0, 0.28) 26%,
-    rgba(0, 0, 0, 0.85) 52%,
-    rgba(0, 0, 0, 0.6) 78%,
-    rgba(0, 0, 0, 0.42) 100%
-  );
-  mask-image: linear-gradient(
-    100deg,
-    transparent 0%,
-    rgba(0, 0, 0, 0.28) 26%,
-    rgba(0, 0, 0, 0.85) 52%,
-    rgba(0, 0, 0, 0.6) 78%,
-    rgba(0, 0, 0, 0.42) 100%
-  );
-}
-
-/* The scrim that buys the contrast back. Same role as `.prism-veil`, tuned for
-   this composition: heaviest bottom-left under the breadcrumb and headline. */
-.service-hero__veil {
-  position: absolute;
-  inset: 0;
-  z-index: 0;
-  pointer-events: none;
-  background:
-    linear-gradient(
-      100deg,
-      color-mix(in srgb, var(--color-accent-900) 88%, transparent) 0%,
-      color-mix(in srgb, var(--color-accent-900) 62%, transparent) 44%,
-      color-mix(in srgb, var(--color-accent-900) 34%, transparent) 100%
-    ),
-    linear-gradient(
-      to top,
-      color-mix(in srgb, var(--color-accent-900) 55%, transparent) 0%,
-      transparent 55%
-    );
-}
-
-/* The spectrum edge the home hero closes on, so a service masthead ends the
-   same way the home field does. */
-.service-hero::after {
-  content: "";
-  position: absolute;
-  inset-inline: 0;
-  bottom: 0;
-  height: 2px;
-  z-index: 2;
-  background: var(--spectrum);
-}
+/* The service mastheads used to carry a spectrum photograph screened over the
+   steel field, plus a scrim holding the type's contrast against it, plus a
+   2px rainbow edge. All three are gone with the rebrand: the masthead is now
+   a flat coral field fading into the lavender below it (`.field-fade` in
+   coral.css), and a photograph over that would fight the one colour the whole
+   brand is built on. /public/service-hero-spectrum.jpg is now unreferenced. */
 
 /* ══════════════════════════════════════════════════════════════════════════
    MOBILE ERGONOMICS

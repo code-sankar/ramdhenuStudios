@@ -3,39 +3,54 @@ import { Link, useLocation } from "react-router-dom";
 import { AnimatePresence, motion, useReducedMotion } from "motion/react";
 
 import Icon from "./Icon";
-import { variants } from "../lib/motion";
+import { duration, ease } from "../lib/motion";
+import { contact } from "../data/site";
 
 /**
- * NAV MENU — the Services mega-menu.
+ * NAV MENU — the mega-menu.
  *
- * The interaction model below is unchanged from the original dropdown and was
- * the hard part; only the panel it opens is new. Keeping notes on it here
- * because every one of these is a bug someone will otherwise reintroduce:
+ * THE PANEL HAS THREE PARTS, and the middle one is what makes it a mega-menu
+ * rather than a tall dropdown:
  *
- * The trigger is a BUTTON, not a link. A link that also opens a menu has to
- * guess which one a click meant. The destination the link used to point at
- * survives as "All services" in the panel footer — a trigger that swallows its
- * own destination is a dead end.
+ *   the rail    every item in the section, down the left. Hovering one does
+ *               not navigate — it changes what the middle shows.
+ *   the read    a heading and a sentence about whichever item is active, so
+ *               the menu explains the choice instead of just listing it.
+ *   the foot    a charcoal strip with the phone number. Someone who opened
+ *               the menu looking for a way to talk to you has found it.
  *
- * Hover opens it, but only under `(hover: hover)`, so a touch device never gets
- * a phantom open from a tap meant as a click. Closing is delayed by a beat
- * because the path from trigger to panel is diagonal, and a menu that vanishes
- * mid-reach is the most common way this pattern is got wrong.
+ * THE INTERACTION MODEL is carried over unchanged and is the hard part:
  *
- * Open-ness is stored as the pathname it was opened on, not as a boolean, so a
- * navigation closes it by derivation rather than by an effect firing after the
+ * The trigger is a BUTTON, not a link — a link that also opens a menu has to
+ * guess which one a click meant. Its old destination survives as the rail's
+ * footer link, because a trigger that swallows its own destination is a dead
+ * end.
+ *
+ * Hover opens it, but only under `(hover: hover)`, so a tap on a touch device
+ * never fires a phantom open. Closing is delayed a beat because the path from
+ * trigger to panel is diagonal, and a menu that vanishes mid-reach is the most
+ * common way this pattern is got wrong.
+ *
+ * Open-ness is stored as the pathname it opened on, not as a boolean, so
+ * navigating closes it by derivation rather than by an effect firing after the
  * new page has already painted behind it.
  *
  * Keyboard: Enter/Space toggles, Escape closes and returns focus to the
- * trigger, Down opens onto the first card, Up/Down move between cards, and
- * focus leaving the whole control closes it.
+ * trigger, Down opens onto the first item, Up/Down move, and focus leaving the
+ * control closes it.
  *
- * BELOW md IT IS NOT A MEGA-MENU. The header collapses into a drawer on a
- * phone, so this becomes a plain stacked list inside it — a 640px grid in a
- * 360px column is not a menu, it is a scroll trap. Same state, same handlers,
- * different panel.
+ * BELOW md IT IS A PLAIN LIST inside the drawer. A three-column panel in a
+ * 360px column is not a menu, it is a scroll trap.
  */
-export default function NavMenu({ label, items, footer, currentPath, active = false, onNavigate }) {
+export default function NavMenu({
+  label,
+  items,
+  footer,
+  currentPath,
+  active = false,
+  onNavigate,
+  onOpenChange,
+}) {
   const id = useId();
   const panelId = `nav-menu-${id.replace(/:/g, "")}`;
   const { pathname } = useLocation();
@@ -43,6 +58,10 @@ export default function NavMenu({ label, items, footer, currentPath, active = fa
 
   const [openAt, setOpenAt] = useState(null);
   const open = openAt !== null && openAt === pathname;
+
+  /* Which rail item the read-column is describing. Defaults to the first. */
+  const [focusIndex, setFocusIndex] = useState(0);
+  const shown = items[focusIndex] ?? items[0];
 
   const wrapRef = useRef(null);
   const triggerRef = useRef(null);
@@ -67,6 +86,11 @@ export default function NavMenu({ label, items, footer, currentPath, active = fa
 
   useEffect(() => () => cancelClose(), []);
 
+  /* The header needs to know, so the bar can go white behind the panel. */
+  useEffect(() => {
+    onOpenChange?.(open);
+  }, [open, onOpenChange]);
+
   useEffect(() => {
     if (!open) return;
     const onPointerDown = (event) => {
@@ -87,13 +111,15 @@ export default function NavMenu({ label, items, footer, currentPath, active = fa
   const onLeave = () => {
     if (!hoverCapable()) return;
     cancelClose();
-    closeTimer.current = setTimeout(() => setOpenAt(null), 140);
+    closeTimer.current = setTimeout(() => setOpenAt(null), 160);
   };
 
   const focusItem = (index) => {
     const links = wrapRef.current?.querySelectorAll("[data-menu-item]");
     if (!links?.length) return;
-    links[(index + links.length) % links.length]?.focus();
+    const at = (index + links.length) % links.length;
+    links[at]?.focus();
+    setFocusIndex(at);
   };
 
   const onTriggerKeyDown = (event) => {
@@ -117,8 +143,7 @@ export default function NavMenu({ label, items, footer, currentPath, active = fa
 
     event.preventDefault();
     const links = [...(wrapRef.current?.querySelectorAll("[data-menu-item]") ?? [])];
-    const at = links.indexOf(document.activeElement);
-    focusItem(at + (event.key === "ArrowDown" ? 1 : -1));
+    focusItem(links.indexOf(document.activeElement) + (event.key === "ArrowDown" ? 1 : -1));
   };
 
   const onBlur = (event) => {
@@ -135,54 +160,98 @@ export default function NavMenu({ label, items, footer, currentPath, active = fa
       id={panelId}
       onKeyDown={onPanelKeyDown}
       className={[
-        "nav-panel w-full overflow-hidden rounded-lg",
-        /* From md up it detaches into a centred panel. `w-[min(...)]` keeps it
-           inside the viewport on a 1024px laptop, where a fixed 640px panel
-           centred on a right-hand trigger would hang off the edge. */
-        "md:absolute md:top-[calc(100%+16px)] md:left-1/2 md:z-20 md:w-[min(660px,calc(100vw-48px))] md:-translate-x-1/2",
+        "menu-panel w-full",
+        /* From md up it detaches into a wide centred panel. The min() keeps it
+           inside a 1024px laptop, where a fixed width centred on a right-hand
+           trigger would hang off the edge. */
+        "md:absolute md:top-[calc(100%+14px)] md:left-1/2 md:z-20",
+        "md:w-[min(880px,calc(100vw-40px))] md:-translate-x-1/2",
       ].join(" ")}
     >
-      <ul className="m-0 grid list-none gap-1 p-2 md:grid-cols-2 md:p-2.5">
-        {items.map((item) => (
-          <li key={item.label}>
-            <Link
-              to={item.to}
-              data-menu-item
-              aria-current={currentPath === item.to ? "true" : undefined}
-              onClick={dismiss}
-              className="group/item flex gap-3 rounded-md p-2.5 no-underline transition-colors duration-200 hover:bg-ink-950/5 aria-[current=true]:bg-ink-950/6 max-md:min-h-[44px] md:p-3"
-            >
-              <span className="mt-px w-6 flex-none font-display text-[11.5px] tracking-[0.08em] text-prism-indigo">
-                {item.num}
-              </span>
-              <span className="flex-1">
-                <span className="block text-[14.5px] leading-snug font-medium text-ink transition-colors duration-200 group-hover/item:text-prism-indigo max-md:text-[16px]">
-                  {item.label}
+      <div className="md:grid md:grid-cols-[minmax(0,260px)_minmax(0,1fr)]">
+        {/* ── The rail ── */}
+        <ul className="m-0 list-none p-0 md:border-r md:border-char-900/8">
+          {items.map((item, i) => (
+            <li key={item.label}>
+              <Link
+                to={item.to}
+                data-menu-item
+                data-active={i === focusIndex ? "true" : undefined}
+                aria-current={currentPath === item.to ? "true" : undefined}
+                onMouseEnter={() => setFocusIndex(i)}
+                onFocus={() => setFocusIndex(i)}
+                onClick={dismiss}
+                className="menu-rail-item no-underline max-md:min-h-[44px]"
+              >
+                <span className="w-6 flex-none font-display text-[11.5px] tracking-[0.08em] text-coral-700">
+                  {item.num}
                 </span>
-                {item.blurb && (
-                  <span className="mt-0.5 block text-[12.5px] leading-[1.45] text-ink/68 max-md:hidden">
-                    {item.blurb}
-                  </span>
-                )}
-              </span>
-            </Link>
-          </li>
-        ))}
-      </ul>
+                <span className="flex-1">{item.label}</span>
+                <Icon name="chevronRight" size={14} />
+              </Link>
+            </li>
+          ))}
+        </ul>
 
-      {footer && (
-        <div className="border-t border-ink/8 bg-ink-950/3 px-4 py-3">
-          <Link
-            to={footer.to}
-            data-menu-item
-            onClick={dismiss}
-            className="inline-flex items-center gap-2 font-display text-[13px] tracking-[0.06em] text-ink/75 uppercase no-underline transition-colors duration-200 hover:text-prism-indigo max-md:min-h-[44px]"
-          >
-            {footer.label}
-            <Icon name="arrowRight" size={14} />
-          </Link>
+        {/* ── The read. Below md the rail already says everything a 360px
+              column has room for, so this is desktop-only. ── */}
+        <div className="hidden flex-col justify-between p-7 md:flex">
+          <div>
+            <p className="mb-2 font-display text-[11px] tracking-[0.14em] text-coral-700 uppercase">
+              {shown?.num} — Service
+            </p>
+            <h3 className="display mb-3 text-[26px] leading-[1.1] text-char-900">
+              {shown?.label}
+            </h3>
+            <p className="m-0 max-w-[44ch] text-[14.5px] leading-[1.6] text-char-700">
+              {shown?.blurb}
+            </p>
+
+            {/* What the column is actually for. The reference puts a photo
+                here; four lines of what the service includes is more use to
+                someone deciding which of six to click. */}
+            {shown?.includes?.length > 0 && (
+              <ul className="mt-5 grid list-none grid-cols-2 gap-x-5 gap-y-1.5 p-0">
+                {shown.includes.map((item) => (
+                  <li
+                    key={item}
+                    className="flex items-start gap-2 text-[13px] leading-[1.45] text-char-700"
+                  >
+                    <span aria-hidden="true" className="mt-[7px] h-1 w-1 flex-none rounded-full bg-coral-500" />
+                    {item}
+                  </li>
+                ))}
+              </ul>
+            )}
+          </div>
+
+          {footer && (
+            <Link
+              to={footer.to}
+              data-menu-item
+              onClick={dismiss}
+              className="mt-6 inline-flex items-center gap-2 self-start font-display text-[13px] tracking-[0.06em] text-char-900 uppercase no-underline transition-colors duration-200 hover:text-coral-700"
+            >
+              {footer.label}
+              <Icon name="arrowRight" size={14} />
+            </Link>
+          )}
         </div>
-      )}
+      </div>
+
+      {/* ── The charcoal foot ── */}
+      <div className="menu-foot flex flex-wrap items-center justify-between gap-3 px-7 py-4 max-md:px-5">
+        <p className="m-0 text-[13.5px] leading-snug">
+          Need something built for your business specifically?
+        </p>
+        <a
+          href={contact.phoneHref}
+          onClick={dismiss}
+          className="font-display text-[15px] tracking-[0.02em] text-white no-underline transition-opacity duration-200 hover:opacity-75"
+        >
+          Or call {contact.phone}
+        </a>
+      </div>
     </div>
   );
 
@@ -203,10 +272,9 @@ export default function NavMenu({ label, items, footer, currentPath, active = fa
         aria-current={active ? "true" : undefined}
         onClick={() => (open ? close() : openMenu())}
         onKeyDown={onTriggerKeyDown}
-        /* No `text-inherit` here: it is a utility, so it beats `.nav-link`'s
-           colour from the components layer and leaves this trigger a different
-           shade from every link beside it. */
-        className="nav-link flex cursor-pointer items-center gap-1.5 border-0 bg-transparent max-md:min-h-[44px] max-md:w-full max-md:text-[17px]"
+        /* No `text-inherit`: it is a utility, so it would beat `.nav-link`'s
+           colour and leave this trigger a different shade from its siblings. */
+        className="nav-link flex cursor-pointer items-center gap-1.5 border-0 bg-transparent max-md:min-h-[44px] max-md:w-full max-md:text-[19px]"
       >
         {label}
         <Icon
@@ -223,11 +291,10 @@ export default function NavMenu({ label, items, footer, currentPath, active = fa
           ) : (
             <motion.div
               className="max-md:mt-2"
-              variants={variants.pop}
-              initial="hidden"
-              animate="show"
-              exit="exit"
-              style={{ transformOrigin: "top center" }}
+              initial={{ opacity: 0, y: -10 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0, y: -8 }}
+              transition={{ duration: duration.short, ease: ease.out }}
             >
               {panel}
             </motion.div>

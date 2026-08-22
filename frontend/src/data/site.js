@@ -33,8 +33,15 @@ export const brand = {
 export const contact = {
   email: "hello@ramdhenu.studio",
   emailHref: "mailto:hello@ramdhenu.studio",
-  phone: "+91 6002830014 || +91 9395805628",
+  /* ONE NUMBER PER FIELD. This was a single string reading
+     "+91 6002830014 || +91 9395805628", which rendered the "||" literally on
+     the page and — worse — went into schema.org `telephone` in seo.js, where
+     a value that is not one dialable number is simply invalid structured
+     data. Both numbers are kept; they are just kept separately. */
+  phone: "+91 60028 30014",
+  phoneAlt: "+91 93958 05628",
   phoneHref: "tel:+916002830014",
+  phoneAltHref: "tel:+919395805628",
   /**
    * Country code + number, DIGITS ONLY — no +, no spaces, no dashes.
    * wa.me percent-encodes anything else into the path and the link dies with
