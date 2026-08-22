@@ -21,13 +21,35 @@ export const services = [
     slug: "website-design-development",
     title: "Website Design & Development",
     short: "Website Design",
-    blurb: "Modern, responsive websites designed to turn visitors into customers.",
+    blurb:
+      "Modern, responsive websites designed to turn visitors into customers.",
     motif: "web",
     metaTitle: "Website Design & Development in Assam | Ramdhenu",
     metaDescription:
       "Fast, mobile-first business websites for local companies in Assam — built around enquiries, not decoration. Design, build, SEO foundations and analytics from one team.",
     lede: "Most local business websites are brochures. They describe the business and stop there. We build the other kind — a site whose job is to turn someone who is already interested into someone who calls, messages or books.",
-    forWho: ["Restaurants & cafés", "Hotels & resorts", "Clinics", "Real estate", "Coaching centres"],
+    forWho: [
+      "Restaurants & cafés",
+      "Hotels & resorts",
+      "Clinics",
+      "Real estate",
+      "Coaching centres",
+    ],
+
+    /* The six faces of a build, for the diagram on this page. They are labels
+       on a figure rather than prose, so they are short by design — the sections
+       below carry the explanation. Order is the diagram's reading order: top
+       pair, middle pair, bottom pair, and each is paired with its opposite
+       rather than its neighbour (design opposite front end, search opposite
+       back end), which is what makes the figure balance. */
+    anatomy: [
+      { label: "UX & UI Design", icon: "design" },
+      { label: "Frontend Development", icon: "frontend" },
+      { label: "SEO & Security", icon: "seo" },
+      { label: "Backend Development", icon: "backend" },
+      { label: "Responsive & Performance", icon: "performance" },
+      { label: "Database & APIs", icon: "data" },
+    ],
     sections: [
       {
         heading: "What we actually build",
@@ -57,10 +79,22 @@ export const services = [
       "Thirty days of post-launch fixes",
     ],
     process: [
-      { step: "Audit", body: "We look at what you have, what competitors rank for, and how people currently reach you." },
-      { step: "Structure", body: "Pages, priorities and the path to an enquiry, agreed before any design happens." },
-      { step: "Design & build", body: "Screens first on mobile, then desktop, with your photography in place rather than stock." },
-      { step: "Launch & measure", body: "Go live, verify tracking works, then watch the first weeks and fix what the data shows." },
+      {
+        step: "Audit",
+        body: "We look at what you have, what competitors rank for, and how people currently reach you.",
+      },
+      {
+        step: "Structure",
+        body: "Pages, priorities and the path to an enquiry, agreed before any design happens.",
+      },
+      {
+        step: "Design & build",
+        body: "Screens first on mobile, then desktop, with your photography in place rather than stock.",
+      },
+      {
+        step: "Launch & measure",
+        body: "Go live, verify tracking works, then watch the first weeks and fix what the data shows.",
+      },
     ],
     outcomes: [
       "A site that loads fast on a mid-range phone on mobile data",
@@ -89,13 +123,20 @@ export const services = [
     slug: "photography-videography",
     title: "Photography & Videography",
     short: "Photography",
-    blurb: "Professional visuals that showcase your products, people and brand.",
+    blurb:
+      "Professional visuals that showcase your products, people and brand.",
     motif: "photography",
     metaTitle: "Business, Food & Product Photography in Assam | Ramdhenu",
     metaDescription:
       "Food, product, interior and brand photography plus reels for local businesses in Assam. Shot for where they will be used — menus, listings, ads and social.",
     lede: "People decide whether to visit your restaurant, salon or resort from a phone screen, in about four seconds, on the strength of a photograph. That photograph is doing more selling than anything else you own.",
-    forWho: ["Restaurants & cafés", "Hotels & resorts", "Salons", "Boutiques", "Local retail"],
+    forWho: [
+      "Restaurants & cafés",
+      "Hotels & resorts",
+      "Salons",
+      "Boutiques",
+      "Local retail",
+    ],
     sections: [
       {
         heading: "Shot for where it will be used",
@@ -124,10 +165,22 @@ export const services = [
       "Full usage rights, delivered as files you keep",
     ],
     process: [
-      { step: "Plan", body: "We agree the shot list against where each image needs to work — menu, site, listing, ad." },
-      { step: "Prep", body: "Timing, styling and what needs to be ready on the day, so the session is not spent waiting." },
-      { step: "Shoot", body: "Stills and vertical video in one visit, usually half a day for a single location." },
-      { step: "Deliver", body: "Edited files in every crop you need, organised by where they are used." },
+      {
+        step: "Plan",
+        body: "We agree the shot list against where each image needs to work — menu, site, listing, ad.",
+      },
+      {
+        step: "Prep",
+        body: "Timing, styling and what needs to be ready on the day, so the session is not spent waiting.",
+      },
+      {
+        step: "Shoot",
+        body: "Stills and vertical video in one visit, usually half a day for a single location.",
+      },
+      {
+        step: "Deliver",
+        body: "Edited files in every crop you need, organised by where they are used.",
+      },
     ],
     outcomes: [
       "One consistent look across your site, social and listings",
@@ -158,11 +211,18 @@ export const services = [
     short: "Social Media",
     blurb: "Content calendars, community and channel growth.",
     motif: "social",
-    metaTitle: "Social Media Management for Local Businesses in Assam | Ramdhenu",
+    metaTitle:
+      "Social Media Management for Local Businesses in Assam | Ramdhenu",
     metaDescription:
       "Content calendars, reels, creatives and community management for local businesses in Assam. Two channels done properly rather than five done badly.",
     lede: "Posting is not a strategy. A feed earns its keep when someone who has never heard of you can scroll it for ten seconds and understand what you sell, what it costs, and why they should come in.",
-    forWho: ["Restaurants & cafés", "Gyms", "Salons", "Boutiques", "Coaching centres"],
+    forWho: [
+      "Restaurants & cafés",
+      "Gyms",
+      "Salons",
+      "Boutiques",
+      "Coaching centres",
+    ],
     sections: [
       {
         heading: "Two channels, properly",
@@ -191,10 +251,22 @@ export const services = [
       "Monthly report in plain language",
     ],
     process: [
-      { step: "Set the base", body: "Profiles, bios, highlights and link routing fixed before any posting starts." },
-      { step: "Plan the month", body: "Themes and a calendar built around your trading pattern, approved by you." },
-      { step: "Produce & post", body: "Creatives, captions and reels made and published on schedule." },
-      { step: "Review & adjust", body: "What worked, what did not, and what changes next month." },
+      {
+        step: "Set the base",
+        body: "Profiles, bios, highlights and link routing fixed before any posting starts.",
+      },
+      {
+        step: "Plan the month",
+        body: "Themes and a calendar built around your trading pattern, approved by you.",
+      },
+      {
+        step: "Produce & post",
+        body: "Creatives, captions and reels made and published on schedule.",
+      },
+      {
+        step: "Review & adjust",
+        body: "What worked, what did not, and what changes next month.",
+      },
     ],
     outcomes: [
       "A feed that explains the business without you narrating it",
@@ -229,7 +301,13 @@ export const services = [
     metaDescription:
       "Meta and Google Ads for local businesses in Assam, measured on enquiries rather than impressions. Landing pages, call tracking and honest reporting.",
     lede: "Ads are the fastest way to find out whether your offer works — and the fastest way to spend money finding out that it doesn't. The difference is entirely in what you measure.",
-    forWho: ["Real estate", "Clinics", "Coaching centres", "Hotels & resorts", "Local retail"],
+    forWho: [
+      "Real estate",
+      "Clinics",
+      "Coaching centres",
+      "Hotels & resorts",
+      "Local retail",
+    ],
     sections: [
       {
         heading: "Measured on enquiries, not impressions",
@@ -258,10 +336,22 @@ export const services = [
       "Monthly reporting on cost per enquiry",
     ],
     process: [
-      { step: "Track first", body: "Nothing runs until conversions are firing correctly — otherwise the data is fiction." },
-      { step: "Build", body: "Audiences, creatives and a landing page for the specific offer." },
-      { step: "Learn", body: "One to two weeks at a controlled budget while the platform settles." },
-      { step: "Scale or stop", body: "Spend moves toward what produces enquiries; what doesn't gets cut." },
+      {
+        step: "Track first",
+        body: "Nothing runs until conversions are firing correctly — otherwise the data is fiction.",
+      },
+      {
+        step: "Build",
+        body: "Audiences, creatives and a landing page for the specific offer.",
+      },
+      {
+        step: "Learn",
+        body: "One to two weeks at a controlled budget while the platform settles.",
+      },
+      {
+        step: "Scale or stop",
+        body: "Spend moves toward what produces enquiries; what doesn't gets cut.",
+      },
     ],
     outcomes: [
       "A known cost per enquiry rather than a guess",
@@ -295,8 +385,14 @@ export const services = [
     metaTitle: "Google Business Profile Management in Assam | Ramdhenu",
     metaDescription:
       "Google Business Profile setup, optimisation and management for local businesses in Assam — Maps visibility, photos, posts and reviews.",
-    lede: "For a local business this is usually the highest-return thing on the list, and the most neglected. Someone searching \"cafe near me\" is not browsing — they are deciding, now, from whatever Google shows them.",
-    forWho: ["Restaurants & cafés", "Salons", "Clinics", "Gyms", "Local retail"],
+    lede: 'For a local business this is usually the highest-return thing on the list, and the most neglected. Someone searching "cafe near me" is not browsing — they are deciding, now, from whatever Google shows them.',
+    forWho: [
+      "Restaurants & cafés",
+      "Salons",
+      "Clinics",
+      "Gyms",
+      "Local retail",
+    ],
     sections: [
       {
         heading: "The profile is the storefront",
@@ -325,10 +421,22 @@ export const services = [
       "Monthly report on calls, directions and clicks",
     ],
     process: [
-      { step: "Claim & audit", body: "Verify ownership and fix what is wrong, missing or duplicated." },
-      { step: "Complete", body: "Every field filled, categories chosen deliberately, photos loaded." },
-      { step: "Activate", body: "Posts, review requests and Q&A running on a schedule." },
-      { step: "Report", body: "Monthly on the actions that matter — calls, directions, website clicks." },
+      {
+        step: "Claim & audit",
+        body: "Verify ownership and fix what is wrong, missing or duplicated.",
+      },
+      {
+        step: "Complete",
+        body: "Every field filled, categories chosen deliberately, photos loaded.",
+      },
+      {
+        step: "Activate",
+        body: "Posts, review requests and Q&A running on a schedule.",
+      },
+      {
+        step: "Report",
+        body: "Monthly on the actions that matter — calls, directions, website clicks.",
+      },
     ],
     outcomes: [
       "A profile that is actually complete, not half filled",
@@ -363,7 +471,13 @@ export const services = [
     metaDescription:
       "Logo systems, brand guidelines, packaging, menus and ad creatives for local businesses in Assam — a visual language that holds together everywhere.",
     lede: "A brand is not a logo. It is the reason someone recognises your post in a crowded feed before they read the name on it — and that only happens when everything you put out looks like it came from the same place.",
-    forWho: ["Boutiques", "Restaurants & cafés", "Local retail", "Hotels & resorts", "Coaching centres"],
+    forWho: [
+      "Boutiques",
+      "Restaurants & cafés",
+      "Local retail",
+      "Hotels & resorts",
+      "Coaching centres",
+    ],
     sections: [
       {
         heading: "A system, not a single file",
@@ -393,10 +507,22 @@ export const services = [
       "Source files handed over",
     ],
     process: [
-      { step: "Understand", body: "What the business is, who it serves, and what it should feel like beside its competitors." },
-      { step: "Direction", body: "Two or three routes explored properly, rather than a page of thumbnails." },
-      { step: "Build the system", body: "The chosen route extended into type, colour, layout and image treatment." },
-      { step: "Document & hand over", body: "Guidelines, templates and source files, all yours." },
+      {
+        step: "Understand",
+        body: "What the business is, who it serves, and what it should feel like beside its competitors.",
+      },
+      {
+        step: "Direction",
+        body: "Two or three routes explored properly, rather than a page of thumbnails.",
+      },
+      {
+        step: "Build the system",
+        body: "The chosen route extended into type, colour, layout and image treatment.",
+      },
+      {
+        step: "Document & hand over",
+        body: "Guidelines, templates and source files, all yours.",
+      },
     ],
     outcomes: [
       "Recognisable before the name is read",

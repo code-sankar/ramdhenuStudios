@@ -807,3 +807,237 @@ figcaption,
     animation: none;
   }
 }
+
+/* --------------------------------------------------------------------------
+   8. THE ANATOMY DIAGRAM
+   ---------------------------------------------------------------------------
+   Six disciplines wired into one build — see src/components/Anatomy.jsx for the
+   geometry, which is generated from a single coordinate table shared by the SVG
+   and the HTML.
+
+   THE STAGE'S ASPECT RATIO IS LOAD-BEARING, NOT STYLING. The cards are
+   positioned in percentages and the wires in viewBox units. Those are only the
+   same distance while the box's proportions are fixed — unlock the ratio and
+   every wire detaches from its card at every width but one. If this needs to be
+   a different shape, change `VIEW` in the component and this ratio together.
+   -------------------------------------------------------------------------- */
+.anatomy-stage {
+  position: relative;
+  aspect-ratio: 1000 / 720;
+  width: 100%;
+  max-width: 1040px;
+  margin-inline: auto;
+}
+
+.anatomy-wires {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+}
+
+/* The browser. Its box is the same FRAME rectangle the wires terminate on,
+   expressed as a percentage of the stage. */
+.anatomy-frame {
+  position: absolute;
+  left: 35.2%;
+  top: 29.722%;
+  width: 29.6%;
+  height: 40.556%;
+  overflow: visible;
+  filter: drop-shadow(
+    0 18px 40px color-mix(in srgb, var(--color-coral-500) 14%, transparent)
+  );
+}
+.anatomy-chrome {
+  fill: #fff;
+  stroke: color-mix(in srgb, var(--color-coral-500) 26%, transparent);
+}
+.anatomy-ink {
+  fill: var(--color-coral-500);
+}
+.anatomy-cta {
+  fill: color-mix(in srgb, var(--color-coral-500) 62%, transparent);
+}
+
+/* A HAIRLINE IS A HAIRLINE AT EVERY SIZE, WHICH IS WHY THE STROKE DOES NOT
+   SCALE. The stage is 1040px at its widest and about 300px on a tablet; a
+   stroke expressed in viewBox units would be three times heavier at one end of
+   that range than the other, and the whole figure would read as a different
+   weight of drawing. `non-scaling-stroke` in the markup pins it to device
+   pixels instead. */
+.anatomy-line {
+  stroke: color-mix(in srgb, var(--color-coral-500) 46%, transparent);
+  stroke-width: 1.2;
+  transition:
+    stroke 240ms var(--ease-out-expo),
+    stroke-width 240ms var(--ease-out-expo);
+}
+.anatomy-port {
+  fill: var(--color-coral-500);
+  opacity: 0.72;
+  transition: opacity 240ms var(--ease-out-expo);
+}
+.anatomy-pulse {
+  fill: var(--color-coral-500);
+}
+
+/* THE HOVER IS `:has()`, NOT REACT STATE. Lighting a wire when its card is
+   hovered is presentational — it re-states the connection the wire already
+   draws, and hides nothing behind itself, so it needs no keyboard equivalent.
+   Driving it from `useState` would re-render the whole figure on every move
+   between cards to change two stroke values. Six rules, no JavaScript, and the
+   diagram never re-renders after mount. */
+.anatomy-stage:has(.anatomy-node[data-i="0"]:hover)
+  .anatomy-wire[data-i="0"]
+  .anatomy-line,
+.anatomy-stage:has(.anatomy-node[data-i="1"]:hover)
+  .anatomy-wire[data-i="1"]
+  .anatomy-line,
+.anatomy-stage:has(.anatomy-node[data-i="2"]:hover)
+  .anatomy-wire[data-i="2"]
+  .anatomy-line,
+.anatomy-stage:has(.anatomy-node[data-i="3"]:hover)
+  .anatomy-wire[data-i="3"]
+  .anatomy-line,
+.anatomy-stage:has(.anatomy-node[data-i="4"]:hover)
+  .anatomy-wire[data-i="4"]
+  .anatomy-line,
+.anatomy-stage:has(.anatomy-node[data-i="5"]:hover)
+  .anatomy-wire[data-i="5"]
+  .anatomy-line {
+  stroke: var(--color-coral-500);
+  stroke-width: 2;
+}
+.anatomy-stage:has(.anatomy-node[data-i="0"]:hover)
+  .anatomy-wire[data-i="0"]
+  .anatomy-port,
+.anatomy-stage:has(.anatomy-node[data-i="1"]:hover)
+  .anatomy-wire[data-i="1"]
+  .anatomy-port,
+.anatomy-stage:has(.anatomy-node[data-i="2"]:hover)
+  .anatomy-wire[data-i="2"]
+  .anatomy-port,
+.anatomy-stage:has(.anatomy-node[data-i="3"]:hover)
+  .anatomy-wire[data-i="3"]
+  .anatomy-port,
+.anatomy-stage:has(.anatomy-node[data-i="4"]:hover)
+  .anatomy-wire[data-i="4"]
+  .anatomy-port,
+.anatomy-stage:has(.anatomy-node[data-i="5"]:hover)
+  .anatomy-wire[data-i="5"]
+  .anatomy-port {
+  opacity: 1;
+}
+
+.anatomy-node {
+  position: absolute;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  padding: 10px;
+  text-align: center;
+  background: #fff;
+  border: 1px solid color-mix(in srgb, var(--color-coral-500) 22%, transparent);
+  border-radius: var(--radius-lg, 14px);
+  box-shadow: 0 2px 10px -6px
+    color-mix(in srgb, var(--color-coral-700) 30%, transparent);
+  transition:
+    transform 260ms var(--ease-out-expo),
+    border-color 260ms var(--ease-out-expo),
+    box-shadow 260ms var(--ease-out-expo);
+}
+.anatomy-node:hover {
+  transform: translateY(-3px);
+  border-color: color-mix(in srgb, var(--color-coral-500) 62%, transparent);
+  box-shadow: 0 14px 30px -18px
+    color-mix(in srgb, var(--color-coral-700) 46%, transparent);
+}
+
+.anatomy-badge {
+  display: grid;
+  place-items: center;
+  width: 46px;
+  height: 46px;
+  flex: none;
+  border-radius: 50%;
+  background: color-mix(in srgb, var(--color-coral-500) 11%, transparent);
+  color: var(--color-coral-700);
+}
+.anatomy-badge svg {
+  stroke: currentColor;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+/* THE WIDTH IS WHAT MAKES THESE WRAP, AND THEY ARE MEANT TO. A two-word
+   discipline set on one line runs the full width of its card and leaves the
+   short labels looking lost beside it; broken over two, all six read as the
+   same object at a glance. Capping the measure rather than the font size means
+   the type stays one size across the figure and the line breaks do the work —
+   `balance` then splits them evenly instead of leaving one word stranded.
+
+   The measure is 96px rather than the ~112px the labels actually occupy: the
+   heading face is Barlow *Condensed*, narrow enough that "Frontend Development"
+   fits on one line at any cap loose enough to look generous. The cap has to be
+   tighter than the text wants, or it does nothing at all. */
+.anatomy-label {
+  /* `display: block` is not cosmetic here: `max-width` has no effect on a
+     non-replaced inline element, so as a bare span the cap below was silently
+     ignored and only the longest label wrapped — by hitting the card edge. */
+  display: block;
+  max-width: 96px;
+  font-family: var(--font-heading);
+  font-weight: 600;
+  font-size: 15px;
+  line-height: 1.22;
+  letter-spacing: 0.01em;
+  color: var(--color-char-900, var(--color-text));
+  text-wrap: balance;
+}
+
+/* BELOW lg THE DIAGRAM STOPS BEING A DIAGRAM. Six wires converging on a centre
+   is an argument about structure; the same six stacked in one column is a list
+   with decoration draped over it, and the wires would have to bend through the
+   cards to reach anything. So the figure becomes what it honestly is at that
+   width — the build, and the six things that go into it — and the drawing is
+   dropped rather than contorted. */
+@media (max-width: 1023px) {
+  .anatomy-stage {
+    aspect-ratio: auto;
+    max-width: 560px;
+  }
+  .anatomy-wires {
+    display: none;
+  }
+  .anatomy-frame {
+    position: static;
+    display: block;
+    width: min(100%, 340px);
+    height: auto;
+    margin: 0 auto clamp(28px, 5vw, 44px);
+  }
+  .anatomy-node {
+    position: static !important;
+    width: auto !important;
+    height: auto !important;
+    min-height: 116px;
+    padding: 18px 12px;
+  }
+  .anatomy-label {
+    max-width: none;
+  }
+  .anatomy-stage :is(.anatomy-node) {
+    grid-column: span 1;
+  }
+  .anatomy-stage {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: clamp(10px, 2vw, 16px);
+  }
+  .anatomy-frame {
+    grid-column: 1 / -1;
+  }
+}

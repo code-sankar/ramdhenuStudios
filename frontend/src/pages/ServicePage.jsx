@@ -1,5 +1,6 @@
 import { Link, useParams } from "react-router-dom";
 
+import Anatomy from "../components/Anatomy";
 import Blueprint from "../components/Blueprint";
 import Icon from "../components/Icon";
 import Layout from "../components/Layout";
@@ -40,6 +41,28 @@ export default function ServicePage() {
   const others = services.filter((s) => s.slug !== service.slug);
   const project = workByService(service.slug);
 
+  /* THE INDEX NUMBERS ARE POSITIONAL, NOT WRITTEN DOWN. Two of these sections
+     are conditional — the diagram only exists where a service has one, and the
+     work section steps aside if no project matches — so hard-coded numbers were
+     already one missing project away from printing 01, 02, 04, 05 on a live
+     page. Deriving them from the sections that actually render means a numbered
+     index can never skip a number, whichever combination appears. */
+  const order = [
+    "intro",
+    service.anatomy && "anatomy",
+    "process",
+    project && "work",
+    "faq",
+    "more",
+  ].filter(Boolean);
+  const num = (key) => String(order.indexOf(key) + 1).padStart(2, "0");
+
+  /* The alternating band runs off the same list, for the same reason. Inserting
+     a section used to shift every ground colour after it by one, which is how a
+     page ends up with two lav-100 bands touching and reading as one very tall
+     block. With no diagram this reproduces the original colours exactly. */
+  const band = (key) => (order.indexOf(key) % 2 ? "bg-lav-100" : "bg-lav-50");
+
   return (
     <Layout skipTo="#service-body">
       <Seo meta={serviceSeo(service)} />
@@ -48,18 +71,23 @@ export default function ServicePage() {
           MASTHEAD — steel field, same as the home hero
       -------------------------------------------------------------------- */}
       <section className="masthead field-fade grain relative overflow-hidden pb-[clamp(56px,7vw,96px)]">
-
         <div className="shell relative">
           <nav aria-label="Breadcrumb" className="mb-8">
             <ol className="flex list-none flex-wrap items-center gap-x-2 p-0 text-[12px] tracking-[0.08em] text-white uppercase max-md:text-[12.5px]">
               <li>
-                <Link to="/" className="inline-block py-2 text-white no-underline transition-colors duration-150 hover:text-white">
+                <Link
+                  to="/"
+                  className="inline-block py-2 text-white no-underline transition-colors duration-150 hover:text-white"
+                >
                   Home
                 </Link>
               </li>
               <li aria-hidden="true">/</li>
               <li>
-                <Link to="/#services" className="inline-block py-2 text-white no-underline transition-colors duration-150 hover:text-white">
+                <Link
+                  to="/#services"
+                  className="inline-block py-2 text-white no-underline transition-colors duration-150 hover:text-white"
+                >
                   Services
                 </Link>
               </li>
@@ -82,7 +110,9 @@ export default function ServicePage() {
               </h1>
             </div>
 
-            <p className="text-[16.5px] leading-[1.6] text-white">{service.lede}</p>
+            <p className="text-[16.5px] leading-[1.6] text-white">
+              {service.lede}
+            </p>
           </div>
 
           <div className="mt-[clamp(32px,4vw,52px)] flex flex-wrap items-center gap-3 border-t border-white/25 pt-[clamp(24px,3vw,34px)]">
@@ -97,7 +127,12 @@ export default function ServicePage() {
               href={whatsappLink}
               target="_blank"
               rel="noreferrer"
-              onClick={() => track("WhatsApp click", { from: "service", service: service.title })}
+              onClick={() =>
+                track("WhatsApp click", {
+                  from: "service",
+                  service: service.title,
+                })
+              }
               className="inline-flex items-center gap-[9px] rounded-full border border-white/25 px-[26px] py-[15px] font-display text-[15px] text-white no-underline transition duration-200 hover:border-paper/40 hover:bg-paper/8 hover:text-white"
             >
               <Icon name="whatsapp" size={16} />
@@ -110,13 +145,18 @@ export default function ServicePage() {
       {/* --------------------------------------------------------------------
           THE EXPLANATION
       -------------------------------------------------------------------- */}
-      <section id="service-body" className="section-y bg-lav-50">
+      <section id="service-body" className={`section-y ${band("intro")}`}>
         <div className="shell grid items-start gap-[clamp(32px,5vw,80px)] lg:grid-cols-[minmax(0,1.35fr)_minmax(0,1fr)]">
           <div>
-            <SectionIndex num="01" label="What this is" />
+            <SectionIndex num={num("intro")} label="What this is" />
             {service.sections.map((block) => (
-              <Reveal key={block.heading} className="mb-[clamp(28px,3.4vw,44px)] last:mb-0">
-                <h2 className="display mb-3 text-[clamp(20px,2.2vw,27px)]">{block.heading}</h2>
+              <Reveal
+                key={block.heading}
+                className="mb-[clamp(28px,3.4vw,44px)] last:mb-0"
+              >
+                <h2 className="display mb-3 text-[clamp(20px,2.2vw,27px)]">
+                  {block.heading}
+                </h2>
                 <p className="m-0 max-w-[64ch] text-[16.5px] leading-[1.62] text-ink/72">
                   {block.body}
                 </p>
@@ -150,7 +190,11 @@ export default function ServicePage() {
                     key={item}
                     className="flex items-start gap-2.5 border-b border-line py-2.5 text-[14.5px] leading-snug last:border-b-0"
                   >
-                    <Icon name="check" size={15} className="mt-0.5 flex-none text-coral-700" />
+                    <Icon
+                      name="check"
+                      size={15}
+                      className="mt-0.5 flex-none text-coral-700"
+                    />
                     {item}
                   </li>
                 ))}
@@ -161,12 +205,44 @@ export default function ServicePage() {
       </section>
 
       {/* --------------------------------------------------------------------
+          WHAT GOES INTO IT — the six disciplines wired into one build.
+
+          Only where the service has the data for it. The prose above can say
+          what we build; it cannot easily say that these six are one object with
+          six faces rather than a menu, and that buying four of them gets you
+          nothing that runs. The wires make that argument in a glance.
+      -------------------------------------------------------------------- */}
+      {service.anatomy && (
+        <section className={`section-y ${band("anatomy")}`}>
+          <div className="shell">
+            <Reveal>
+              <SectionIndex num={num("anatomy")} label="What goes into it" />
+            </Reveal>
+            <Reveal className="mb-[clamp(32px,5vw,60px)] max-w-[620px]">
+              <h2 className="display mb-3 text-[clamp(26px,3.2vw,40px)]">
+                Six disciplines, one build
+              </h2>
+              <p className="text-muted m-0 text-base">
+                None of these is an add-on. A site with the design but not the
+                performance work is slow and beautiful; one with the back end
+                but not the search groundwork is a shop with no street. They
+                ship together or the site does not do its job.
+              </p>
+            </Reveal>
+            <Reveal delay={0.08} variant="fade">
+              <Anatomy nodes={service.anatomy} />
+            </Reveal>
+          </div>
+        </section>
+      )}
+
+      {/* --------------------------------------------------------------------
           HOW IT RUNS
       -------------------------------------------------------------------- */}
-      <section className="section-y bg-lav-100">
+      <section className={`section-y ${band("process")}`}>
         <div className="shell">
           <Reveal>
-            <SectionIndex num="02" label="How it runs" />
+            <SectionIndex num={num("process")} label="How it runs" />
             <h2 className="display mb-[clamp(32px,4vw,56px)] text-[clamp(26px,3.2vw,40px)]">
               Four stages, every time
             </h2>
@@ -186,7 +262,9 @@ export default function ServicePage() {
                   <span className="font-display text-[12px] tracking-[0.12em] text-coral-700">
                     {String(i + 1).padStart(2, "0")}
                   </span>
-                  <h3 className="display mt-2 mb-2 text-[clamp(17px,1.8vw,21px)]">{stage.step}</h3>
+                  <h3 className="display mt-2 mb-2 text-[clamp(17px,1.8vw,21px)]">
+                    {stage.step}
+                  </h3>
                   <p className="text-muted m-0 max-w-[34ch] text-[14.5px] leading-relaxed">
                     {stage.body}
                   </p>
@@ -197,11 +275,20 @@ export default function ServicePage() {
 
           {/* What changes — deliberately not numbers we cannot stand behind */}
           <Reveal delay={0.1} className="mt-[clamp(40px,5vw,72px)]">
-            <h3 className="display mb-5 text-[clamp(18px,2vw,24px)]">What changes</h3>
+            <h3 className="display mb-5 text-[clamp(18px,2vw,24px)]">
+              What changes
+            </h3>
             <ul className="grid list-none gap-x-10 gap-y-3 p-0 sm:grid-cols-2">
               {service.outcomes.map((o) => (
-                <li key={o} className="flex items-start gap-3 text-[15.5px] leading-relaxed">
-                  <Icon name="arrowRight" size={16} className="mt-1 flex-none text-coral-700" />
+                <li
+                  key={o}
+                  className="flex items-start gap-3 text-[15.5px] leading-relaxed"
+                >
+                  <Icon
+                    name="arrowRight"
+                    size={16}
+                    className="mt-1 flex-none text-coral-700"
+                  />
                   {o}
                 </li>
               ))}
@@ -217,10 +304,10 @@ export default function ServicePage() {
           rendering half a card if one is ever missing.
       -------------------------------------------------------------------- */}
       {project && (
-        <section className="section-y bg-lav-50">
+        <section className={`section-y ${band("work")}`}>
           <div className="shell">
             <Reveal>
-              <SectionIndex num="03" label="The work" />
+              <SectionIndex num={num("work")} label="The work" />
             </Reveal>
             <Reveal delay={0.06}>
               <div className="flex flex-wrap gap-[clamp(24px,4vw,56px)]">
@@ -234,7 +321,10 @@ export default function ServicePage() {
                       className="h-full w-full object-contain"
                     />
                   ) : (
-                    <Plate motif={project.motif} label={`${project.name} — ${service.title}`} />
+                    <Plate
+                      motif={project.motif}
+                      label={`${project.name} — ${service.title}`}
+                    />
                   )}
                 </Blueprint>
 
@@ -246,7 +336,9 @@ export default function ServicePage() {
                       </span>
                     ))}
                   </div>
-                  <h3 className="display text-[clamp(22px,2.4vw,30px)]">{project.name}</h3>
+                  <h3 className="display text-[clamp(22px,2.4vw,30px)]">
+                    {project.name}
+                  </h3>
                   <p className="text-muted m-0 text-[15px]">{project.desc}</p>
                   {project.placeholder && (
                     <p className="text-muted mt-2 mb-0 text-[13px]">
@@ -271,18 +363,24 @@ export default function ServicePage() {
       {/* --------------------------------------------------------------------
           SERVICE FAQ
       -------------------------------------------------------------------- */}
-      <section className="section-y bg-lav-100">
+      <section className={`section-y ${band("faq")}`}>
         <div className="shell grid items-start gap-[clamp(32px,5vw,80px)] lg:grid-cols-[minmax(0,0.8fr)_minmax(0,1.4fr)]">
           <Reveal>
-            <SectionIndex num="04" label="Before you ask" />
-            <h2 className="display text-[clamp(24px,3vw,36px)]">Questions on this service</h2>
+            <SectionIndex num={num("faq")} label="Before you ask" />
+            <h2 className="display text-[clamp(24px,3vw,36px)]">
+              Questions on this service
+            </h2>
           </Reveal>
           <Reveal delay={0.06}>
             <dl className="m-0 border-t border-line">
               {service.faqs.map((f) => (
                 <div key={f.q} className="border-b border-line py-6">
-                  <dt className="display mb-2.5 text-[clamp(16px,1.5vw,19px)]">{f.q}</dt>
-                  <dd className="text-muted m-0 max-w-[64ch] text-[15px] leading-relaxed">{f.a}</dd>
+                  <dt className="display mb-2.5 text-[clamp(16px,1.5vw,19px)]">
+                    {f.q}
+                  </dt>
+                  <dd className="text-muted m-0 max-w-[64ch] text-[15px] leading-relaxed">
+                    {f.a}
+                  </dd>
                 </div>
               ))}
             </dl>
@@ -293,10 +391,10 @@ export default function ServicePage() {
       {/* --------------------------------------------------------------------
           THE OTHER FIVE
       -------------------------------------------------------------------- */}
-      <section className="section-y bg-lav-50">
+      <section className={`section-y ${band("more")}`}>
         <div className="shell">
           <Reveal>
-            <SectionIndex num="05" label="Also from us" />
+            <SectionIndex num={num("more")} label="Also from us" />
             <h2 className="display mb-[clamp(28px,3.4vw,44px)] text-[clamp(24px,3vw,36px)]">
               One team, five other disciplines
             </h2>
@@ -304,12 +402,18 @@ export default function ServicePage() {
           <Reveal delay={0.06}>
             <Stagger as="ul" className="m-0 list-none border-t border-line p-0">
               {others.map((s) => (
-                <StaggerItem as="li" key={s.slug} className="border-b border-line">
+                <StaggerItem
+                  as="li"
+                  key={s.slug}
+                  className="border-b border-line"
+                >
                   <Link
                     to={servicePath(s.slug)}
                     className="group flex items-center gap-[clamp(16px,3vw,40px)] py-5 no-underline"
                   >
-                    <span className="w-7 flex-none font-display text-[13px] text-coral-700">{s.num}</span>
+                    <span className="w-7 flex-none font-display text-[13px] text-coral-700">
+                      {s.num}
+                    </span>
                     <span className="flex-1 font-display text-[clamp(17px,2vw,26px)] uppercase transition-colors duration-150 group-hover:text-coral-700">
                       {s.title}
                     </span>
@@ -337,8 +441,8 @@ export default function ServicePage() {
               Let&apos;s talk about {service.short.toLowerCase()}.
             </h2>
             <p className="mt-4 max-w-[46ch] text-[16px] text-white">
-              Tell us where the business is now. We&apos;ll tell you whether this is the right
-              place to start — and say so if it isn&apos;t.
+              Tell us where the business is now. We&apos;ll tell you whether
+              this is the right place to start — and say so if it isn&apos;t.
             </p>
           </div>
           <Link
