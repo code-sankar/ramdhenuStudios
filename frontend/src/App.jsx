@@ -5,6 +5,7 @@ import ScrollManager from "./components/ScrollManager";
 import HomePage from "./pages/HomePage";
 import IndustryPage from "./pages/IndustryPage";
 import NotFoundPage from "./pages/NotFoundPage";
+import ProjectPage from "./pages/ProjectPage";
 import ServicePage from "./pages/ServicePage";
 import WorkPage from "./pages/WorkPage";
 
@@ -38,6 +39,7 @@ export default function App() {
         <Route path="/services/:slug" element={<ServicePage />} />
         <Route path="/industries/:slug" element={<IndustryPage />} />
         <Route path="/work" element={<WorkPage />} />
+        <Route path="/work/:slug" element={<ProjectPage />} />
         <Route path="*" element={<NotFoundPage />} />
       </Routes>
     </BrowserRouter>

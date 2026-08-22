@@ -12,7 +12,7 @@ import { AnimatePresence, motion, useReducedMotion } from "motion/react";
 
 import { duration, ease, stagger, travel } from "../lib/motion";
 import { serviceBySlug } from "../data/services";
-import { servicePath, workSeo } from "../data/seo";
+import { projectPath, workSeo } from "../data/seo";
 import { whatsappLink } from "../data/site";
 import { work, workCategories } from "../data/work";
 import { track } from "../lib/track";
@@ -174,81 +174,112 @@ export default function WorkPage() {
               turns a filter from a page swap into a rearrangement. */}
           <ul className="m-0 grid list-none grid-cols-1 gap-[clamp(24px,3vw,40px)] p-0 sm:grid-cols-2 lg:grid-cols-3">
             <AnimatePresence mode="popLayout" initial={false}>
-              {filtered.map((project, i) => {
-                const primaryService = serviceBySlug(project.services[0]);
-                return (
-                  <motion.li
-                    key={project.slug}
-                    layout={reduced ? false : "position"}
-                    initial={
-                      reduced
-                        ? false
-                        : { opacity: 0, y: travel.sm, scale: 0.97 }
-                    }
-                    animate={{ opacity: 1, y: 0, scale: 1 }}
-                    exit={
-                      reduced ? { opacity: 0 } : { opacity: 0, scale: 0.97 }
-                    }
-                    transition={{
-                      duration: duration.base,
-                      ease: ease.out,
-                      /* Only the arrivals stagger. Staggering the exits as well
+              {filtered.map((project, i) => (
+                <motion.li
+                  key={project.slug}
+                  layout={reduced ? false : "position"}
+                  initial={
+                    reduced ? false : { opacity: 0, y: travel.sm, scale: 0.97 }
+                  }
+                  animate={{ opacity: 1, y: 0, scale: 1 }}
+                  exit={reduced ? { opacity: 0 } : { opacity: 0, scale: 0.97 }}
+                  transition={{
+                    duration: duration.base,
+                    ease: ease.out,
+                    /* Only the arrivals stagger. Staggering the exits as well
                          reads as the grid unravelling rather than as a filter
                          being applied. */
-                      delay: reduced ? 0 : Math.min(i, 8) * stagger.tight,
-                    }}
-                    className="flex flex-col"
-                  >
-                    <Blueprint className="relative block aspect-4/3 w-full">
-                      {project.image ? (
-                        <img
-                          src={project.image}
-                          alt={`${project.name} — ${project.category}`}
-                          loading="lazy"
-                          decoding="async"
-                          className="h-full w-full object-contain"
-                        />
-                      ) : (
-                        <Plate
-                          motif={project.motif}
-                          label={`${project.name} — ${project.category}`}
-                        />
-                      )}
-                    </Blueprint>
+                    delay: reduced ? 0 : Math.min(i, 8) * stagger.tight,
+                  }}
+                  className="group relative flex flex-col"
+                >
+                  <Blueprint className="relative block aspect-4/3 w-full overflow-hidden">
+                    {project.image ? (
+                      <img
+                        src={project.image}
+                        alt={`${project.name} — ${project.category}`}
+                        loading="lazy"
+                        decoding="async"
+                        className="h-full w-full object-contain transition-transform duration-500 group-hover:scale-[1.03]"
+                      />
+                    ) : (
+                      <Plate
+                        motif={project.motif}
+                        label={`${project.name} — ${project.category}`}
+                      />
+                    )}
+                  </Blueprint>
 
-                    <div className="flex flex-1 flex-col gap-2.5 py-4">
-                      <div className="flex flex-wrap gap-2">
-                        {project.tags.map((tag) => (
-                          <span className="tag tag-outline" key={tag}>
-                            {tag}
-                          </span>
-                        ))}
-                      </div>
-                      <h3 className="display text-[clamp(19px,2vw,23px)]">
+                  <div className="flex flex-1 flex-col gap-2.5 py-4">
+                    <div className="flex flex-wrap gap-2">
+                      {project.tags.map((tag) => (
+                        <span className="tag tag-outline" key={tag}>
+                          {tag}
+                        </span>
+                      ))}
+                    </div>
+
+                    {/* THE WHOLE CARD OPENS THE PROJECT, AND IT IS DONE WITH A
+                          COVERING PSEUDO-ELEMENT RATHER THAN BY WRAPPING THE CARD
+                          IN A LINK. Wrapping would be simpler and would make the
+                          "Visit site" link below an anchor inside an anchor,
+                          which is invalid HTML and which browsers resolve by
+                          throwing one of them away.
+
+                          Putting the link on the heading and letting `.card-cover`
+                          stretch its hit area over the card keeps one accessible
+                          name — the project's — while leaving the live link a real
+                          sibling that can be raised above the cover and clicked on
+                          its own. */}
+                    <h3 className="display text-[clamp(19px,2vw,23px)]">
+                      <Link
+                        to={projectPath(project.slug)}
+                        className="card-cover text-inherit no-underline transition-colors duration-300 group-hover:text-coral-700"
+                      >
                         {project.name}
-                      </h3>
-                      <p className="text-muted m-0 flex-1 text-[14.5px] leading-relaxed">
-                        {project.desc}
+                      </Link>
+                    </h3>
+
+                    <p className="text-muted m-0 flex-1 text-[14.5px] leading-relaxed">
+                      {project.desc}
+                    </p>
+
+                    {project.placeholder && (
+                      <p className="text-muted m-0 text-[13px]">
+                        <span className="tag tag-outline mr-2">Sample</span>
+                        Example project shown for layout.
                       </p>
-                      {project.placeholder && (
-                        <p className="text-muted m-0 text-[13px]">
-                          <span className="tag tag-outline mr-2">Sample</span>
-                          Example project shown for layout.
-                        </p>
-                      )}
-                      {primaryService && (
-                        <Link
-                          to={servicePath(primaryService.slug)}
-                          className="linkish mt-1 inline-flex w-fit items-center gap-1.5 text-[14px]"
+                    )}
+
+                    {/* Raised above the cover so it is separately clickable.
+                          Rendered only when the entry has a real URL — see
+                          work.js on why every one of them is null today. */}
+                    <div className="relative z-[1] mt-1 flex flex-wrap items-center gap-x-5 gap-y-2">
+                      <span
+                        aria-hidden="true"
+                        className="inline-flex items-center gap-1.5 text-[14px] text-coral-700"
+                      >
+                        See the project
+                        <Icon name="arrowRight" size={14} />
+                      </span>
+                      {project.liveUrl && (
+                        <a
+                          href={project.liveUrl}
+                          target="_blank"
+                          rel="noreferrer noopener"
+                          onClick={() =>
+                            track("Live site opened", { project: project.slug })
+                          }
+                          className="linkish inline-flex items-center gap-1.5 text-[14px]"
                         >
-                          See how we did it
+                          Visit site
                           <Icon name="arrowRight" size={14} />
-                        </Link>
+                        </a>
                       )}
                     </div>
-                  </motion.li>
-                );
-              })}
+                  </div>
+                </motion.li>
+              ))}
             </AnimatePresence>
           </ul>
 
