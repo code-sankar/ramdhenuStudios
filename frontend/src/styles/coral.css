@@ -107,7 +107,8 @@ figcaption,
 .input:focus,
 .input:focus-visible {
   border-color: var(--color-coral-500);
-  box-shadow: 0 0 0 3px color-mix(in srgb, var(--color-coral-500) 18%, transparent);
+  box-shadow: 0 0 0 3px
+    color-mix(in srgb, var(--color-coral-500) 18%, transparent);
   outline: none;
 }
 
@@ -123,8 +124,11 @@ figcaption,
    2. THE CORAL FIELD
    ---------------------------------------------------------------------------
    Flat colour, not a gradient — the reference is confident enough to use one
-   value across a whole viewport, and that flatness is most of why the particle
-   cloud reads. A gradient behind it would turn the cloud into noise.
+   value across a whole viewport. That flatness is now doing a second job: it
+   is the ground the bubble field is read against, and every highlight, rim and
+   iridescent patch in that field is calibrated against this one value. A
+   gradient underneath would make each bubble sit on a slightly different
+   colour and none of the lighting would agree.
 
    `--field-fade` is the one exception: the service mastheads dissolve downward
    into the lavender that follows them, so the page reads as one surface
@@ -158,6 +162,258 @@ figcaption,
   opacity: 0.035;
   mix-blend-mode: overlay;
   background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='200' height='200'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='200' height='200' filter='url(%23n)'/%3E%3C/svg%3E");
+}
+
+/* --------------------------------------------------------------------------
+   2.1 THE BUBBLE FIELD
+   ---------------------------------------------------------------------------
+   The drift of soap bubbles over the coral. Geometry, placement and timing are
+   computed in BubbleField.jsx and arrive as custom properties; everything here
+   is the part CSS is genuinely better at — what a bubble is made of, and how it
+   moves without ever touching the main thread.
+
+   A BUBBLE IS SEVEN GRADIENTS, AND THE ORDER IS THE PHYSICS. Bottom of the
+   stack is the film itself: you are looking through it at the coral, so it is
+   mostly transparent, and it brightens sharply toward the rim because at the
+   edge your sightline passes through the most soap. On top of that go the
+   three interference patches — magenta, cyan, gold, in that sequence, because
+   that is the order thin films actually produce and any other set reads as
+   "coloured glass". Then the bounce off the far inside wall, then the specular
+   bloom, then the specular itself. Take away the interference and you have a
+   marble; take away the rim and you have a smudge.
+
+   ONE UNIT SIZES THE WHOLE FIELD. Every bubble's diameter is a multiplier on
+   `--bubble-u`, so the field scales as one photograph would — the relationships
+   between big and small hold at every width instead of the small ones vanishing
+   on a phone while the big ones swallow it. The clamp's floor is what stops a
+   390px screen from rendering a field of specks. */
+.bubble-field {
+  --bubble-u: clamp(4.2px, 0.98vw, 10.5px);
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  overflow: hidden;
+  pointer-events: none;
+  /* The field cannot affect anything outside itself, so the browser is free to
+     skip it entirely when it is scrolled away. */
+  contain: strict;
+}
+
+/* The outer element carries position and the rise. `translate` is a separate
+   property from `transform` in every browser this site supports, so the
+   centring composes with the animation instead of being overwritten by it —
+   the same mechanism the orbit's breathing relies on. */
+.bubble {
+  position: absolute;
+  left: var(--x);
+  top: var(--y);
+  width: calc(var(--s) * var(--bubble-u));
+  aspect-ratio: 1;
+  translate: -50% -50%;
+  animation: bubble-rise var(--tr) var(--ease-in-out-soft, ease-in-out)
+    var(--dr) infinite alternate;
+}
+
+/* The inner element carries the look and the sway. Two elements because one
+   `transform` cannot hold two clocks, and two axes on one clock is a diagonal
+   line rather than a float. */
+.bubble-film {
+  position: absolute;
+  inset: 0;
+  border-radius: 50%;
+  opacity: var(--o);
+  animation: bubble-sway var(--ts) var(--ease-in-out-soft, ease-in-out)
+    var(--ds) infinite alternate;
+  background:
+    /* THE SPECULAR. It grows and dims with `--soft` rather than being blurred:
+       an out-of-focus point light spreads into a disc of the lens's shape and
+       loses none of its total energy, which is why a defocused highlight reads
+       as bigger and softer but never as smeared. */
+    radial-gradient(
+      ellipse calc(8.5% + var(--soft) * 13%) calc(8.5% + var(--soft) * 13%) at
+        var(--hx) var(--hy),
+      rgb(255 255 255 / calc(0.98 - var(--soft) * 0.42)) 0%,
+      rgb(255 255 255 / calc(0.82 - var(--soft) * 0.4)) 40%,
+      rgb(255 255 255 / 0) 100%
+    ),
+    /* its bloom, which is what stops the specular reading as a pasted dot */
+    radial-gradient(
+        ellipse calc(25% + var(--soft) * 10%) calc(25% + var(--soft) * 10%) at
+          var(--hx) var(--hy),
+        rgb(255 244 234 / 0.4) 0%,
+        rgb(255 244 234 / 0) 100%
+      ),
+    /* light that got through and bounced off the far inside wall */
+    radial-gradient(
+        ellipse 29% 29% at 72% 78%,
+        rgb(255 222 194 / 0.5) 0%,
+        rgb(255 222 194 / 0) 100%
+      ),
+    /* thin-film interference: magenta, cyan, gold, in the order soap makes them */
+    radial-gradient(
+        ellipse 29% 27% at var(--ax) var(--ay),
+        rgb(196 122 255 / calc(0.29 * var(--i))) 0%,
+        rgb(196 122 255 / 0) 100%
+      ),
+    radial-gradient(
+      ellipse 28% 26% at var(--bx) var(--by),
+      rgb(104 212 255 / calc(0.34 * var(--i))) 0%,
+      rgb(104 212 255 / 0) 100%
+    ),
+    radial-gradient(
+      ellipse 27% 24% at var(--cx) var(--cy),
+      rgb(255 204 104 / calc(0.4 * var(--i))) 0%,
+      rgb(255 204 104 / 0) 100%
+    ),
+    /* THE FILM, AND ALL OF IT IS IN THE LAST 20%. The middle is nearly clear —
+       you are looking at the coral through one molecule of soap. Everything
+       that says "bubble" happens at the edge, where the sightline runs along
+       the film instead of through it: a dip where it thins, then the rim
+       proper, nearly white.
+
+       `--soft` is the focus. At 0 the rim is a hard band in the last 9% of the
+       radius. At 1 it starts a third of the way in and peaks dimmer, which is
+       exactly what a rim does as it leaves the focal plane — it spreads inward
+       and loses contrast, rather than blurring symmetrically outward like a
+       filter would. The final stop stays pinned at 100% either way, so the
+       element's own circular edge is never visible. */
+    radial-gradient(
+        circle at 50% 50%,
+        rgb(255 172 116 / 0.2) 0%,
+        rgb(255 168 112 / 0.25) calc(52% - var(--soft) * 14%),
+        rgb(255 162 108 / 0.3) calc(74% - var(--soft) * 20%),
+        rgb(214 96 62 / calc(0.2 - var(--soft) * 0.14))
+          calc(83% - var(--soft) * 20%),
+        rgb(255 214 190 / calc(0.72 - var(--soft) * 0.3))
+          calc(91% - var(--soft) * 17%),
+        rgb(255 250 246 / calc(0.97 - var(--soft) * 0.52))
+          calc(96.5% - var(--soft) * 11%),
+        rgb(255 255 255 / calc(0.62 - var(--soft) * 0.34))
+          calc(99% - var(--soft) * 4%),
+        rgb(255 255 255 / 0) 100%
+      );
+  /* The 1px inset ring is a constant, not a proportion, so the smallest bubbles
+     keep a crisp edge that a percentage stop would have lost at that diameter.
+     It fades out with focus for the same reason everything else does — a hard
+     hairline on an out-of-focus bubble is the one thing that would give the
+     whole trick away. The outer glow is proportional, because bloom is. */
+  box-shadow:
+    inset 0 0 0 1px rgb(255 236 224 / calc(0.34 - var(--soft) * 0.3)),
+    0 0 calc(var(--s) * var(--bubble-u) * 0.12) rgb(255 170 130 / 0.13);
+}
+
+/* Amplitudes are per-bubble and symmetrical about the resting position, so
+   `alternate` swings through the placed point rather than away from it. */
+@keyframes bubble-rise {
+  from {
+    transform: translate3d(0, var(--dy), 0);
+  }
+  to {
+    transform: translate3d(0, calc(var(--dy) * -1), 0);
+  }
+}
+
+/* The scale is the wobble. A real bubble is not rigid, and 2.4% of travel is
+   enough to say so without becoming a pulse. */
+@keyframes bubble-sway {
+  from {
+    transform: translate3d(calc(var(--dx) * -1), 0, 0) scale(0.988);
+  }
+  to {
+    transform: translate3d(var(--dx), 0, 0) scale(1.012);
+  }
+}
+
+/* WHITE TYPE OVER A PALE BUBBLE IS A CONTRAST FAILURE, AND THE FIELD IS WHAT
+   PUT IT THERE — SO THE FIELD CARRIES THE FIX.
+
+   IT IS MIXED FROM CORAL-700, NOT THE FIELD'S OWN CORAL-500, AND THAT IS THE
+   ONLY REASON IT WORKS. White on flat coral-500 measures 4.61:1 — it passes
+   AA, but with a tenth of a point to spare, which means the hero had no
+   headroom for texture of any kind before the bubbles arrived. A scrim in
+   coral-500 can only ever restore that 4.61, so it has to reach 98% coverage
+   to claw back what the bubbles took and still lands *under* AA on the 12px
+   rail. Mixing the darker coral-700 instead means the scrim adds contrast
+   rather than merely returning it: 86% at the left edge clears every run with
+   room to spare, and because it is a tint rather than a cover, the bubbles
+   underneath stay visible as structure — rims and highlights still read, just
+   pulled toward the field. Which is what the reference does on its own left
+   side.
+
+   Measured, not judged: contrast is sampled at the pixels glyphs actually
+   paint, across the drift cycle, at three viewports. The numbers are in the
+   commit. Every value below is the loosest one that passed.
+
+   The vignette at the end is doing a different job from the other two — it is
+   not for contrast, it seats the field in the frame so the bubbles read as
+   photographed rather than as scattered. */
+.bubble-scrim {
+  position: absolute;
+  inset: 0;
+  background:
+    /* the copy column */
+    linear-gradient(
+      96deg,
+      color-mix(in srgb, var(--color-coral-700) 86%, transparent) 0%,
+      color-mix(in srgb, var(--color-coral-700) 74%, transparent) 30%,
+      color-mix(in srgb, var(--color-coral-700) 44%, transparent) 54%,
+      transparent 84%
+    ),
+    /* the bottom rail, which is 12px type straight over the busiest corner */
+    linear-gradient(
+        to top,
+        color-mix(in srgb, var(--color-coral-700) 86%, transparent) 0%,
+        color-mix(in srgb, var(--color-coral-700) 46%, transparent) 11%,
+        transparent 26%
+      ),
+    /* and a vignette, which is not for contrast — it seats the field in the
+       frame so the bubbles read as photographed rather than as scattered. */
+    radial-gradient(
+        130% 96% at 52% 46%,
+        transparent 38%,
+        color-mix(in srgb, var(--color-coral-700) 34%, transparent) 100%
+      );
+}
+
+/* BELOW THE DESKTOP LAYOUT THE SCRIM TURNS THROUGH NINETY DEGREES, BECAUSE THE
+   COPY DOES. On a wide screen the type is a column down the left and the field
+   is clear to its right, so the scrim runs left-to-right. Under 1024px the
+   headline, the buttons and the rail all go full-width and stack, so a
+   left-weighted scrim is protecting a margin nobody is reading over — measured
+   at 768px it left the ghost button at 4.17:1 and at 390px the rail at 2.45:1.
+   Vertical instead: lightest at the top where only the nav sits, firm through
+   the middle third where the copy is, firmest at the foot under the rail.
+
+   The field is quieter here than on desktop, and that is the correct trade. On
+   a 390px screen the type covers most of the viewport — there is no "beside the
+   headline" left to be vivid in. */
+@media (max-width: 1023px) {
+  .bubble-scrim {
+    background:
+      linear-gradient(
+        to bottom,
+        color-mix(in srgb, var(--color-coral-700) 54%, transparent) 0%,
+        color-mix(in srgb, var(--color-coral-700) 84%, transparent) 28%,
+        color-mix(in srgb, var(--color-coral-700) 84%, transparent) 64%,
+        color-mix(in srgb, var(--color-coral-700) 92%, transparent) 100%
+      ),
+      radial-gradient(
+        130% 96% at 52% 46%,
+        transparent 38%,
+        color-mix(in srgb, var(--color-coral-700) 34%, transparent) 100%
+      );
+  }
+}
+
+/* A phone gets the composition, not the crowd. Roughly half the bubbles are
+   tagged `extra` and drop out here: it is fewer promoted layers on the device
+   with the least GPU memory, and at 390px the full field is clutter rather
+   than depth. The ones that stay are chosen per band, so the far/mid/near
+   structure survives the cut. */
+@media (max-width: 767px) {
+  .bubble[data-tier="extra"] {
+    display: none;
+  }
 }
 
 /* --------------------------------------------------------------------------
@@ -315,7 +571,8 @@ figcaption,
   padding: 13px 20px;
   font-size: 14.5px;
   color: var(--color-char-700);
-  border-bottom: 1px solid color-mix(in srgb, var(--color-char-900) 7%, transparent);
+  border-bottom: 1px solid
+    color-mix(in srgb, var(--color-char-900) 7%, transparent);
   box-shadow: inset 3px 0 0 transparent;
   transition:
     background-color 180ms ease,
@@ -466,9 +723,11 @@ figcaption,
     #f0a08f 100%
   );
   box-shadow:
-    inset -16px -20px 44px -20px color-mix(in srgb, var(--color-coral-500) 34%, transparent),
+    inset -16px -20px 44px -20px
+      color-mix(in srgb, var(--color-coral-500) 34%, transparent),
     inset 12px 14px 34px -16px #fff,
-    0 24px 60px -30px color-mix(in srgb, var(--color-coral-500) 40%, transparent);
+    0 24px 60px -30px
+      color-mix(in srgb, var(--color-coral-500) 40%, transparent);
   animation: orbit-breathe 11s var(--ease-in-out-soft) infinite;
 }
 
@@ -513,7 +772,8 @@ figcaption,
 .orbit-node:focus-visible .orbit-dot,
 .orbit-node[data-active="true"] .orbit-dot {
   transform: scale(1.4);
-  box-shadow: 0 0 0 8px color-mix(in srgb, var(--color-coral-500) 15%, transparent);
+  box-shadow: 0 0 0 8px
+    color-mix(in srgb, var(--color-coral-500) 15%, transparent);
 }
 
 /* --------------------------------------------------------------------------
@@ -528,9 +788,22 @@ figcaption,
    CSS animation either, so Orbit does not render its <animateMotion> children
    at all when the query matches — `animation-duration: 0.001ms` would sail
    straight past them and the travellers would keep going.
-   -------------------------------------------------------------------------- */
+
+   AND ONE THING THE GLOBAL RULE REACHES BUT SHOULD NOT BE TRUSTED WITH. The
+   global flattening does not stop an animation, it runs it in 0.001ms — which
+   for `infinite alternate` means a keyframe pair cycling as fast as the
+   compositor will allow, forever. On one hover transition that is harmless. On
+   thirty-two promoted bubble layers it is a GPU spinning at full tilt to
+   produce a still image, on a machine whose owner has explicitly asked for
+   less motion. They get `animation: none` instead, and the field stands still
+   at its resting composition. */
 @media (prefers-reduced-motion: reduce) {
   .site-bar {
     transition: none;
+  }
+
+  .bubble,
+  .bubble-film {
+    animation: none;
   }
 }
