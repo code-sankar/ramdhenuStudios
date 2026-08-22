@@ -44,7 +44,7 @@ export default function Testimonials({ autoplay = true }) {
     >
       <div className="shell">
         <Reveal>
-          <SectionIndex num="03" label="In their words" />
+          <SectionIndex num="04" label="In their words" />
         </Reveal>
 
         <Reveal className="mb-[clamp(32px,5vw,56px)] flex flex-wrap items-end justify-between gap-6">

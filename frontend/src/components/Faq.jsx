@@ -50,7 +50,7 @@ export default function Faq() {
 
       <div className="shell grid items-start gap-[clamp(32px,5vw,80px)] lg:grid-cols-[minmax(0,0.8fr)_minmax(0,1.4fr)]">
         <Reveal className="lg:sticky lg:top-28">
-          <SectionIndex num="04" label="Before you ask" />
+          <SectionIndex num="05" label="Before you ask" />
           <h2 className="display text-[clamp(28px,3.6vw,44px)]">Questions We Get Asked</h2>
           <p className="text-muted mt-4 max-w-[38ch] text-base">
             Straight answers, including the ones that are less convenient for us.
