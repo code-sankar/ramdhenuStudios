@@ -2,6 +2,7 @@ import { Link } from "react-router-dom";
 
 import Icon from "../components/Icon";
 import Layout from "../components/Layout";
+import PrismField from "../components/PrismField";
 import Seo from "../components/Seo";
 import { notFoundSeo, servicePath } from "../data/seo";
 import { services } from "../data/services";
@@ -21,8 +22,9 @@ export default function NotFoundPage() {
 
       <section
         id="not-found"
-        className="relative overflow-hidden bg-steel-900 py-[clamp(64px,9vw,120px)]"
+        className="masthead relative overflow-hidden bg-ink-950 pb-[clamp(64px,9vw,120px)]"
       >
+        <PrismField intensity={0.7} />
         <div className="hero__grid" aria-hidden="true" />
 
         <div className="shell relative">
@@ -42,7 +44,7 @@ export default function NotFoundPage() {
           <div className="mt-[clamp(28px,3.5vw,44px)] flex flex-wrap items-center gap-3 border-t border-paper/20 pt-[clamp(24px,3vw,34px)]">
             <Link
               to="/"
-              className="inline-flex items-center gap-[9px] border border-steel bg-steel px-[26px] py-[15px] font-display text-[15px] on-steel no-underline transition duration-200 hover:-translate-y-px hover:bg-steel-400"
+              className="btn-prism inline-flex items-center gap-[9px] rounded-full px-[26px] py-[15px] font-display text-[15px] no-underline"
             >
               <Icon name="arrowRight" size={15} />
               Back to the home page

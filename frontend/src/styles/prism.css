@@ -1,0 +1,664 @@
+/* ==========================================================================
+   PRISM — the rebrand's visual language
+   --------------------------------------------------------------------------
+   Industry gave this site good bones: a real spacing scale, honest hairlines,
+   and a refusal to decorate. What it could not give it was warmth. A wireframe
+   reads as a schematic, and a schematic is the wrong register for a studio
+   asking a restaurant owner to trust it with how their business looks.
+
+   Prism keeps the bones and changes the light:
+
+     the spectrum becomes a material   it blooms, rims and picks out; it is no
+                                       longer a 2px apology at three moments
+     the ground goes deep              #05070b–#141c29, blue-black, so coloured
+                                       light on it glows instead of muddying
+     corners come back                 a tight radius scale; pills for actions
+     surfaces gain depth               tinted elevation, inner top highlights,
+                                       glass where things float
+     everything moves on one curve     --ease-out-expo, shared with motion.js
+
+   WHAT HAS NOT CHANGED. The spacing scale, the type faces, the shell measure
+   and the section rhythm are all still Industry's. This is a reskin of a
+   system that worked, not a replacement for one that did not.
+   ========================================================================== */
+
+/* --------------------------------------------------------------------------
+   1. UN-SQUARING THE WIREFRAME
+   ---------------------------------------------------------------------------
+   industry.css line 277 squares every component on purpose — `.card, .btn,
+   .input, .tag, .seg, .dialog { border-radius: 0 }`. That is the single line
+   most responsible for the old build reading as a technical drawing. Both
+   files sit in layer(components) and this one is imported second, so these
+   win on order alone without an !important anywhere.
+   -------------------------------------------------------------------------- */
+/* NOTE — THERE IS NO `@layer components { }` WRAPPER HERE, AND THAT IS LOAD
+   BEARING. This file is already pulled in as `@import "./prism.css"
+   layer(components)`. Wrapping its rules in `@layer components` again does not
+   put them in that layer a second time — it creates the SUB-layer
+   `components.components`, and a sub-layer loses to its parent's own
+   unlayered content. industry.css's rules are that parent content, so every
+   override below silently lost to the thing it was written to override:
+   `.text-muted` stayed at 55%, `.card` stayed flat, `.btn` stayed square. The
+   buttons still looked right only because the markup sets `rounded-full`
+   directly, which hid the failure everywhere it mattered least.
+
+   Top-level rules here land in `components` proper, after industry.css, and
+   win on order. Tailwind utilities still beat all of it. */
+
+.card,
+.input,
+.seg,
+.dialog {
+  border-radius: var(--radius-md);
+}
+
+/* Actions are pills. Nothing else is — a page where everything is round has
+   no hierarchy left to spend. */
+.btn,
+.tag {
+  border-radius: var(--radius-full);
+}
+
+/* The system's buttons were flat fills with a hover that swapped one solid
+   for another. Give them a press, a lift and a real transition. */
+.btn {
+  transition:
+    transform 180ms var(--ease-out-expo),
+    box-shadow 220ms var(--ease-out-expo),
+    background-color 180ms ease,
+    border-color 180ms ease,
+    color 180ms ease;
+}
+.btn:active {
+  transform: translateY(0) scale(0.985);
+}
+
+.btn-primary {
+  background: var(--color-accent-800);
+  border-color: transparent;
+  box-shadow: var(--shadow-sm);
+}
+.btn-primary:hover {
+  background: var(--color-accent-700);
+  transform: translateY(-1px);
+  box-shadow: var(--shadow-md);
+}
+
+/* Cards stop being outlines and start being objects. */
+.card {
+  background: var(--color-bg);
+  border-color: color-mix(in srgb, var(--color-text) 9%, transparent);
+  box-shadow: var(--shadow-xs);
+  transition:
+    transform 260ms var(--ease-out-expo),
+    box-shadow 260ms var(--ease-out-expo),
+    border-color 200ms ease;
+}
+
+/* SECONDARY TEXT FAILED AA, AND HAD BEEN FAILING ALL ALONG.
+   Industry sets muted copy to `--color-text` at 55%, which lands on #f2f2f3
+   at 3.6:1 — under the 4.5 that body text needs. It is used for section
+   ledes, captions, attributions and the FAQ intro, so it is some of the most
+   read text on the site.
+
+   68% measures 5.4:1 and still reads clearly as secondary. Overridden here
+   rather than edited in industry.css so that file stays the untouched
+   export it is meant to be. */
+.text-muted,
+figcaption,
+.caption {
+  color: color-mix(in srgb, var(--color-text) 68%, transparent);
+}
+
+/* Same story on the outline tag: Industry sets both border and text to
+   `--color-accent` (#5980a6), which is 3.7:1 on paper — and these are 11px
+   labels, the size that needs contrast most. The text drops to accent-700
+   (5.8:1) and the border keeps the lighter accent, so the chip still reads as
+   one object rather than as a heavy outline. */
+.tag-outline {
+  border-color: color-mix(in srgb, var(--color-accent) 55%, transparent);
+  color: var(--color-accent-700);
+}
+
+.input {
+  transition:
+    border-color 160ms ease,
+    box-shadow 160ms ease;
+}
+.input:focus,
+.input:focus-visible {
+  border-color: color-mix(in srgb, var(--color-prism-indigo) 55%, transparent);
+  box-shadow: 0 0 0 3px color-mix(in srgb, var(--color-prism-indigo) 15%, transparent);
+  outline: none;
+}
+
+/* --------------------------------------------------------------------------
+   2. THE PRISM FIELD — living light on the deep ground
+   ---------------------------------------------------------------------------
+   Five blurred colour bodies drifting on independent loops behind a grain
+   overlay. This replaces `.hero__aurora`, which was one static gradient with a
+   mask: correct, cheap, and completely inert.
+
+   IT IS COMPOSITOR-ONLY. Every blob animates `transform` and nothing else, so
+   the whole field runs on the GPU and never triggers layout or paint. The blur
+   is applied once per blob as a filter on a static element — filters are
+   expensive to *change*, not to *have*, so animating transform underneath a
+   fixed blur costs almost nothing.
+
+   The blobs are deliberately larger than the viewport and heavily overlapped:
+   what you should read is one shifting field of light, not five circles.
+   -------------------------------------------------------------------------- */
+.prism-field {
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  overflow: hidden;
+  pointer-events: none;
+  /* Contains the blobs' paint so a drifting body never invalidates the page
+     around it. */
+  contain: strict;
+}
+
+.prism-field__blob {
+  position: absolute;
+  border-radius: 50%;
+  will-change: transform;
+  /* Composited on its own layer from the first frame rather than being
+     promoted mid-animation, which is what causes the one-frame flash. */
+  transform: translate3d(0, 0, 0);
+}
+
+/* Violet, top-left — the anchor. Largest and slowest. */
+.prism-field__blob:nth-child(1) {
+  width: 62vw;
+  height: 62vw;
+  min-width: 520px;
+  min-height: 520px;
+  top: -22%;
+  left: -14%;
+  background: radial-gradient(circle at 50% 50%, var(--color-prism-violet) 0%, transparent 68%);
+  opacity: 0.66;
+  filter: blur(72px);
+  animation: prism-drift-a 34s var(--ease-in-out-soft) infinite;
+}
+
+/* Indigo, centre-right — the counterweight. */
+.prism-field__blob:nth-child(2) {
+  width: 54vw;
+  height: 54vw;
+  min-width: 440px;
+  min-height: 440px;
+  top: 6%;
+  right: -16%;
+  background: radial-gradient(circle at 50% 50%, var(--color-prism-indigo) 0%, transparent 66%);
+  opacity: 0.6;
+  filter: blur(80px);
+  animation: prism-drift-b 41s var(--ease-in-out-soft) infinite;
+}
+
+/* Cyan, low-centre — the cool floor the headline sits over. */
+.prism-field__blob:nth-child(3) {
+  width: 58vw;
+  height: 44vw;
+  min-width: 460px;
+  min-height: 360px;
+  bottom: -20%;
+  left: 18%;
+  background: radial-gradient(ellipse at 50% 50%, var(--color-prism-cyan) 0%, transparent 68%);
+  opacity: 0.54;
+  filter: blur(76px);
+  animation: prism-drift-c 29s var(--ease-in-out-soft) infinite;
+}
+
+/* Emerald, bottom-left — small, keeps the low corner from going dead. */
+.prism-field__blob:nth-child(4) {
+  width: 34vw;
+  height: 34vw;
+  min-width: 280px;
+  min-height: 280px;
+  bottom: -8%;
+  left: -8%;
+  background: radial-gradient(circle at 50% 50%, var(--color-prism-emerald) 0%, transparent 64%);
+  opacity: 0.42;
+  filter: blur(68px);
+  animation: prism-drift-d 37s var(--ease-in-out-soft) infinite;
+}
+
+/* Amber, high-right — the one warm note. Faintest of the five: warmth reads
+   far louder than cool at equal opacity, and this field must stay cool. */
+.prism-field__blob:nth-child(5) {
+  width: 30vw;
+  height: 30vw;
+  min-width: 240px;
+  min-height: 240px;
+  top: -6%;
+  right: 22%;
+  background: radial-gradient(circle at 50% 50%, var(--color-prism-amber) 0%, transparent 62%);
+  opacity: 0.3;
+  filter: blur(70px);
+  animation: prism-drift-e 45s var(--ease-in-out-soft) infinite;
+}
+
+/* Paths are irregular on purpose — three keyframes at uneven offsets, no two
+   loops the same length. Anything symmetrical reads as a loop within about
+   fifteen seconds, and once seen it cannot be unseen. */
+@keyframes prism-drift-a {
+  0%,
+  100% {
+    transform: translate3d(0, 0, 0) scale(1);
+  }
+  38% {
+    transform: translate3d(8vw, 6vh, 0) scale(1.12);
+  }
+  71% {
+    transform: translate3d(-4vw, 10vh, 0) scale(0.94);
+  }
+}
+@keyframes prism-drift-b {
+  0%,
+  100% {
+    transform: translate3d(0, 0, 0) scale(1);
+  }
+  44% {
+    transform: translate3d(-10vw, 8vh, 0) scale(0.9);
+  }
+  78% {
+    transform: translate3d(-3vw, -6vh, 0) scale(1.14);
+  }
+}
+@keyframes prism-drift-c {
+  0%,
+  100% {
+    transform: translate3d(0, 0, 0) scale(1);
+  }
+  41% {
+    transform: translate3d(9vw, -7vh, 0) scale(1.16);
+  }
+  69% {
+    transform: translate3d(-7vw, -3vh, 0) scale(0.92);
+  }
+}
+@keyframes prism-drift-d {
+  0%,
+  100% {
+    transform: translate3d(0, 0, 0) scale(1);
+  }
+  50% {
+    transform: translate3d(12vw, -9vh, 0) scale(1.2);
+  }
+}
+@keyframes prism-drift-e {
+  0%,
+  100% {
+    transform: translate3d(0, 0, 0) scale(1);
+  }
+  46% {
+    transform: translate3d(-8vw, 7vh, 0) scale(1.1);
+  }
+  74% {
+    transform: translate3d(5vw, 3vh, 0) scale(0.95);
+  }
+}
+
+/* GRAIN. The single cheapest thing that separates a page that looks designed
+   from one that looks generated: a large blurred gradient is unnaturally
+   smooth, and the eye reads that smoothness as CGI. Turbulence at 3% breaks it
+   up and the field reads as film. Inline SVG so it costs no request. */
+.prism-grain {
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+  pointer-events: none;
+  opacity: 0.045;
+  mix-blend-mode: overlay;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='200' height='200'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='200' height='200' filter='url(%23n)'/%3E%3C/svg%3E");
+}
+
+/* The scrim that buys contrast back. The field is bright enough that reversed
+   type would fail AA over the blobs without it — weighted where the copy is. */
+.prism-veil {
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+  pointer-events: none;
+  background:
+    linear-gradient(
+      104deg,
+      color-mix(in srgb, var(--color-ink-950) 78%, transparent) 0%,
+      color-mix(in srgb, var(--color-ink-950) 44%, transparent) 46%,
+      color-mix(in srgb, var(--color-ink-950) 10%, transparent) 78%,
+      transparent 100%
+    ),
+    linear-gradient(
+      to top,
+      color-mix(in srgb, var(--color-ink-950) 62%, transparent) 0%,
+      transparent 42%
+    );
+}
+
+/* --------------------------------------------------------------------------
+   3. PRISM AS INK — the gradient that picks out one word
+   -------------------------------------------------------------------------- */
+.prism-text {
+  background: var(--spectrum);
+  background-size: 200% 100%;
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+  -webkit-text-fill-color: transparent;
+  animation: prism-shift 14s linear infinite;
+}
+@keyframes prism-shift {
+  to {
+    background-position: 200% 0;
+  }
+}
+
+/* --------------------------------------------------------------------------
+   4. GLASS — surfaces that float over the field
+   -------------------------------------------------------------------------- */
+.glass {
+  background: color-mix(in srgb, var(--color-ink-850) 62%, transparent);
+  backdrop-filter: blur(20px) saturate(1.4);
+  -webkit-backdrop-filter: blur(20px) saturate(1.4);
+  border: 1px solid color-mix(in srgb, var(--color-bg) 12%, transparent);
+  box-shadow: var(--shadow-lift);
+}
+.glass-light {
+  background: color-mix(in srgb, var(--color-paper-bright) 72%, transparent);
+  backdrop-filter: blur(20px) saturate(1.3);
+  -webkit-backdrop-filter: blur(20px) saturate(1.3);
+  border: 1px solid color-mix(in srgb, var(--color-text) 8%, transparent);
+  box-shadow: var(--shadow-md);
+}
+
+/* THE MENU PANEL IS NOT GLASS, AND THAT IS A CORRECTION.
+   It was `.glass-light` — 72% paper over a backdrop blur — and the hero
+   headline read straight through it. Two things were wrong. The opacity was
+   tuned for a surface floating over ordinary content, not over 160px display
+   type; and `backdrop-filter` cannot be relied on for legibility here at all,
+   because the panel animates inside a transformed ancestor and a transform
+   ancestor is exactly what makes a browser drop the backdrop filter.
+
+   So it is simply opaque. 97% was tried first and still ghosted the hero's
+   160px display type through the panel — against white letterforms on a near
+   black ground, three percent is plenty to read. Depth comes from the shadow
+   and the border, which is all it ever needed. A navigation menu has one job
+   before it has any others: being readable. */
+.nav-panel {
+  background: var(--color-paper-bright);
+  border: 1px solid color-mix(in srgb, var(--color-text) 9%, transparent);
+  box-shadow: var(--shadow-xl);
+}
+
+/* --------------------------------------------------------------------------
+   5. THE PRISM BUTTON — the one object on the page wearing the full spectrum
+   ---------------------------------------------------------------------------
+   The fill is a static slice of the spectrum; the *glow* beneath it is the
+   same gradient blurred and scaled. On hover the glow grows rather than the
+   button, which is what makes it read as emitting light instead of inflating.
+   -------------------------------------------------------------------------- */
+.btn-prism {
+  position: relative;
+  isolation: isolate;
+  border: 0;
+  color: #fff;
+  background: linear-gradient(
+    100deg,
+    var(--color-prism-violet) 0%,
+    var(--color-prism-indigo) 42%,
+    var(--color-prism-cyan) 100%
+  );
+  background-size: 180% 100%;
+  background-position: 0% 0;
+  transition:
+    background-position 520ms var(--ease-out-expo),
+    transform 200ms var(--ease-out-expo);
+}
+.btn-prism::before {
+  content: "";
+  position: absolute;
+  inset: -2px;
+  z-index: -1;
+  border-radius: inherit;
+  background: inherit;
+  filter: blur(14px);
+  opacity: 0.5;
+  transition:
+    opacity 300ms var(--ease-out-expo),
+    inset 300ms var(--ease-out-expo);
+}
+.btn-prism:hover {
+  background-position: 100% 0;
+  transform: translateY(-1px);
+}
+.btn-prism:hover::before {
+  inset: -5px;
+  opacity: 0.78;
+}
+/* The top highlight that stops a saturated fill from reading as flat vinyl. */
+.btn-prism::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  pointer-events: none;
+  background: linear-gradient(to bottom, rgb(255 255 255 / 0.22), transparent 52%);
+}
+
+/* --------------------------------------------------------------------------
+   6. RIMLIGHT — a hairline that catches the spectrum on hover
+   ---------------------------------------------------------------------------
+   For cards and rows on the light ground. The border itself cannot hold a
+   gradient, so the gradient is painted into a pseudo-element and punched out
+   with a mask, leaving exactly a 1px rim.
+   -------------------------------------------------------------------------- */
+.rimlight {
+  position: relative;
+}
+.rimlight::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  padding: 1px;
+  background: var(--spectrum);
+  -webkit-mask:
+    linear-gradient(#000 0 0) content-box,
+    linear-gradient(#000 0 0);
+  mask:
+    linear-gradient(#000 0 0) content-box,
+    linear-gradient(#000 0 0);
+  -webkit-mask-composite: xor;
+  mask-composite: exclude;
+  opacity: 0;
+  transition: opacity 300ms var(--ease-out-expo);
+  pointer-events: none;
+}
+.rimlight:hover::after,
+.rimlight:focus-within::after {
+  opacity: 0.85;
+}
+
+/* --------------------------------------------------------------------------
+   7. THE NAV CAPSULE
+   ---------------------------------------------------------------------------
+   The bar floats: a rounded capsule inset from the page edges rather than a
+   full-bleed strip welded to the top.
+
+   IT STAYS `position: sticky`, WHICH IS THE WHOLE TRICK. A fixed bar is the
+   obvious way to float one, and it would mean every page on the site — six
+   service pages, five industry pages, work, 404 — needs top padding added by
+   hand to stop its masthead sliding underneath. Sticky keeps the header in
+   flow, so nothing downstream moves, and the float is bought entirely with
+   margin on the capsule inside it.
+
+   IT FLIPS THEME AS IT LEAVES THE HERO. Every page on this site opens on a
+   dark field, so at rest the capsule is transparent with light type. Once the
+   page scrolls past that field the capsule becomes light glass and the type
+   goes to ink. Both states are driven off `data-scrolled` on the header, so
+   there is exactly one source of truth and no chance of the two halves
+   disagreeing mid-transition.
+   -------------------------------------------------------------------------- */
+.nav-capsule {
+  border: 1px solid transparent;
+  border-radius: var(--radius-full);
+  transition:
+    background-color 420ms var(--ease-out-expo),
+    border-color 420ms var(--ease-out-expo),
+    box-shadow 420ms var(--ease-out-expo),
+    backdrop-filter 420ms var(--ease-out-expo);
+}
+
+[data-scrolled="true"] .nav-capsule {
+  background: color-mix(in srgb, var(--color-paper-bright) 82%, transparent);
+  backdrop-filter: blur(22px) saturate(1.5);
+  -webkit-backdrop-filter: blur(22px) saturate(1.5);
+  border-color: color-mix(in srgb, var(--color-text) 8%, transparent);
+  box-shadow: var(--shadow-lg);
+}
+
+/* Links are paper over the opening field and ink once the capsule is lit. The
+   colour is on a transition so the flip reads as one movement with the
+   capsule's own, rather than as text snapping a frame early. */
+.nav-link {
+  position: relative;
+  z-index: 1;
+  padding: 8px 14px;
+  border-radius: var(--radius-full);
+  font-size: 15px;
+  letter-spacing: 0.005em;
+  color: color-mix(in srgb, var(--color-bg) 78%, transparent);
+  transition: color 420ms var(--ease-out-expo);
+  cursor: pointer;
+}
+.nav-link:hover {
+  color: var(--color-bg);
+}
+[data-scrolled="true"] .nav-link {
+  color: color-mix(in srgb, var(--color-text) 72%, transparent);
+}
+[data-scrolled="true"] .nav-link:hover {
+  color: var(--color-text);
+}
+.nav-link[aria-current="true"] {
+  color: var(--color-bg);
+}
+[data-scrolled="true"] .nav-link[aria-current="true"] {
+  color: var(--color-text);
+}
+
+/* The pill that slides between items. It is a sibling behind the label, not a
+   background on it, because framer moves it with a shared `layoutId` — a
+   background cannot travel between two elements, an absolutely positioned
+   sibling can. */
+.nav-pill {
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  border-radius: var(--radius-full);
+  background: color-mix(in srgb, var(--color-bg) 14%, transparent);
+}
+[data-scrolled="true"] .nav-pill {
+  background: color-mix(in srgb, var(--color-text) 7%, transparent);
+}
+
+/* The availability badge rides the flip too. It used `.glass` — a dark
+   surface — which sat as a grey smudge on the lit capsule once the page
+   scrolled. Both states are hairline-and-tint rather than fill, so it never
+   competes with the primary button beside it. */
+.nav-badge {
+  border: 1px solid color-mix(in srgb, var(--color-bg) 20%, transparent);
+  background: color-mix(in srgb, var(--color-bg) 7%, transparent);
+  color: color-mix(in srgb, var(--color-bg) 78%, transparent);
+  transition:
+    background-color 420ms var(--ease-out-expo),
+    border-color 420ms var(--ease-out-expo),
+    color 420ms var(--ease-out-expo);
+}
+[data-scrolled="true"] .nav-badge {
+  border-color: color-mix(in srgb, var(--color-text) 12%, transparent);
+  background: color-mix(in srgb, var(--color-text) 4%, transparent);
+  color: color-mix(in srgb, var(--color-text) 62%, transparent);
+}
+
+/* The brand mark rides the same flip. */
+.nav-brand {
+  color: var(--color-bg);
+  transition: color 420ms var(--ease-out-expo);
+}
+[data-scrolled="true"] .nav-brand {
+  color: var(--color-text);
+}
+
+/* WHILE THE DRAWER IS OPEN the bar reverts to its dark-field state whatever
+   the scroll position, because that is what it is now sitting on. Without
+   this, opening the menu halfway down a page leaves a light glass capsule
+   floating on a near-black overlay. Listed after the scrolled rules so it
+   wins at equal specificity. */
+[data-drawer="true"] .nav-capsule {
+  background: transparent;
+  border-color: transparent;
+  box-shadow: none;
+  backdrop-filter: none;
+  -webkit-backdrop-filter: none;
+}
+[data-drawer="true"] .nav-brand,
+[data-drawer="true"] .nav-link {
+  color: var(--color-bg);
+}
+
+/* THE HEADER CLEARANCE.
+   The bar is fixed, so it no longer reserves space in flow and every page's
+   opening section would start underneath it. This is the padding that buys
+   that space back — applied to the dark masthead each page opens on, where it
+   reads as generous top margin rather than as a gap.
+
+   The lower bound (104px) clears the 96px bar on a phone; the upper is the
+   hero's own breathing room on a large screen. */
+.masthead {
+  padding-top: clamp(104px, 13vw, 168px);
+}
+
+/* The drawer sits BELOW the header, not above it. At z-60 it covered the bar
+   — including the close button that dismisses it, leaving Escape as the only
+   way out. Under the header, the toggle stays live and turns into the X. */
+.nav-drawer {
+  position: fixed;
+  inset: 0;
+  z-index: 45;
+  background: color-mix(in srgb, var(--color-ink-950) 96%, transparent);
+  backdrop-filter: blur(28px) saturate(1.3);
+  -webkit-backdrop-filter: blur(28px) saturate(1.3);
+  overflow-y: auto;
+  overscroll-behavior: contain;
+}
+.nav-drawer .nav-link {
+  color: color-mix(in srgb, var(--color-bg) 82%, transparent);
+  font-size: 19px;
+  padding: 12px 0;
+}
+.nav-drawer .nav-link:hover,
+.nav-drawer .nav-link[aria-current="true"] {
+  color: var(--color-bg);
+}
+
+/* --------------------------------------------------------------------------
+   8. REDUCED MOTION
+   ---------------------------------------------------------------------------
+   app.css already flattens every transition and animation globally under this
+   query. What it cannot do is decide what the field should look like once it
+   has stopped — an aurora frozen at 0.001ms lands on frame one of five loops,
+   which is an arbitrary composition nobody chose. Park the blobs at their
+   resting positions and drop the shimmer instead.
+   -------------------------------------------------------------------------- */
+@media (prefers-reduced-motion: reduce) {
+  .prism-field__blob {
+    animation: none !important;
+    transform: none !important;
+  }
+  .prism-text {
+    animation: none !important;
+    background-position: 0 0 !important;
+  }
+}
