@@ -8,7 +8,9 @@ import Plate from "../components/Plate";
 import Reveal from "../components/Reveal";
 import Seo from "../components/Seo";
 import SectionIndex from "../components/ui/SectionIndex";
-import { Stagger, StaggerItem } from "../components/ui/Stagger";
+import { AnimatePresence, motion, useReducedMotion } from "motion/react";
+
+import { duration, ease, stagger, travel } from "../lib/motion";
 import { serviceBySlug } from "../data/services";
 import { servicePath, workSeo } from "../data/seo";
 import { whatsappLink } from "../data/site";
@@ -30,11 +32,21 @@ import { track } from "../lib/track";
  */
 export default function WorkPage() {
   const [filter, setFilter] = useState("all");
+  /* The grid's motion is a layout animation, which is the one kind that cannot
+     simply be shortened to nothing — a card sliding to a new column in 1ms is
+     still a card moving across the screen. Under reduced motion the cards are
+     cut out of the layout system entirely and only cross-fade. */
+  const reduced = useReducedMotion();
   const categories = useMemo(() => workCategories(), []);
-  const anyPlaceholder = useMemo(() => work.some((project) => project.placeholder), []);
+  const anyPlaceholder = useMemo(
+    () => work.some((project) => project.placeholder),
+    [],
+  );
 
   const filtered =
-    filter === "all" ? work : work.filter((project) => project.services.includes(filter));
+    filter === "all"
+      ? work
+      : work.filter((project) => project.services.includes(filter));
 
   return (
     <Layout skipTo="#work-body">
@@ -44,7 +56,6 @@ export default function WorkPage() {
           MASTHEAD
       -------------------------------------------------------------------- */}
       <section className="masthead field-fade grain relative overflow-hidden pb-[clamp(56px,7vw,96px)]">
-
         <div className="shell relative">
           <nav aria-label="Breadcrumb" className="mb-8">
             <ol className="flex list-none flex-wrap items-center gap-x-2 p-0 text-[12px] tracking-[0.08em] text-white uppercase max-md:text-[12.5px]">
@@ -75,9 +86,9 @@ export default function WorkPage() {
             </div>
 
             <p className="text-[16.5px] leading-[1.6] text-white">
-              One example from each of our six disciplines — websites, photography, social
-              content, campaigns, Google Business profiles and branding, built for local
-              businesses in Assam.
+              One example from each of our six disciplines — websites,
+              photography, social content, campaigns, Google Business profiles
+              and branding, built for local businesses in Assam.
             </p>
           </div>
 
@@ -112,20 +123,30 @@ export default function WorkPage() {
             <SectionIndex num="01" label="Selected projects" />
           </Reveal>
 
-          <Reveal delay={0.05} className="mb-[clamp(28px,3.4vw,40px)] flex flex-wrap gap-[8px]">
+          <Reveal
+            delay={0.05}
+            className="mb-[clamp(28px,3.4vw,40px)] flex flex-wrap gap-[8px]"
+          >
             <div
               role="group"
               aria-label="Filter by service"
               className="flex flex-wrap gap-[8px]"
             >
-              <FilterChip active={filter === "all"} onClick={() => setFilter("all")}>
+              <FilterChip
+                active={filter === "all"}
+                onClick={() => setFilter("all")}
+              >
                 All work
               </FilterChip>
               {categories.map((slug) => {
                 const service = serviceBySlug(slug);
                 if (!service) return null;
                 return (
-                  <FilterChip key={slug} active={filter === slug} onClick={() => setFilter(slug)}>
+                  <FilterChip
+                    key={slug}
+                    active={filter === slug}
+                    onClick={() => setFilter(slug)}
+                  >
                     {service.short}
                   </FilterChip>
                 );
@@ -133,65 +154,109 @@ export default function WorkPage() {
             </div>
           </Reveal>
 
-          <Stagger
-            as="ul"
-            className="m-0 grid list-none grid-cols-1 gap-[clamp(24px,3vw,40px)] p-0 sm:grid-cols-2 lg:grid-cols-3"
-          >
-            {filtered.map((project) => {
-              const primaryService = serviceBySlug(project.services[0]);
-              return (
-                <StaggerItem as="li" key={project.slug} className="flex flex-col">
-                  <Blueprint className="relative block aspect-4/3 w-full">
-                    {project.image ? (
-                      <img
-                        src={project.image}
-                        alt={`${project.name} — ${project.category}`}
-                        loading="lazy"
-                        decoding="async"
-                        className="h-full w-full object-contain"
-                      />
-                    ) : (
-                      <Plate motif={project.motif} label={`${project.name} — ${project.category}`} />
-                    )}
-                  </Blueprint>
+          {/* THE GRID IS NOT A `Stagger` ANY MORE, AND THAT IS THE WHOLE POINT
+              OF THIS SECTION. `Stagger` reveals a list once, on scroll, and then
+              its job is done — which is right for a list that never changes.
+              This one changes every time a chip is pressed, and measured before
+              the change it went from six cards to one in a single frame with no
+              transition at all: the page simply became a different page under
+              the reader's hands.
 
-                  <div className="flex flex-1 flex-col gap-2.5 py-4">
-                    <div className="flex flex-wrap gap-2">
-                      {project.tags.map((tag) => (
-                        <span className="tag tag-outline" key={tag}>
-                          {tag}
-                        </span>
-                      ))}
-                    </div>
-                    <h3 className="display text-[clamp(19px,2vw,23px)]">{project.name}</h3>
-                    <p className="text-muted m-0 flex-1 text-[14.5px] leading-relaxed">
-                      {project.desc}
-                    </p>
-                    {project.placeholder && (
-                      <p className="text-muted m-0 text-[13px]">
-                        <span className="tag tag-outline mr-2">Sample</span>
-                        Example project shown for layout.
+              `AnimatePresence` in `popLayout` mode is what fixes it. `popLayout`
+              takes leaving cards out of flow *before* the survivors move, so the
+              ones that remain slide to their new grid positions instead of
+              jumping into the gaps. Without it the exits and the reflow fight
+              each other and the result is worse than no animation.
+
+              `layout` on each card is what does that sliding. It is the one
+              place on this site worth the cost — a layout animation measures
+              the element before and after, which is real work, but it is what
+              turns a filter from a page swap into a rearrangement. */}
+          <ul className="m-0 grid list-none grid-cols-1 gap-[clamp(24px,3vw,40px)] p-0 sm:grid-cols-2 lg:grid-cols-3">
+            <AnimatePresence mode="popLayout" initial={false}>
+              {filtered.map((project, i) => {
+                const primaryService = serviceBySlug(project.services[0]);
+                return (
+                  <motion.li
+                    key={project.slug}
+                    layout={reduced ? false : "position"}
+                    initial={
+                      reduced
+                        ? false
+                        : { opacity: 0, y: travel.sm, scale: 0.97 }
+                    }
+                    animate={{ opacity: 1, y: 0, scale: 1 }}
+                    exit={
+                      reduced ? { opacity: 0 } : { opacity: 0, scale: 0.97 }
+                    }
+                    transition={{
+                      duration: duration.base,
+                      ease: ease.out,
+                      /* Only the arrivals stagger. Staggering the exits as well
+                         reads as the grid unravelling rather than as a filter
+                         being applied. */
+                      delay: reduced ? 0 : Math.min(i, 8) * stagger.tight,
+                    }}
+                    className="flex flex-col"
+                  >
+                    <Blueprint className="relative block aspect-4/3 w-full">
+                      {project.image ? (
+                        <img
+                          src={project.image}
+                          alt={`${project.name} — ${project.category}`}
+                          loading="lazy"
+                          decoding="async"
+                          className="h-full w-full object-contain"
+                        />
+                      ) : (
+                        <Plate
+                          motif={project.motif}
+                          label={`${project.name} — ${project.category}`}
+                        />
+                      )}
+                    </Blueprint>
+
+                    <div className="flex flex-1 flex-col gap-2.5 py-4">
+                      <div className="flex flex-wrap gap-2">
+                        {project.tags.map((tag) => (
+                          <span className="tag tag-outline" key={tag}>
+                            {tag}
+                          </span>
+                        ))}
+                      </div>
+                      <h3 className="display text-[clamp(19px,2vw,23px)]">
+                        {project.name}
+                      </h3>
+                      <p className="text-muted m-0 flex-1 text-[14.5px] leading-relaxed">
+                        {project.desc}
                       </p>
-                    )}
-                    {primaryService && (
-                      <Link
-                        to={servicePath(primaryService.slug)}
-                        className="linkish mt-1 inline-flex w-fit items-center gap-1.5 text-[14px]"
-                      >
-                        See how we did it
-                        <Icon name="arrowRight" size={14} />
-                      </Link>
-                    )}
-                  </div>
-                </StaggerItem>
-              );
-            })}
-          </Stagger>
+                      {project.placeholder && (
+                        <p className="text-muted m-0 text-[13px]">
+                          <span className="tag tag-outline mr-2">Sample</span>
+                          Example project shown for layout.
+                        </p>
+                      )}
+                      {primaryService && (
+                        <Link
+                          to={servicePath(primaryService.slug)}
+                          className="linkish mt-1 inline-flex w-fit items-center gap-1.5 text-[14px]"
+                        >
+                          See how we did it
+                          <Icon name="arrowRight" size={14} />
+                        </Link>
+                      )}
+                    </div>
+                  </motion.li>
+                );
+              })}
+            </AnimatePresence>
+          </ul>
 
           {anyPlaceholder && (
             <p className="text-muted mt-[clamp(24px,3vw,36px)] max-w-[64ch] text-[13.5px] leading-relaxed">
-              Some work above is shown for layout while we gather permission to publish real
-              client projects — each is marked "Sample" rather than left to look genuine.
+              Some work above is shown for layout while we gather permission to
+              publish real client projects — each is marked "Sample" rather than
+              left to look genuine.
             </p>
           )}
         </div>
@@ -207,8 +272,8 @@ export default function WorkPage() {
               Want to see your business here?
             </h2>
             <p className="mt-4 max-w-[46ch] text-[16px] text-white">
-              Tell us where it is now. We&apos;ll tell you which of our six disciplines is worth
-              starting with.
+              Tell us where it is now. We&apos;ll tell you which of our six
+              disciplines is worth starting with.
             </p>
           </div>
           <Link
