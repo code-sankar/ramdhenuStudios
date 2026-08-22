@@ -424,11 +424,110 @@ figcaption,
 }
 
 /* --------------------------------------------------------------------------
-   6. REDUCED MOTION
+   6. THE ORBIT FIGURE
    ---------------------------------------------------------------------------
-   app.css flattens every transition and animation globally under this query.
-   ParticleMark handles itself in JS: it draws one static assembled frame and
-   never starts a loop.
+   The six disciplines drawn as one system — see src/components/Orbit.jsx for
+   the geometry. Only the parts CSS is actually better at live here: a sphere
+   made of light, and a node that answers to hover, focus and the component's
+   own active state through one selector each.
+
+   ON TAILWIND AND `transform`. The sphere and its glow are centred with
+   `-translate-x-1/2 -translate-y-1/2`, which in Tailwind v4 compiles to the
+   standalone `translate` property rather than to `transform`. That is what
+   makes the breathing keyframes below safe: they animate `transform` alone and
+   compose with the centring instead of overwriting it. On v3 the same
+   keyframes would fling both elements into the top-left corner.
+   -------------------------------------------------------------------------- */
+
+/* The field the sphere sits in. Blurred far past its own edge so it has no
+   visible boundary — a hard-edged glow is just a second circle. */
+.orbit-glow {
+  background: radial-gradient(
+    circle,
+    color-mix(in srgb, var(--color-coral-500) 17%, transparent) 0%,
+    color-mix(in srgb, var(--color-coral-500) 7%, transparent) 46%,
+    transparent 68%
+  );
+  filter: blur(16px);
+  animation: orbit-breathe 11s var(--ease-in-out-soft) infinite;
+}
+
+/* THE SPHERE IS ONE OFF-CENTRE HIGHLIGHT AND TWO INSET SHADOWS. A centred
+   radial gradient reads as a flat disc no matter how many stops it has; moving
+   the light source to 34%/28% and letting the far side fall to a deeper coral
+   is the whole difference between a circle and a ball. */
+.orbit-sphere {
+  background: radial-gradient(
+    circle at 33% 27%,
+    #fff 0%,
+    #fdeae5 12%,
+    #fbd2c9 42%,
+    #f7b7a9 76%,
+    #f0a08f 100%
+  );
+  box-shadow:
+    inset -16px -20px 44px -20px color-mix(in srgb, var(--color-coral-500) 34%, transparent),
+    inset 12px 14px 34px -16px #fff,
+    0 24px 60px -30px color-mix(in srgb, var(--color-coral-500) 40%, transparent);
+  animation: orbit-breathe 11s var(--ease-in-out-soft) infinite;
+}
+
+/* Under a third of a percent of travel per second. It should never be visible
+   as motion — only as the figure not being quite dead. */
+@keyframes orbit-breathe {
+  0%,
+  100% {
+    transform: scale(1);
+  }
+  50% {
+    transform: scale(1.028);
+  }
+}
+
+/* A NODE IS A LINK WHOSE DRAWING IS 9px AND WHOSE TARGET IS 44px. Hover and
+   focus share every rule: a node found by keyboard should look exactly like a
+   node found by mouse, and `data-active` lets the read-out below drive the
+   same state from React. */
+.orbit-node {
+  color: var(--color-char-700);
+  transition: color 200ms ease;
+}
+.orbit-node:hover,
+.orbit-node:focus-visible,
+.orbit-node[data-active="true"] {
+  color: var(--color-coral-700);
+}
+
+.orbit-dot {
+  width: 9px;
+  height: 9px;
+  flex: none;
+  border-radius: 50%;
+  background: var(--color-coral-500);
+  box-shadow: 0 0 0 0 transparent;
+  transition:
+    transform 240ms var(--ease-out-expo),
+    box-shadow 240ms var(--ease-out-expo);
+}
+.orbit-node:hover .orbit-dot,
+.orbit-node:focus-visible .orbit-dot,
+.orbit-node[data-active="true"] .orbit-dot {
+  transform: scale(1.4);
+  box-shadow: 0 0 0 8px color-mix(in srgb, var(--color-coral-500) 15%, transparent);
+}
+
+/* --------------------------------------------------------------------------
+   7. REDUCED MOTION
+   ---------------------------------------------------------------------------
+   app.css flattens every transition and animation globally under this query,
+   which covers the orbit's breathing and every hover on the page.
+
+   TWO THINGS IT CANNOT REACH, AND BOTH ARE HANDLED IN JAVASCRIPT. Canvas
+   drawing is not a CSS animation, so ParticleMark checks the query itself and
+   draws one static assembled frame instead of starting a loop. SMIL is not a
+   CSS animation either, so Orbit does not render its <animateMotion> children
+   at all when the query matches — `animation-duration: 0.001ms` would sail
+   straight past them and the travellers would keep going.
    -------------------------------------------------------------------------- */
 @media (prefers-reduced-motion: reduce) {
   .site-bar {

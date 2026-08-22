@@ -98,7 +98,7 @@ src/
   lib/
     track.js         send an event, safely, whether or not analytics is on
   pages/
-    HomePage.jsx     hero → about → services → testimonials → faq → contact
+    HomePage.jsx     hero → about → services → orbit → testimonials → faq → contact
     ServicePage.jsx  the template behind every /services/<slug>/
     IndustryPage.jsx the template behind every /industries/<slug>/
     WorkPage.jsx     every project in one filterable grid, at /work/
@@ -115,17 +115,27 @@ src/
     Logo.jsx         the wordmark — swap in the official artwork here
     Icon.jsx         the Lucide glyphs actually used, inline
     Reveal.jsx       one short scroll entrance, reused everywhere
+    ParticleMark.jsx the monogram as a body of continuously rising bubbles
+    Orbit.jsx        the six disciplines drawn as one system, on one centre
     ui/SectionIndex  the numbered spec-sheet index each section opens with
     EnquiryForm.jsx  the conversion point — validation + WhatsApp/POST delivery
     Dialog.jsx       the system's modal, made keyboard-safe
     LegalDialogs.jsx privacy + terms, opened from the footer
-    Header · Hero · About · Services · Testimonials · Contact · Footer
+    Header · Hero · About · Services · Testimonials · Faq · Contact · Footer
 ```
 
 Routing lives in `src/App.jsx`: `/` → `HomePage`, `/services/:slug` → `ServicePage`,
 `/industries/:slug` → `IndustryPage`, `/work` → `WorkPage`, anything else →
 `NotFoundPage`. Sections follow the artboard:
-**Hero → About → Services → Testimonials → Contact.**
+**Hero → About → Services → Orbit → Testimonials → FAQ → Contact.**
+
+`Orbit` is the one section that is not a list of anything. The services grid
+above it can say what the six disciplines are but not why they belong in one
+place — a list is six separate things by construction. So the same six are drawn
+again as one figure: six nodes on a circle, three ellipses whose long axes land
+exactly on the opposing pairs, and the brand mark at the centre. Its geometry is
+computed from `services.js`, so adding or removing a discipline re-solves the
+whole figure rather than needing it redrawn.
 
 ## Before this goes live
 
