@@ -7,7 +7,7 @@ import { duration, ease } from "../lib/motion";
 import { brand, disciplines, socials } from "../data/site";
 
 /**
- * HERO — the coral field, with the brand monogram assembled out of particles.
+ * HERO — the coral field, with the brand monogram made of moving bubbles.
  *
  * THE COMPOSITION:
  *   the field      flat coral, edge to edge. Flat on purpose — a gradient
@@ -45,6 +45,7 @@ export default function Hero({ showAvailability = true }) {
     >
       {/* The mark. Oversized and pushed right so the headline crosses it —
           the type and the glyph should occupy one space, not sit side by side.
+          Its bubbles rise and recycle continuously; see ParticleMark.
           Hidden below md: at 390px it would sit directly under the headline
           and turn it into texture. */}
       <ParticleMark className="pointer-events-none absolute top-1/2 right-[-6%] hidden h-[min(92vh,860px)] w-[min(58vw,860px)] -translate-y-1/2 md:block" />
