@@ -110,7 +110,7 @@ src/
     Analytics.jsx    loads the provider, counts a pageview per route
     BookCall.jsx     the Cal.com embed, loaded on intent like the video
     ScrollManager.jsx  hash, top or restore, depending on the navigation
-    NavMenu.jsx      the header's Services dropdown — accordion below md
+    NavMenu.jsx      the header's dropdowns (services, industries) — accordion below lg
     Blueprint.jsx    the wireframe frame + its four registration marks
     Plate.jsx        drawn spec-sheet figure, stands in for absent photography
     Logo.jsx         the wordmark — swap in the official artwork here
@@ -423,15 +423,75 @@ Two details worth knowing before you edit the copy:
   They describe how we'd approach a trade, which is true on day one. The moment
   one starts claiming outcomes we can't evidence, it stops being worth ranking.
 
-## The Services dropdown
+## The nav dropdowns
 
-The header's "Services" item opens a menu of the six disciplines
-(`src/components/NavMenu.jsx`). Its contents are built in `Header.jsx` from
-`services.js`, so the menu cannot fall out of step with the services
-themselves — `site.js` only carries a `menu: true` flag on that one nav item.
+Two nav items open a mega-menu: **Services** (the six disciplines) and
+**Industries** (the six trades). Both are the same component,
+`src/components/NavMenu.jsx`, rendered twice.
+
+Their contents are built in `Header.jsx` from `services.js` and
+`industries.js`, so neither menu can fall out of step with its data — `site.js`
+only carries the *name* of the menu on the nav item:
+
+```js
+{ label: "Services",   id: "services", menu: "services"   },
+{ label: "Industries",                 menu: "industries" },
+```
+
 That indirection is deliberate: `seo.js` imports `site.js`, so building hrefs
 in `site.js` would need the route helpers back out of `seo.js` and close a
-cycle.
+cycle. (`menu` used to be a boolean, back when one item had a dropdown.)
+
+**Industries carries no `id`.** Its panel footer points at the industry chips
+in the About section (`/#industries`), and if the nav item claimed that anchor
+too, the scroll-spy would light up both "About" and "Industries" for one
+section. Its highlight comes from `pathname.startsWith("/industries/")`
+instead — which is also the only thing that can mark a *button* as current
+across six pages it does not itself link to.
+
+### One component, two vocabularies
+
+Nothing inside `NavMenu` may name a service, so the two words that differ are
+props:
+
+| prop | Services | Industries |
+|---|---|---|
+| `kind` | `"Service"` | `"Industry"` — the read column's eyebrow, `01 — …` |
+| `listLabel` | *(none)* | `"Where we usually start"` |
+
+`listLabel` exists because the bullets under an industry are **service names**
+taken from its `priority`, and three service names sitting unlabelled under an
+industry heading read as part of the industry. What a service *includes* needs
+no such heading.
+
+The list's own layout follows its content rather than a flag: every line 18
+characters or shorter and it becomes one wrapping row, otherwise two columns.
+The shortest service bullet is 21 characters and the longest industry entry is
+15, so services get columns and industries get a row — and a longer line added
+later moves itself back into columns.
+
+### The panel centres on the bar, not on its trigger
+
+An 880px panel needs 440px of room either side of whatever it is centred on,
+and the first trigger in a seven-item row does not have it — centred on
+"Services" at 1280px it hung 52px off the left edge of the window. So
+`NavMenu`'s wrapper is deliberately **not** positioned at `lg`, which leaves
+the fixed `<header>` as the panel's containing block: `left-1/2` then centres
+it on the bar, and `top: calc(100% + 14px)` is measured from the bar's own
+height. It cannot go off-screen at any width.
+
+### Which menus are open, not whether one is
+
+`Header` keys open-ness by menu name. Two dropdowns sharing one boolean
+flicker: crossing from one trigger to the other opens the second and *then*
+closes the first, and the bar would follow the close and go transparent under
+an open panel.
+
+Only the bar's copy of a dropdown reports its state. The drawer's copy is an
+accordion inside a full-screen coral overlay, and `data-menu` turns the bar
+white — so expanding it used to paint a white strip and a recoloured CTA across
+the top of the drawer, and leave the bar stuck white after the drawer closed,
+because the report has no unmount cleanup.
 
 ### The trigger is a button, not a link
 
@@ -455,12 +515,21 @@ gets a phantom open from a tap meant as a click. **Closing is delayed 140ms**
 because the path from trigger to panel is diagonal, and a menu that vanishes
 mid-reach is the single most common way this pattern is got wrong.
 
-### Below md it is not a dropdown
+### Below lg it is not a dropdown
 
 The header already collapses into a stacked panel on a phone, so the menu
 becomes an inline accordion inside it. An absolutely positioned overlay in a
 360px column would cover the nav it belongs to. Same component, same state,
-different placement — `md:absolute` versus static.
+different placement — `lg:absolute` versus static.
+
+**That threshold moved from 768 to 1024 when Industries was added, and the
+number is arithmetic rather than taste.** A 768px bar gives the link row 458px
+between the lockup and the CTA; six items and their gaps already needed 461.
+The seventh needs about 105 more, and no amount of tightening finds it. At
+1024 there is 665px available against 566 needed — which itself only works
+because the wider lockup and the "Available" chip now wait for `xl`; carrying
+both at 1024 costs 84px and leaves 15. So 768–1023 gets the drawer, which is
+what a tablet in portrait wants anyway.
 
 ### Open-ness is a path, not a boolean
 

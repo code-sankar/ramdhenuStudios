@@ -84,12 +84,20 @@ export const whatsappLink = `https://wa.me/${contact.whatsappNumber}?text=${enco
  * is the only one of the second kind — it is not a section of the home page.
  */
 export const nav = [
-  /* `menu` marks the one item that opens a dropdown. The six entries inside it
-     are built by the Header from services.js rather than listed here: this
-     module is imported by seo.js, so importing the route helpers back out of
-     seo.js to build hrefs would close a cycle. One boolean avoids that, and
-     the menu can never fall out of step with the services themselves. */
-  { label: "Services", id: "services", menu: true },
+  /* `menu` NAMES the dropdown an item opens — it used to be a boolean, back
+     when only one item had one. The Header maps the name to a list; the
+     entries inside are built there from services.js and industries.js rather
+     than listed here, because this module is imported by seo.js and importing
+     the route helpers back out of seo.js to build hrefs would close a cycle.
+     A name avoids that, and neither menu can fall out of step with its data.
+
+     INDUSTRIES CARRIES NO `id`, WHICH IS DELIBERATE. Its dropdown's footer
+     points at the industry chips in the About section, and if the item also
+     claimed that anchor the scroll-spy would fight About for the highlight
+     every time a reader reached it — two nav items lighting up for one
+     section. Its highlight comes from the /industries/ route instead. */
+  { label: "Services", id: "services", menu: "services" },
+  { label: "Industries", menu: "industries" },
   { label: "Work", path: "/work/" },
   { label: "About", id: "about" },
   { label: "Testimonials", id: "testimonials" },

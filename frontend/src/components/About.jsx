@@ -29,7 +29,12 @@ export default function About() {
             </h2>
           </Reveal>
 
-          <Reveal delay={0.08} className="pt-2">
+          {/* `id` because the Industries dropdown's footer link lands here —
+              this row of chips is the fullest list of trades on the site, and
+              a menu footer is not reason enough to build an index page for
+              them. It sits on the column rather than on the <ul> so the arrival
+              carries the sentence above the chips with it. */}
+          <Reveal id="industries" delay={0.08} className="pt-2">
             <p className="mb-6 text-[16.5px] leading-[1.62] text-ink/70">
               No jargon, no bloat — one team covering the website, the visuals and the
               campaigns that bring people through the door.
