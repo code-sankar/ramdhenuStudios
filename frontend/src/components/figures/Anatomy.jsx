@@ -1,4 +1,5 @@
 import { Node, Stage } from "./Stage";
+import { useLayout } from "./useLayout";
 import { useStill } from "./useStill";
 
 /**
@@ -15,23 +16,56 @@ import { useStill } from "./useStill";
  * a right-angled run with a rounded corner reads as plumbing, which is the
  * closer metaphor for parts of one system than for six things pointing at a
  * seventh.
+ *
+ * ON A PHONE THE HUB BECOMES A BUS, WHICH KEEPS THE CLAIM AND DROPS ONLY THE
+ * SYMMETRY. Six cards ringing a centre needs width in both directions and a
+ * phone has it in one, so the frame moves to the top and a single trunk runs
+ * down from it with the cards hanging off alternate sides. Every wire still
+ * terminates at the same frame, which was the whole argument; what is lost is
+ * the balance, and balance was only ever how the argument was made pleasant to
+ * look at. Shrinking the landscape version instead would have kept the symmetry
+ * and made the labels unreadable, which loses the argument outright.
  */
 
-const VIEW = { w: 1000, h: 720 };
-const CARD = { w: 186, h: 132 };
-const FRAME = { x: 352, y: 214, w: 296, h: 292 };
-
-/* Every pair is symmetric about x = 500, which is worth preserving if anything
-   moves: the figure reads as a system because it is balanced, and a diagram
-   that is *nearly* symmetric reads as a mistake. */
-const SLOTS = [
-  { card: [52, 34], from: [238, 100], to: [420, FRAME.y] },
-  { card: [762, 34], from: [762, 100], to: [580, FRAME.y] },
-  { card: [14, 294], from: [200, 360], to: [FRAME.x, 360] },
-  { card: [800, 294], from: [800, 360], to: [FRAME.x + FRAME.w, 360] },
-  { card: [96, 554], from: [282, 620], to: [420, FRAME.y + FRAME.h] },
-  { card: [718, 554], from: [718, 620], to: [580, FRAME.y + FRAME.h] },
-];
+const LAYOUTS = {
+  wide: {
+    view: { w: 1000, h: 720 },
+    card: { w: 186, h: 132 },
+    frame: { x: 352, y: 214, w: 296, h: 292 },
+    /* Every pair is symmetric about x = 500, which is worth preserving if
+       anything moves: the figure reads as a system because it is balanced, and
+       a diagram that is *nearly* symmetric reads as a mistake. */
+    slots: [
+      { card: [52, 34], from: [238, 100], to: [420, 214] },
+      { card: [762, 34], from: [762, 100], to: [580, 214] },
+      { card: [14, 294], from: [200, 360], to: [352, 360] },
+      { card: [800, 294], from: [800, 360], to: [648, 360] },
+      { card: [96, 554], from: [282, 620], to: [420, 506] },
+      { card: [718, 554], from: [718, 620], to: [580, 506] },
+    ],
+  },
+  narrow: {
+    view: { w: 600, h: 1290 },
+    card: { w: 256, h: 150 },
+    frame: { x: 160, y: 24, w: 280, h: 266 },
+    /* EVERY WIRE RUNS ALL THE WAY TO THE FRAME, not to a trunk drawn separately.
+       The first version stopped each one 30 units from its card at a shared
+       vertical line, which looked right and killed the motion: the travellers
+       had almost nothing to travel, so the figure's one claim — that all six
+       feed the same build — was made by a static line instead of by six things
+       visibly arriving. Sending each wire up to the frame gives the far cards an
+       890-unit run, and the six overlapping verticals draw the trunk themselves,
+       darker than the stubs because six signals share it. */
+    slots: [
+      { card: [14, 305], from: [270, 380], to: [300, 290] },
+      { card: [330, 465], from: [330, 540], to: [300, 290] },
+      { card: [14, 625], from: [270, 700], to: [300, 290] },
+      { card: [330, 785], from: [330, 860], to: [300, 290] },
+      { card: [14, 945], from: [270, 1020], to: [300, 290] },
+      { card: [330, 1105], from: [330, 1180], to: [300, 290] },
+    ],
+  },
+};
 
 /* Coprime-ish, and none a multiple of another, so the six only return to the
    same arrangement after their common multiple. */
@@ -49,16 +83,18 @@ function wire([x1, y1], [x2, y2], r = 15) {
 
 export default function Anatomy({ nodes }) {
   const still = useStill();
+  const L = LAYOUTS[useLayout()];
+  const FRAME = L.frame;
   const items = nodes
-    .slice(0, SLOTS.length)
-    .map((n, i) => ({ ...n, ...SLOTS[i], i }));
+    .slice(0, L.slots.length)
+    .map((n, i) => ({ ...n, ...L.slots[i], i }));
 
   return (
-    <Stage view={VIEW} kind="anatomy">
+    <Stage view={L.view} kind="anatomy">
       <svg
         aria-hidden="true"
         className="fig-art"
-        viewBox={`0 0 ${VIEW.w} ${VIEW.h}`}
+        viewBox={`0 0 ${L.view.w} ${L.view.h}`}
         fill="none"
       >
         <defs>
@@ -191,10 +227,10 @@ export default function Anatomy({ nodes }) {
         <Node
           key={n.label}
           i={n.i}
-          view={VIEW}
+          view={L.view}
           label={n.label}
           icon={n.icon}
-          box={[n.card[0], n.card[1], CARD.w, CARD.h]}
+          box={[n.card[0], n.card[1], L.card.w, L.card.h]}
         />
       ))}
     </Stage>

@@ -1,4 +1,5 @@
 import { Node, Stage } from "./Stage";
+import { useLayout } from "./useLayout";
 import { useStill } from "./useStill";
 
 /**
@@ -6,42 +7,84 @@ import { useStill } from "./useStill";
  *
  * THE CLAIM: the camera is one stage of four, and the three around it are where
  * the work actually is. People buy "a shoot" and are surprised by the brief and
- * the edit; a left-to-right spine says before you read a word that this is a
- * sequence with a shape, and that the shutter is not the beginning of it.
+ * the edit; a spine says before you read a word that this is a sequence with a
+ * shape, and that the shutter is not the beginning of it.
+ *
+ * ON A PHONE THE SPINE TURNS NINETY DEGREES AND LOSES NOTHING. A sequence needs
+ * a direction, not a compass bearing — a line running down a narrow screen with
+ * the frame travelling top to bottom says exactly what the horizontal one says
+ * on a laptop, and says it without shrinking four cards into a strip too small
+ * to read. The cards alternate either side of the vertical spine so each has
+ * half the width to itself rather than a quarter.
  *
  * THE MOTION IS THE ARGUMENT, LITERALLY. A frame travels the spine, and each
  * stage's port flares as it arrives — the ports are timed off the traveller's
  * own duration rather than given loops of their own, so the sequence is
- * mechanically correct rather than four things blinking near each other. Arrival
- * time is distance along the spine over total length, times the duration; if the
- * layout moves, the timings follow, because they are computed from it.
+ * mechanically correct rather than four things blinking near each other.
+ * Arrival time is distance along the spine over total length, times the
+ * duration; both layouts compute it from their own geometry, so neither can
+ * drift out of step with its drawing.
  */
 
-const VIEW = { w: 1000, h: 280 };
-const CARD = { w: 186, h: 132 };
-const SPINE = { y: 214, x1: 60, x2: 940 };
 const TRIP = 7; /* seconds end to end */
 
-/* Evenly spaced along the spine, and the cards hang above their own port. */
-const STOPS = [170, 403, 637, 870];
+const LAYOUTS = {
+  wide: {
+    view: { w: 1000, h: 280 },
+    card: { w: 186, h: 132 },
+    axis: "x",
+    spine: { at: 214, from: 60, to: 940 },
+    /* Distance along the spine for each stop, and where the card sits. */
+    stops: [170, 403, 637, 870],
+    cardAt: 22,
+    stem: 154,
+    arrows: [286, 520, 753],
+  },
+  narrow: {
+    view: { w: 600, h: 930 },
+    card: { w: 256, h: 150 },
+    axis: "y",
+    spine: { at: 300, from: 60, to: 870 },
+    stops: [150, 370, 590, 810],
+    /* Alternating sides: left card ends at 270, right card starts at 330. */
+    sides: [14, 330, 14, 330],
+    arrows: [260, 480, 700],
+  },
+};
 
 export default function Pipeline({ nodes }) {
   const still = useStill();
+  const L = LAYOUTS[useLayout()];
+  const vertical = L.axis === "y";
   const items = nodes
-    .slice(0, STOPS.length)
-    .map((n, i) => ({ ...n, x: STOPS[i], i }));
-  const span = SPINE.x2 - SPINE.x1;
+    .slice(0, L.stops.length)
+    .map((n, i) => ({ ...n, at: L.stops[i], i }));
+  const span = L.spine.to - L.spine.from;
+
+  /* One helper for both orientations, so the two layouts cannot describe the
+     same wire differently. */
+  const spinePath = vertical
+    ? `M ${L.spine.at} ${L.spine.from} V ${L.spine.to}`
+    : `M ${L.spine.from} ${L.spine.at} H ${L.spine.to}`;
+  const portOf = (v) => (vertical ? [L.spine.at, v] : [v, L.spine.at]);
+  const stemPath = (n) => {
+    const [px, py] = portOf(n.at);
+    if (!vertical) return `M ${px} ${L.stem} V ${py}`;
+    /* The stem reaches sideways to whichever edge of the card faces the spine. */
+    const left = L.sides[n.i] < L.spine.at;
+    return `M ${left ? L.sides[n.i] + L.card.w : L.sides[n.i]} ${py} H ${px}`;
+  };
 
   return (
-    <Stage view={VIEW} kind="pipeline">
+    <Stage view={L.view} kind="pipeline">
       <svg
         aria-hidden="true"
         className="fig-art"
-        viewBox={`0 0 ${VIEW.w} ${VIEW.h}`}
+        viewBox={`0 0 ${L.view.w} ${L.view.h}`}
         fill="none"
       >
         <defs>
-          <path id="pipe-spine" d={`M ${SPINE.x1} ${SPINE.y} H ${SPINE.x2}`} />
+          <path id="pipe-spine" d={spinePath} />
         </defs>
 
         <use
@@ -50,99 +93,101 @@ export default function Pipeline({ nodes }) {
           vectorEffect="non-scaling-stroke"
         />
 
-        {items.map((n) => (
-          <g key={n.i} className="fig-wire" data-i={n.i}>
-            {/* the stem from the card down to its stop on the spine */}
+        {items.map((n) => {
+          const [px, py] = portOf(n.at);
+          return (
+            <g key={n.i} className="fig-wire" data-i={n.i}>
+              <path
+                className="fig-line"
+                vectorEffect="non-scaling-stroke"
+                d={stemPath(n)}
+              />
+              <circle className="fig-port" cx={px} cy={py} r="6">
+                {!still && (
+                  /* Flares the instant the frame reaches it. `begin` is the
+                     traveller's arrival time, and the value list spikes at the
+                     very start of the cycle so the flare lands on arrival rather
+                     than somewhere after it. */
+                  <animate
+                    attributeName="r"
+                    values="11;6;6"
+                    keyTimes="0;0.1;1"
+                    dur={`${TRIP}s`}
+                    begin={`${(((n.at - L.spine.from) / span) * TRIP).toFixed(2)}s`}
+                    repeatCount="indefinite"
+                  />
+                )}
+              </circle>
+            </g>
+          );
+        })}
+
+        {/* DIRECTION HAS TO SURVIVE THE MOTION BEING SWITCHED OFF. A travelling
+            frame says which way beautifully and says nothing at all under
+            `prefers-reduced-motion`, where a reader would be left with four
+            cards on a bar and no reason to read them in any particular order.
+            The chevrons are static and carry the sequence on their own. */}
+        {L.arrows.map((v) => {
+          const [x, y] = portOf(v);
+          return (
             <path
-              className="fig-line"
-              vectorEffect="non-scaling-stroke"
-              d={`M ${n.x} 154 V ${SPINE.y}`}
+              key={v}
+              className="fig-arrow"
+              d="M -5 -4.6 L 5 0 L -5 4.6 Z"
+              transform={`translate(${x} ${y})${vertical ? " rotate(90)" : ""}`}
             />
-            <circle className="fig-port" cx={n.x} cy={SPINE.y} r="6">
-              {!still && (
-                /* Flares the instant the frame reaches it. `begin` is the
-                   traveller's arrival time, and the value list spikes at the
-                   very start of the cycle so the flare lands on arrival rather
-                   than somewhere after it. */
-                <animate
-                  attributeName="r"
-                  values="11;6;6"
-                  keyTimes="0;0.1;1"
-                  dur={`${TRIP}s`}
-                  begin={`${(((n.x - SPINE.x1) / span) * TRIP).toFixed(2)}s`}
-                  repeatCount="indefinite"
-                />
-              )}
-            </circle>
-          </g>
-        ))}
+          );
+        })}
 
         {/* The traveller is a frame rather than a dot — it is the thing being
             shot, cut and delivered, and on a photography page a rectangle with
             an aperture in it says that at a glance. Centred on its own origin so
             `animateMotion` moves its middle and not its corner. */}
         {!still && (
-          <g className="fig-pulse-g">
-            <g>
-              <rect
-                x="-11"
-                y="-8"
-                width="22"
-                height="16"
-                rx="3"
-                className="fig-frame-mark"
-              />
-              <circle cx="0" cy="0" r="3.4" className="fig-frame-eye" />
-              <animateMotion
-                dur={`${TRIP}s`}
-                repeatCount="indefinite"
-                rotate="0"
-              >
-                <mpath href="#pipe-spine" />
-              </animateMotion>
-            </g>
+          <g>
+            <rect
+              x="-11"
+              y="-8"
+              width="22"
+              height="16"
+              rx="3"
+              className="fig-frame-mark"
+            />
+            <circle cx="0" cy="0" r="3.4" className="fig-frame-eye" />
+            <animateMotion dur={`${TRIP}s`} repeatCount="indefinite" rotate="0">
+              <mpath href="#pipe-spine" />
+            </animateMotion>
           </g>
         )}
 
-        {/* DIRECTION HAS TO SURVIVE THE MOTION BEING SWITCHED OFF. A travelling
-            frame says left-to-right beautifully and says nothing at all under
-            `prefers-reduced-motion`, where a reader would be left with four
-            cards on a bar and no reason to read them in any particular order.
-            The chevrons are static and carry the sequence on their own. */}
-        {[286, 520, 753].map((x) => (
-          <path
-            key={x}
-            className="fig-arrow"
-            d="M -5 -4.6 L 5 0 L -5 4.6 Z"
-            transform={`translate(${x} ${SPINE.y})`}
-          />
-        ))}
-
         {/* The ends of the run, so the spine terminates rather than stopping. */}
-        <circle
-          className="fig-port"
-          cx={SPINE.x1}
-          cy={SPINE.y}
-          r="4"
-          opacity="0.5"
-        />
-        <circle
-          className="fig-port"
-          cx={SPINE.x2}
-          cy={SPINE.y}
-          r="4"
-          opacity="0.5"
-        />
+        {[L.spine.from, L.spine.to].map((v) => {
+          const [x, y] = portOf(v);
+          return (
+            <circle
+              key={v}
+              className="fig-port"
+              cx={x}
+              cy={y}
+              r="4"
+              opacity="0.5"
+            />
+          );
+        })}
       </svg>
 
       {items.map((n) => (
         <Node
           key={n.label}
           i={n.i}
-          view={VIEW}
+          view={L.view}
           label={n.label}
           icon={n.icon}
-          box={[n.x - CARD.w / 2, 22, CARD.w, CARD.h]}
+          box={
+            vertical
+              ? [L.sides[n.i], n.at - L.card.h / 2, L.card.w, L.card.h]
+              : [n.at - L.card.w / 2, L.cardAt, L.card.w, L.card.h]
+          }
         />
       ))}
     </Stage>
