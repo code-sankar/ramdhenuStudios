@@ -556,6 +556,37 @@ carries its own `placeholder`, the card marks itself "Sample" individually,
 and a summary note appears above the grid only while at least one entry still
 needs replacing.
 
+## The footer
+
+It is the site map, not a repeat of the nav. The old one carried the seven nav
+items and two legal documents, which meant it pointed at **none** of the six
+service pages and none of the six industry pages — twelve of the twenty-one
+routes, and the twelve that exist to rank. Services, Industries, Company and
+Legal are built from `services.js`, `industries.js` and `nav`, so adding a
+service or an industry puts it in the footer with no second edit.
+
+**Four groups is also what makes the phone layout work.** They fall into a
+two-by-two grid on a narrow screen; the old single column made a visitor scroll
+past thirty stacked links to reach the copyright. Each row is a 44px target with
+the text as its label, so a fingertip in a two-column list never lands in the gap
+between two links.
+
+**The brand block is its own row rather than a fifth column.** Beside the lists
+it ran to twice their height, and a grid row is as tall as its tallest cell — so
+a quarter of the footer sat empty to the right of Legal.
+
+**It stays on the light ground deliberately.** Every page ends on a
+`bg-char-900` block — contact at home, the CTA on every service, industry and
+project page — so a dark footer would fuse with the one above it into a single
+slab with no findable seam. The coral hairline at the top is the handoff.
+
+The wordmark is an outline rather than a fill: solid, it was a large grey mass,
+too faint to read as type and too big to read as anything else. The
+`@supports` guard around `-webkit-text-stroke` is not optional — the stroke needs
+`color: transparent` to show, and a browser with the second and not the first
+would render nothing at all. Container and type are both sized off `vw` at the
+same ratio so the same three-quarters of the letterform shows at every width.
+
 ## Analytics
 
 Off until configured. Set `provider` and `siteId` in `src/data/analytics.js` and

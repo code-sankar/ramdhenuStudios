@@ -1130,3 +1130,119 @@ figcaption,
   z-index: 0;
   border-radius: inherit;
 }
+
+/* --------------------------------------------------------------------------
+   10. THE FOOTER
+   ---------------------------------------------------------------------------
+   Four link groups, a brand block and a cropped wordmark — see Footer.jsx for
+   why it is the site map rather than a repeat of the nav.
+
+   IT IS LIGHT BECAUSE EVERY PAGE ARRIVES HERE OFF A DARK BLOCK. The contact
+   section at home and the CTA on every service, industry and project page are
+   all `bg-char-900`; a dark footer would fuse with the one above it into a
+   single slab with no seam. The hairline below is the handoff between them.
+   -------------------------------------------------------------------------- */
+.footer-rule {
+  height: 3px;
+  background: linear-gradient(
+    90deg,
+    var(--color-coral-500) 0%,
+    color-mix(in srgb, var(--color-coral-500) 45%, transparent) 38%,
+    color-mix(in srgb, var(--color-coral-500) 12%, transparent) 100%
+  );
+}
+
+/* A ROW IS THE TARGET, THE TEXT IS ONLY THE LABEL. 44px of height per link
+   means a fingertip in a two-column list never lands in the gap between two of
+   them — which on a phone is the difference between a footer that works and one
+   that has to be aimed at. The negative inline margin keeps the text optically
+   flush with the column heading while the box stays wide enough to hit. */
+.footer-row {
+  display: flex;
+  align-items: center;
+  min-height: 44px;
+  padding-inline: 8px;
+  margin-inline: -8px;
+  border: 0;
+  background: none;
+  font: inherit;
+  color: inherit;
+  text-align: left;
+  text-decoration: none;
+  cursor: pointer;
+}
+
+/* The hover moves the text, not the row: shifting a 44px box would nudge every
+   link below it. `inline-block` is what lets a transform apply at all. */
+.footer-link {
+  display: inline-block;
+  font-size: 14.5px;
+  color: var(--color-char-700, var(--color-text));
+  text-decoration: none;
+  transition:
+    color 200ms var(--ease-out-expo),
+    transform 200ms var(--ease-out-expo);
+}
+.footer-row:hover .footer-link,
+.footer-row:focus-visible .footer-link,
+a.footer-link:hover,
+a.footer-link:focus-visible {
+  color: var(--color-coral-700);
+  transform: translateX(3px);
+}
+
+.footer-social {
+  display: grid;
+  place-items: center;
+  width: 40px;
+  height: 40px;
+  flex: none;
+  border: 1px solid color-mix(in srgb, var(--color-coral-500) 26%, transparent);
+  border-radius: 50%;
+  color: var(--color-char-700, var(--color-text));
+  transition:
+    background-color 220ms var(--ease-out-expo),
+    border-color 220ms var(--ease-out-expo),
+    color 220ms var(--ease-out-expo),
+    transform 220ms var(--ease-out-expo);
+}
+a.footer-social:hover,
+a.footer-social:focus-visible {
+  background: var(--color-coral-500);
+  border-color: var(--color-coral-500);
+  color: #fff;
+  transform: translateY(-2px);
+}
+
+/* THE WORDMARK IS AN OUTLINE, WHICH IS THE ONE CHANGE THAT LIFTS THE WHOLE
+   BLOCK. Filled, it was a large grey mass: too faint to read as type and too
+   big to read as anything else. Hollow, it becomes a drawn object, it carries
+   the brand colour without shouting, and the ground stays visible through the
+   letters.
+
+   THE `@supports` GUARD IS NOT OPTIONAL. `-webkit-text-stroke` needs
+   `color: transparent` to show, and a browser that has the second and not the
+   first would render a wordmark that is genuinely invisible — so the fill is
+   only given away inside the query that proves the stroke will arrive. */
+/* THE CROP IS A FRACTION, NOT A HEIGHT. The container and the type are both
+   sized off vw at the same ratio — 11vw against 15vw — so roughly the top
+   three-quarters of the letterform shows at every width. Set as a fixed height
+   the crop drifted with the clamps: at 390px it left a third of the letters
+   visible and at 1440 nearly all of them, which reads as two different ideas. */
+.footer-wordmark {
+  display: block;
+  translate: 0 6%;
+  text-align: center;
+  font-family: var(--font-heading);
+  font-size: clamp(78px, 15vw, 250px);
+  line-height: 1;
+  letter-spacing: -0.02em;
+  color: color-mix(in srgb, var(--color-coral-500) 16%, transparent);
+}
+@supports (-webkit-text-stroke: 1px red) {
+  .footer-wordmark {
+    color: transparent;
+    -webkit-text-stroke: clamp(1px, 0.18vw, 2.4px)
+      color-mix(in srgb, var(--color-coral-500) 34%, transparent);
+  }
+}
