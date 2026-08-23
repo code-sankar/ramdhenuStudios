@@ -97,8 +97,8 @@ export const nav = [
      every time a reader reached it — two nav items lighting up for one
      section. Its highlight comes from the /industries/ route instead. */
   { label: "Services", id: "services", menu: "services" },
-  { label: "Industries", menu: "industries" },
   { label: "Work", path: "/work/" },
+  { label: "Industries", menu: "industries" },
   { label: "About", id: "about" },
   { label: "Testimonials", id: "testimonials" },
   { label: "FAQ", id: "faq" },

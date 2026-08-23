@@ -435,6 +435,7 @@ only carries the *name* of the menu on the nav item:
 
 ```js
 { label: "Services",   id: "services", menu: "services"   },
+{ label: "Work",       path: "/work/"                     },
 { label: "Industries",                 menu: "industries" },
 ```
 
