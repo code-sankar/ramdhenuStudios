@@ -238,7 +238,7 @@ checklist lives at the top of `src/data/site.js`.
 | What | Where | To publish |
 |---|---|---|
 | Contact details | `site.js` → `contact` | Real phone, WhatsApp number, email, studio address |
-| Social profiles | `site.js` → `socials` | Replace the `#` hrefs |
+| Social profiles | `site.js` → `socials` | Instagram and Facebook are live; LinkedIn is still `#`. Anything left on `#` is dropped from the hero, rendered as an inert mark in the footer, and left out of the structured data's `sameAs` — a profile is only ever claimed once it exists |
 | Live domain | `site.js` → `siteUrl` | Canonical URLs, OG tags, structured data and the sitemap all derive from it; `robots.txt` names it too |
 | Example projects | `work.js` → each project's `placeholder` | Real permissioned work, then drop that project's flag — one at a time |
 | Placeholder quotes | `testimonials.js` → each quote's `placeholder` | A real name, role and permission, then drop that quote's flag |

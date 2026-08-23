@@ -18,7 +18,7 @@
 import { industries } from "./industries.js";
 import { services, serviceBySlug } from "./services.js";
 import { work } from "./work.js";
-import { brand, contact, siteUrl } from "./site.js";
+import { brand, contact, liveSocials, siteUrl } from "./site.js";
 
 /** Trailing slash throughout — it is what the canonical URLs and sitemap use. */
 export const servicePath = (slug) => `/services/${slug}/`;
@@ -47,6 +47,15 @@ const provider = {
     addressRegion: contact.region,
     addressCountry: contact.country,
   },
+  /* `sameAs` is how a search engine is told that these accounts and this
+     business are the same entity — the whole reason a local business's
+     profiles are worth listing at all. Built from `liveSocials`, so a profile
+     still parked on "#" is never claimed; the key is omitted entirely rather
+     than emitted empty, because an empty `sameAs` is a claim that the business
+     has no profiles. */
+  ...(liveSocials.length > 0
+    ? { sameAs: liveSocials.map((social) => social.href) }
+    : {}),
 };
 
 /**
