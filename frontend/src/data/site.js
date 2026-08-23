@@ -8,7 +8,7 @@
  * │  LAUNCH CHECKLIST — every ⚠ below is a placeholder. Work down the list.  │
  * ├─────────────────────────────────────────────────────────────────────────┤
  * │  1. `contact`        real phone, WhatsApp number, email, studio address  │
- * │  2. `socials`        real profile URLs (currently "#")                   │
+ * │  2. `socials`        the LinkedIn URL — Instagram and Facebook are live  │
  * │  3. `enquiry`        set `endpoint` if the host handles form POSTs       │
  * │  4. `siteUrl`        the live domain — used by SEO tags + structured data │
  * │  5. work.js          drop `placeholder` on each project as it goes live  │
@@ -108,12 +108,37 @@ export const nav = [
 /** Where a nav item points: its own route, or a hash into the home page. */
 export const navHref = (item) => item.path ?? `/#${item.id}`;
 
-/** ⚠ PLACEHOLDER — replace "#" with the real profile URLs. */
+/**
+ * The profiles, in the order they are worth clicking.
+ *
+ * ⚠ LinkedIn is still "#". Anything left as "#" renders as an inert mark
+ *   rather than a link — a dead anchor on a sub-page jumps the reader to the
+ *   top of the page for no reason — and is left out of the `sameAs` in the
+ *   structured data, because telling Google an account exists and pointing it
+ *   at nothing is worse than saying nothing.
+ *
+ * The Instagram URL is stored without the `?hl=en` it was copied with: that
+ * parameter forces the page into English for whoever follows the link, which
+ * is a preference of the person who copied it, not of the visitor.
+ */
 export const socials = [
-  { label: "Instagram", href: "#", icon: "instagram" },
+  {
+    label: "Instagram",
+    href: "https://www.instagram.com/ramdhenustudios/",
+    icon: "instagram",
+  },
   { label: "LinkedIn", href: "#", icon: "linkedin" },
-  { label: "Facebook", href: "#", icon: "facebook" },
+  {
+    label: "Facebook",
+    href: "https://www.facebook.com/profile.php?id=61593888382123",
+    icon: "facebook",
+  },
 ];
+
+/** The profiles that actually go somewhere — used for links and for `sameAs`. */
+export const liveSocials = socials.filter(
+  (social) => social.href && social.href !== "#",
+);
 
 /**
  * ABOUT VIDEO
