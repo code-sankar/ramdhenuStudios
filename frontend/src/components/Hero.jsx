@@ -4,7 +4,7 @@ import { motion, useReducedMotion } from "motion/react";
 import BubbleField from "./BubbleField";
 import Icon from "./Icon";
 import { duration, ease } from "../lib/motion";
-import { brand, disciplines, socials } from "../data/site";
+import { brand, disciplines, liveSocials } from "../data/site";
 
 /**
  * HERO — the coral field, with the brand monogram made of moving bubbles.
@@ -128,8 +128,14 @@ export default function Hero({ showAvailability = true }) {
           ))}
         </div>
 
+        {/* `liveSocials`, not `socials` — a profile still set to "#" was
+            rendering here as a real anchor, and on any page but the top that is
+            a link that throws the reader back to the top for nothing. The
+            footer has always dropped those to inert marks; the hero was simply
+            missed. Here they are left out altogether: three marks in a row
+            where one does nothing is worse than two that both work. */}
         <ul className="m-0 flex list-none items-center gap-2 p-0">
-          {socials.map((social) => (
+          {liveSocials.map((social) => (
             <li key={social.label}>
               <a
                 href={social.href}
