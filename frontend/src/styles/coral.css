@@ -593,6 +593,19 @@ figcaption,
   box-shadow: inset 3px 0 0 var(--color-coral-500);
 }
 
+/* ONE SHEET AT A TIME.
+   Both dropdowns open in the same box — centred on the bar rather than on
+   their own triggers — so while one hands over to the other, the outgoing
+   panel spends its whole exit fade sitting exactly on top of the incoming one.
+   Two translucent white sheets in the same place render each other's text
+   through themselves, and for a moment the menu shows six services and six
+   industries at once. A handover is not worth watching: the loser is cut
+   rather than faded. Header.jsx sets the flag on whichever menu is not the
+   open one. */
+[data-preempt="true"] .menu-panel {
+  visibility: hidden;
+}
+
 /* The charcoal strip closing the panel — the reference's "need something
    tailored?" bar, and the one place a phone number belongs in a menu. */
 .menu-foot {

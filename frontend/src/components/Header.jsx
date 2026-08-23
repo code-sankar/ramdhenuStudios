@@ -42,24 +42,25 @@ export default function Header({ showAvailability = true }) {
   const { pathname } = useLocation();
   const reduced = useReducedMotion();
   const [open, setOpen] = useState(false);
-  /* WHICH menus are open, not whether one is — keyed by name. Two dropdowns
-     sharing a single boolean flicker: crossing from one trigger to the other
-     opens the second and then closes the first, and the bar would follow the
-     close and go transparent under an open panel. */
-  const [openMenus, setOpenMenus] = useState({});
-  const menuOpen = Object.values(openMenus).some(Boolean);
+  /* WHICH menu is open, not whether one is — one slot, and the last opener
+     wins. Two dropdowns sharing a boolean flicker: crossing from one trigger
+     to the other opens the second and *then* closes the first, and the bar
+     would follow that close and go transparent under an open panel. A close
+     reported by a menu that is no longer the open one is ignored, which is
+     exactly what a slot gives you and a boolean cannot. */
+  const [openMenu, setOpenMenu] = useState(null);
+  const menuOpen = openMenu !== null;
   const [active, setActive] = useState("");
   const [scrolled, setScrolled] = useState(false);
 
   const isCurrent = (item) => (item.path ? pathname === item.path : active === item.id);
 
   /* Stable identity — NavMenu reports from an effect keyed on the callback, so
-     a new function each render would re-fire it each render. The guard returns
-     the previous object unchanged when nothing moved, which is what stops the
-     mount-time "closed" report from costing a render of its own. */
+     a new function each render would re-fire it each render. Returning `prev`
+     unchanged is what stops the mount-time "closed" report from both menus
+     costing a render of its own. */
   const setMenuOpen = useCallback(
-    (key, value) =>
-      setOpenMenus((prev) => (!!prev[key] === value ? prev : { ...prev, [key]: value })),
+    (key, value) => setOpenMenu((prev) => (value ? key : prev === key ? null : prev)),
     [],
   );
 
@@ -177,7 +178,12 @@ export default function Header({ showAvailability = true }) {
      accordion inside a full-screen coral overlay, so expanding it left a white
      strip and a re-coloured CTA floating across the top of the drawer. The
      drawer's copy also unmounts with the drawer, and the open report has no
-     cleanup, so it used to leave the bar stuck white after the drawer closed. */
+     cleanup, so it used to leave the bar stuck white after the drawer closed.
+
+     `preempt` marks the menu that is NOT the open one, so it can drop its panel
+     out of sight rather than fade it out on top of the incoming one — see
+     coral.css §3. Drawer copies never preempt each other: down there the panels
+     are accordions stacked in flow, not two sheets in the same box. */
   const links = ({ drawer = false } = {}) =>
     nav.map((item) => {
       const menu = menus[item.menu];
@@ -191,6 +197,7 @@ export default function Header({ showAvailability = true }) {
           listLabel={menu.listLabel}
           currentPath={pathname}
           active={isCurrent(item) || pathname.startsWith(menu.prefix)}
+          preempt={!drawer && menuOpen && openMenu !== item.menu}
           onNavigate={closeDrawer}
           onOpenChange={drawer ? undefined : menu.onOpenChange}
         />

@@ -42,6 +42,12 @@ import { contact } from "../data/site";
  * BELOW lg IT IS A PLAIN LIST inside the drawer. A three-column panel in a
  * 360px column is not a menu, it is a scroll trap.
  *
+ * BOTH PANELS OPEN IN THE SAME BOX, which is why `preempt` exists: the header
+ * marks whichever menu is not the open one, and a preempted panel is cut rather
+ * than faded out on top of its replacement. It gates painting only, never
+ * state — a menu that is preempted still owns and clears its own open-ness, so
+ * there is no way for the two to disagree about who is open.
+ *
  * IT IS RENDERED TWICE — services and industries — SO NOTHING HERE MAY NAME A
  * SERVICE. `kind` supplies the word the read column labels an item with, and
  * `listLabel` names the bullets under it: what a service *includes* needs no
@@ -56,6 +62,7 @@ export default function NavMenu({
   listLabel,
   currentPath,
   active = false,
+  preempt = false,
   onNavigate,
   onOpenChange,
 }) {
@@ -172,27 +179,34 @@ export default function NavMenu({
     onNavigate?.();
   };
 
-  const panel = (
-    <div
-      id={panelId}
-      onKeyDown={onPanelKeyDown}
-      className={[
-        "menu-panel w-full",
-        /* From lg up it detaches into a wide sheet centred ON THE HEADER, not
-           on its own trigger — the wrapper below is deliberately not positioned
-           at this breakpoint, so the fixed header is the containing block and
-           `100%` is the bar's own height.
+  /* From lg up the panel detaches into a wide sheet centred ON THE HEADER, not
+     on its own trigger — the wrapper below is deliberately not positioned at
+     this breakpoint, so the fixed header is the containing block and `100%` is
+     the bar's own height.
 
-           CENTRED ON THE TRIGGER IT HUNG 52px OFF THE LEFT EDGE. An 880px panel
-           needs 440px of room either side of whatever it is centred on, and the
-           first trigger in a seven-item row does not have it. Centring on the
-           bar cannot go off-screen at any width, and at 880 the panel is most
-           of the bar anyway — it reads as a sheet dropping out of the header
-           rather than as a tooltip on one word. */
-        "lg:absolute lg:top-[calc(100%+14px)] lg:left-1/2 lg:z-20",
-        "lg:w-[min(880px,calc(100vw-40px))] lg:-translate-x-1/2",
-      ].join(" ")}
-    >
+     CENTRED ON THE TRIGGER IT HUNG 52px OFF THE LEFT EDGE. An 880px panel needs
+     440px of room either side of whatever it is centred on, and the first
+     trigger in a seven-item row does not have it. Centring on the bar cannot go
+     off-screen at any width, and at 880 the panel is most of the bar anyway —
+     it reads as a sheet dropping out of the header rather than as a tooltip on
+     one word.
+
+     IT IS CENTRED BY MARGINS, NOT BY A TRANSFORM, AND THAT IS THE WHOLE POINT.
+     `inset-x-0` with a fixed width leaves the horizontal equation
+     over-constrained, and the spec resolves that by splitting the slack between
+     two `auto` margins — which centres the box using no transform at all. It
+     has to be that way round because this element is also the one the entrance
+     animates: a transform on an element does not disturb its own placement,
+     whereas `-translate-x-1/2` combined with an animated `y` would fight over
+     the same property. */
+  const panelClass = [
+    "menu-panel w-full max-lg:mt-2",
+    "lg:absolute lg:inset-x-0 lg:top-[calc(100%+14px)] lg:z-20",
+    "lg:mx-auto lg:w-[min(880px,calc(100vw-40px))]",
+  ].join(" ");
+
+  const panel = (
+    <>
       <div className="lg:grid lg:grid-cols-[minmax(0,260px)_minmax(0,1fr)]">
         {/* ── The rail ── */}
         <ul className="m-0 list-none p-0 lg:border-r lg:border-char-900/8">
@@ -288,12 +302,18 @@ export default function NavMenu({
           Or call {contact.phone}
         </a>
       </div>
-    </div>
+    </>
   );
 
   return (
     <div
       ref={wrapRef}
+      /* THE FLAG GOES ON THE WRAPPER, NOT ON THE PANEL, and it has to. Once
+         AnimatePresence starts a panel's exit it is replaying the element from
+         the render before it was removed, so a class set on the panel itself
+         arrives one render too late to hide it. The wrapper is still being
+         rendered, so its attribute is always current. */
+      data-preempt={preempt ? "true" : undefined}
       /* No `lg:relative` — see the panel above: it centres on the header. */
       className="max-lg:w-full"
       onMouseEnter={onEnter}
@@ -303,7 +323,10 @@ export default function NavMenu({
       <button
         ref={triggerRef}
         type="button"
-        aria-expanded={open}
+        /* Not `open`: a preempted panel is invisible and cannot be reached,
+           so the honest answer for those 160ms is that it is not expanded —
+           and it is what stops both triggers sitting coral at once. */
+        aria-expanded={open && !preempt}
         aria-controls={panelId}
         aria-haspopup="true"
         aria-current={active ? "true" : undefined}
@@ -321,13 +344,27 @@ export default function NavMenu({
         />
       </button>
 
+      {/* NOTHING MAY WRAP THE PANEL IN A TRANSFORMED BOX. A transformed element
+          is a containing block for absolutely positioned descendants, so while
+          an outer `motion.div` held `transform: matrix(…)` mid-entrance, the
+          panel was positioned against *it* — a 100px inline box sitting at the
+          trigger — and only against the header once motion wrote
+          `transform: none` on the last frame. The panel faded in 52px off the
+          left edge of the window and then snapped 252px sideways into place,
+          every single time it opened. The animated element and the positioned
+          element are now one and the same, which is the only arrangement where
+          that cannot happen. */}
       <AnimatePresence initial={false}>
         {open &&
           (reduced ? (
-            <div className="max-lg:mt-2">{panel}</div>
+            <div id={panelId} onKeyDown={onPanelKeyDown} className={panelClass}>
+              {panel}
+            </div>
           ) : (
             <motion.div
-              className="max-lg:mt-2"
+              id={panelId}
+              onKeyDown={onPanelKeyDown}
+              className={panelClass}
               initial={{ opacity: 0, y: -10 }}
               animate={{ opacity: 1, y: 0 }}
               exit={{ opacity: 0, y: -8 }}

@@ -477,16 +477,51 @@ An 880px panel needs 440px of room either side of whatever it is centred on,
 and the first trigger in a seven-item row does not have it — centred on
 "Services" at 1280px it hung 52px off the left edge of the window. So
 `NavMenu`'s wrapper is deliberately **not** positioned at `lg`, which leaves
-the fixed `<header>` as the panel's containing block: `left-1/2` then centres
-it on the bar, and `top: calc(100% + 14px)` is measured from the bar's own
-height. It cannot go off-screen at any width.
+the fixed `<header>` as the panel's containing block, and
+`top: calc(100% + 14px)` is measured from the bar's own height. It cannot go
+off-screen at any width.
 
-### Which menus are open, not whether one is
+Two consequences follow from that, and both are load-bearing.
 
-`Header` keys open-ness by menu name. Two dropdowns sharing one boolean
-flicker: crossing from one trigger to the other opens the second and *then*
-closes the first, and the bar would follow the close and go transparent under
-an open panel.
+**Nothing may wrap the panel in a transformed box.** A transformed element is a
+containing block for absolutely positioned descendants, so while an outer
+`motion.div` held `transform: matrix(…)` through the entrance, the panel was
+positioned against *it* — a 100px inline box sitting at the trigger — and only
+against the header once motion wrote `transform: none` on the last frame. The
+panel faded in 52px off the left edge and then snapped 252px sideways into
+place, every time it opened. The animated element and the positioned element
+are now the same element, which is the only arrangement where that cannot
+happen.
+
+**It is centred by margins, not by a transform.** `inset-x-0` plus a fixed
+width leaves the horizontal equation over-constrained, and the spec resolves
+that by splitting the slack between two `auto` margins — centring with no
+transform at all. It has to be that way round, because the element doing the
+centring is also the one the entrance animates, and `-translate-x-1/2` and an
+animated `y` would be fighting over the same property.
+
+### Which menu is open, not whether one is
+
+`Header` holds one slot and the last opener wins. Two dropdowns sharing a
+boolean flicker: crossing from one trigger to the other opens the second and
+*then* closes the first, and the bar would follow that close and go transparent
+under an open panel. A close reported by a menu that is no longer the open one
+is ignored, which is exactly what a slot gives you and a boolean cannot.
+
+**One sheet is painted at a time.** Both panels open in the same box, so during
+a handover the outgoing one spends its whole exit fade sitting exactly on top
+of the incoming one, and two translucent white sheets render each other's text
+— for a moment the menu shows six services and six industries at once. So the
+header marks whichever menu is not the open one and its panel is cut rather
+than faded (`[data-preempt]`, coral.css §3). The flag goes on the *wrapper*:
+once `AnimatePresence` starts an exit it is replaying the element from the
+render before removal, so a class on the panel itself arrives one render too
+late.
+
+It gates painting only, never state. A preempted menu still owns and clears its
+own open-ness — the outside-`pointerdown` handler closes it the moment you
+press the other trigger — so the two can never disagree about who is open, and
+nothing can pop back when the winner closes.
 
 Only the bar's copy of a dropdown reports its state. The drawer's copy is an
 accordion inside a full-screen coral overlay, and `data-menu` turns the bar
