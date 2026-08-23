@@ -1,4 +1,5 @@
 import { Node, Stage } from "./Stage";
+import { useLayout } from "./useLayout";
 import { useStill } from "./useStill";
 
 /**
@@ -18,20 +19,46 @@ import { useStill } from "./useStill";
  * all the way through. Give them all the same opacity and the figure quietly
  * claims every impression converts, which is the exact lie the diagram exists to
  * avoid.
+ *
+ * ON A PHONE THE FUNNEL NARROWS AND THE LABELS GO UNDERNEATH THEIR OWN TIER
+ * rather than out to the side. Side labels need a column of width the screen
+ * does not have, and stacking the whole figure — funnel, then four cards —
+ * would break the one thing a leader line is for, which is saying which label
+ * belongs to which tier. Keeping the funnel narrow down the left and the cards
+ * against the right edge holds that pairing at a width where both still fit.
  */
 
-const VIEW = { w: 1000, h: 580 };
-const CARD = { w: 340, h: 96 };
-
-/* Tier boundaries: y and the half-width of the funnel at that y. */
-const TIERS = [
-  { y: 60, hw: 190 },
-  { y: 180, hw: 150 },
-  { y: 300, hw: 108 },
-  { y: 420, hw: 64 },
-  { y: 540, hw: 26 },
-];
-const AXIS = 300; /* the funnel's centre line */
+const LAYOUTS = {
+  wide: {
+    view: { w: 1000, h: 580 },
+    card: { w: 340, h: 96 },
+    axis: 300,
+    labelX: 580,
+    /* Tier boundaries: y and the half-width of the funnel at that y. */
+    tiers: [
+      { y: 60, hw: 190 },
+      { y: 180, hw: 150 },
+      { y: 300, hw: 108 },
+      { y: 420, hw: 64 },
+      { y: 540, hw: 26 },
+    ],
+  },
+  narrow: {
+    view: { w: 600, h: 600 },
+    /* These cards keep their icon beside the label at every width, so they need
+       height for one row rather than for two stacked lines. */
+    card: { w: 336, h: 120 },
+    axis: 120,
+    labelX: 250,
+    tiers: [
+      { y: 40, hw: 100 },
+      { y: 170, hw: 79 },
+      { y: 300, hw: 56 },
+      { y: 430, hw: 33 },
+      { y: 550, hw: 13 },
+    ],
+  },
+};
 
 /* Each particle keeps its position as a *fraction* of the funnel's width rather
    than as a fixed offset, and that is not a refinement — the first version gave
@@ -54,21 +81,23 @@ const DROPS = [
 ];
 
 /* The polyline a particle at fraction `f` falls down, boundary by boundary. */
-const trail = (f) =>
-  TIERS.map(
-    (t, i) => `${i ? "L" : "M"} ${(AXIS + f * t.hw).toFixed(1)} ${t.y}`,
-  ).join(" ");
+const trail = (L, f) =>
+  L.tiers
+    .map((t, i) => `${i ? "L" : "M"} ${(L.axis + f * t.hw).toFixed(1)} ${t.y}`)
+    .join(" ");
 
 export default function Funnel({ nodes }) {
   const still = useStill();
+  const L = LAYOUTS[useLayout()];
+  const { tiers: TIERS, axis: AXIS } = L;
   const items = nodes.slice(0, 4).map((n, i) => ({ ...n, i }));
 
   return (
-    <Stage view={VIEW} kind="funnel">
+    <Stage view={L.view} kind="funnel">
       <svg
         aria-hidden="true"
         className="fig-art"
-        viewBox={`0 0 ${VIEW.w} ${VIEW.h}`}
+        viewBox={`0 0 ${L.view.w} ${L.view.h}`}
         fill="none"
       >
         {/* The tiers, each a shade stronger than the one above it: the shape
@@ -107,7 +136,7 @@ export default function Funnel({ nodes }) {
                     dur={`${dur}s`}
                     begin={`${(i * 0.42).toFixed(2)}s`}
                     repeatCount="indefinite"
-                    path={trail(d.f)}
+                    path={trail(L, d.f)}
                   />
                   <animate
                     attributeName="opacity"
@@ -137,10 +166,10 @@ export default function Funnel({ nodes }) {
               <path
                 className="fig-line"
                 vectorEffect="non-scaling-stroke"
-                d={`M ${AXIS + midHw} ${midY} H 580`}
+                d={`M ${AXIS + midHw} ${midY} H ${L.labelX}`}
               />
               <circle className="fig-port" cx={AXIS + midHw} cy={midY} r="5" />
-              <circle className="fig-port" cx="580" cy={midY} r="5" />
+              <circle className="fig-port" cx={L.labelX} cy={midY} r="5" />
             </g>
           );
         })}
@@ -152,10 +181,10 @@ export default function Funnel({ nodes }) {
           <Node
             key={n.label}
             i={n.i}
-            view={VIEW}
+            view={L.view}
             label={n.label}
             icon={n.icon}
-            box={[580, midY - CARD.h / 2, CARD.w, CARD.h]}
+            box={[L.labelX, midY - L.card.h / 2, L.card.w, L.card.h]}
           />
         );
       })}

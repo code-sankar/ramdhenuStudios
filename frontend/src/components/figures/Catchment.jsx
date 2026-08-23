@@ -1,4 +1,5 @@
 import { Node, Stage } from "./Stage";
+import { useLayout } from "./useLayout";
 import { useStill } from "./useStill";
 
 /**
@@ -18,34 +19,59 @@ import { useStill } from "./useStill";
  * The rings are `r` and `opacity` on three circles rather than a scale
  * transform, which keeps their stroke a true hairline the whole way out. A
  * scaled circle grows its stroke with it and arrives looking like a doughnut.
+ *
+ * LIKE THE RING FIGURE, THIS ONE IS ALREADY SQUARE and needs no rearranging for
+ * a phone — a radius is a radius. The portrait layout only tightens the frame
+ * and trades a little ring reach for cards wide enough to still hold two words.
  */
 
-const VIEW = { w: 900, h: 620 };
-const CARD = { w: 180, h: 118 };
-const PIN = { x: 450, y: 300 };
 const SWEEP = 4.8; /* seconds for a ring to travel out and fade */
 
 /* Four corners, each with the port where its spoke meets it — always the corner
    nearest the pin, so no spoke ever crosses a card. */
-const SLOTS = [
-  { card: [48, 52], port: [228, 170] },
-  { card: [672, 52], port: [672, 170] },
-  { card: [48, 450], port: [228, 450] },
-  { card: [672, 450], port: [672, 450] },
-];
+const LAYOUTS = {
+  wide: {
+    view: { w: 900, h: 620 },
+    card: { w: 180, h: 118 },
+    pin: { x: 450, y: 300 },
+    reach: 262,
+    pinScale: 2.6,
+    slots: [
+      { card: [48, 52], port: [228, 170] },
+      { card: [672, 52], port: [672, 170] },
+      { card: [48, 450], port: [228, 450] },
+      { card: [672, 450], port: [672, 450] },
+    ],
+  },
+  narrow: {
+    view: { w: 600, h: 660 },
+    card: { w: 240, h: 160 },
+    pin: { x: 300, y: 330 },
+    reach: 200,
+    pinScale: 2.1,
+    slots: [
+      { card: [12, 30], port: [252, 190] },
+      { card: [348, 30], port: [348, 190] },
+      { card: [12, 470], port: [252, 470] },
+      { card: [348, 470], port: [348, 470] },
+    ],
+  },
+};
 
 export default function Catchment({ nodes }) {
   const still = useStill();
+  const L = LAYOUTS[useLayout()];
+  const PIN = L.pin;
   const items = nodes
-    .slice(0, SLOTS.length)
-    .map((n, i) => ({ ...n, ...SLOTS[i], i }));
+    .slice(0, L.slots.length)
+    .map((n, i) => ({ ...n, ...L.slots[i], i }));
 
   return (
-    <Stage view={VIEW} kind="catchment">
+    <Stage view={L.view} kind="catchment">
       <svg
         aria-hidden="true"
         className="fig-art"
-        viewBox={`0 0 ${VIEW.w} ${VIEW.h}`}
+        viewBox={`0 0 ${L.view.w} ${L.view.h}`}
         fill="none"
       >
         <defs>
@@ -76,7 +102,12 @@ export default function Catchment({ nodes }) {
           </radialGradient>
         </defs>
 
-        <circle cx={PIN.x} cy={PIN.y} r="250" fill="url(#catch-glow)" />
+        <circle
+          cx={PIN.x}
+          cy={PIN.y}
+          r={L.reach * 0.96}
+          fill="url(#catch-glow)"
+        />
 
         {/* The reach. Three rings a third of a cycle apart, so there is always
             one mid-flight and the coverage reads as continuous rather than as a
@@ -93,7 +124,7 @@ export default function Catchment({ nodes }) {
             >
               <animate
                 attributeName="r"
-                values="40;262"
+                values={`40;${L.reach}`}
                 dur={`${SWEEP}s`}
                 begin={`${((i * SWEEP) / 3).toFixed(2)}s`}
                 repeatCount="indefinite"
@@ -116,21 +147,21 @@ export default function Catchment({ nodes }) {
               className="fig-ring"
               cx={PIN.x}
               cy={PIN.y}
-              r="110"
+              r={L.reach * 0.42}
               opacity="0.4"
             />
             <circle
               className="fig-ring"
               cx={PIN.x}
               cy={PIN.y}
-              r="186"
+              r={L.reach * 0.71}
               opacity="0.26"
             />
             <circle
               className="fig-ring"
               cx={PIN.x}
               cy={PIN.y}
-              r="248"
+              r={L.reach * 0.95}
               opacity="0.14"
             />
           </>
@@ -172,7 +203,7 @@ export default function Catchment({ nodes }) {
         {/* The pin. Solid, and the only solid object in the figure, so the eye
             lands on it before it reads a single label. */}
         <g
-          transform={`translate(${PIN.x} ${PIN.y}) scale(2.6) translate(-12 -13)`}
+          transform={`translate(${PIN.x} ${PIN.y}) scale(${L.pinScale}) translate(-12 -13)`}
         >
           <path
             className="fig-solid"
@@ -186,10 +217,10 @@ export default function Catchment({ nodes }) {
         <Node
           key={n.label}
           i={n.i}
-          view={VIEW}
+          view={L.view}
           label={n.label}
           icon={n.icon}
-          box={[n.card[0], n.card[1], CARD.w, CARD.h]}
+          box={[n.card[0], n.card[1], L.card.w, L.card.h]}
         />
       ))}
     </Stage>

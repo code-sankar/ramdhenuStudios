@@ -835,6 +835,17 @@ figcaption,
 .fig-stage[data-kind="catchment"] {
   max-width: 900px;
 }
+/* The portrait geometries are taller than they are wide, so an unconstrained
+   stage on a tablet would run off the bottom of the screen before it ran out of
+   width. Capping the width caps the height with it, because the ratio is fixed. */
+@media (max-width: 719px) {
+  .fig-stage,
+  .fig-stage[data-kind="loop"],
+  .fig-stage[data-kind="radiate"],
+  .fig-stage[data-kind="catchment"] {
+    max-width: 460px;
+  }
+}
 
 .fig-art {
   position: absolute;
@@ -1023,36 +1034,69 @@ figcaption,
   fill: none;
 }
 
-/* BELOW lg EVERY FIGURE STOPS BEING A FIGURE. A hub, a ring, a funnel and a
-   spine all become the same thing in a single column — a list with decoration
-   draped over it — and their wires would have to bend through the cards to
-   reach anything. So the drawing is dropped rather than contorted and the cards
-   become an honest grid. One rule for all six, because at that width there is
-   nothing left to tell them apart. */
-@media (max-width: 1023px) {
-  .fig-stage {
-    aspect-ratio: auto !important;
-    display: grid;
-    grid-template-columns: repeat(2, minmax(0, 1fr));
-    gap: clamp(10px, 2vw, 16px);
-    max-width: 560px;
+/* THE FIGURES USED TO DISAPPEAR HERE AND THAT WAS THE WRONG CALL. The rule this
+   replaces hid `.fig-art` below 1024px and turned the stage into a plain grid,
+   on the reasoning that six wires converging on a centre stops being an
+   argument in a single column. That justified dropping the *landscape layout*;
+   it did not follow that there should be no drawing — and the effect was that
+   every visitor on a phone, which for this site's audience is most of them, got
+   the list the diagram existed to improve on.
+
+   Each figure now carries a portrait geometry of its own and picks between them
+   in JavaScript (see useLayout.js), because the choice is a different set of
+   coordinates rather than a different set of styles. What is left here is the
+   part that genuinely is styling: type and padding, which do not scale with an
+   SVG viewBox and so have to be told separately that the frame got smaller. */
+@media (max-width: 719px) {
+  /* THESE NUMBERS ARE THE BUDGET THE PORTRAIT GEOMETRIES ARE BUILT AGAINST, not
+     a taste adjustment. Type does not scale with an SVG viewBox, so a card's
+     contents have a fixed pixel height while its box shrinks with the stage —
+     and the first attempt at these layouts clipped every label on a 390px
+     screen for exactly that reason.
+
+     Worst case is a 320px viewport, where the stage is 280px wide: badge 30 +
+     gap 6 + two lines of 12px at 1.15 + 12 of padding is 76px, which is 27% of
+     the stage. Every narrow card is sized to clear that with room, so nothing
+     is ever cut off — the check that catches a regression here is `scrollHeight
+     > clientHeight` on a `.fig-node`. */
+  .fig-node {
+    gap: 6px;
+    padding: 6px;
   }
-  .fig-art {
-    display: none;
+  .fig-badge {
+    width: 30px;
+    height: 30px;
   }
-  .fig-node,
-  .fig-stage[data-kind="funnel"] .fig-node {
-    position: static !important;
-    width: auto !important;
-    height: auto !important;
-    min-height: 116px;
-    flex-direction: column;
-    justify-content: center;
-    padding: 18px 12px;
-    text-align: center;
+  .fig-badge svg {
+    width: 16px;
+    height: 16px;
   }
   .fig-label {
+    max-width: 76px;
+    font-size: 12px;
+    line-height: 1.15;
+  }
+  /* The funnel's labels sit in a row beside their icon at every width — there
+     is no second column to fall into on a phone, so the card simply narrows. */
+  .fig-stage[data-kind="funnel"] .fig-node {
+    padding: 8px 12px;
+    gap: 10px;
+  }
+  .fig-stage[data-kind="funnel"] .fig-label {
     max-width: none;
+  }
+}
+
+/* Between the two: the landscape geometry still fits, but only just, so the
+   type comes down before the layout has to. */
+@media (min-width: 720px) and (max-width: 1023px) {
+  .fig-label {
+    max-width: 88px;
+    font-size: 14px;
+  }
+  .fig-badge {
+    width: 40px;
+    height: 40px;
   }
 }
 

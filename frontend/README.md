@@ -179,9 +179,32 @@ circle. If they ever converge, the second page starts reading as the first with
 the words swapped.
 
 `Stage.jsx` carries everything that is *not* the argument — the coordinate
-space, the cards, the reduced-motion gate, the phone fallback — so a new figure
-is a layout and a claim rather than another copy of the scaffolding. Which
-figure a page gets is `figure.kind` in that service's own data.
+space, the cards, the reduced-motion gate — so a new figure is a layout and a
+claim rather than another copy of the scaffolding. Which figure a page gets is
+`figure.kind` in that service's own data.
+
+**Every figure carries two geometries and picks between them at 720px** (see
+`useLayout.js`). They used to vanish below 1024px instead, on the reasoning that
+six wires converging on a centre stops being an argument in a single column.
+That justified dropping the *landscape layout*; it did not follow that there
+should be no drawing, and the effect was that every visitor on a phone — which
+for this site's audience is most of them — got the list the diagram existed to
+improve on. A ring is not a landscape shape. Neither is a funnel or a spine.
+
+So the horizontal pipeline becomes a vertical one; the hub keeps its frame and
+hangs its cards off a trunk; the branding circle opens into a fan between two
+columns; the ring, the funnel and the catchment keep their shape and tighten.
+The breakpoint is arithmetic rather than taste: at a 720px stage a landscape
+card is 134px against a 96px label measure plus padding, the last width where it
+is comfortable.
+
+**Type is the constraint that sizes the portrait geometries**, because it does
+not scale with an SVG viewBox — a card's contents have a fixed pixel height
+while its box shrinks with the stage. Worst case is a 320px viewport, where the
+stage is 280px: badge 30 + gap 6 + two lines of 12px + 12 of padding is 76px,
+which is 27% of the stage. Every narrow card clears that. The check that catches
+a regression is `scrollHeight > clientHeight` on a `.fig-node`, run at ten
+widths from 320 to 1440.
 
 Three things to know before editing one. **The stage's proportions are
 load-bearing, not styling** — wires are SVG in viewBox units and cards are HTML

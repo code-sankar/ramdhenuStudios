@@ -1,4 +1,5 @@
 import { Node, Stage } from "./Stage";
+import { useLayout } from "./useLayout";
 import { useStill } from "./useStill";
 
 /**
@@ -11,52 +12,70 @@ import { useStill } from "./useStill";
  * beginning or an end to it.
  *
  * WHICH IS WHY THIS IS A RING AND THE PHOTOGRAPHY FIGURE IS A LINE. Both are
- * five-ish ordered stages and either could have been drawn either way. A shoot
- * genuinely ends — you deliver and you are done — and a line ends. Social
- * genuinely does not, and a ring does not. The shape is the part of each figure
- * doing the arguing; the labels are only naming what it argues about.
+ * ordered stages and either could have been drawn either way. A shoot genuinely
+ * ends — you deliver and you are done — and a line ends. Social genuinely does
+ * not, and a ring does not. The shape is the part doing the arguing.
  *
- * The ring passes behind the cards rather than between them, so it reads as one
- * continuous thread the stages are strung on rather than as five separate hops.
+ * OF THE SIX, THIS IS THE ONE THAT BARELY CHANGES ON A PHONE. A ring is square
+ * by nature, so the portrait layout is the same figure with a tighter frame and
+ * smaller cards rather than a rearrangement — which is lucky, because its five
+ * labels are single words and stay legible at any size the ring will take.
  */
 
-const VIEW = { w: 900, h: 660 };
-const CARD = { w: 168, h: 112 };
-const RING = { cx: 450, cy: 320, r: 240 };
-const ORBIT = 16; /* seconds for one full turn — slow enough to read as a cycle */
+const LAYOUTS = {
+  wide: {
+    view: { w: 900, h: 660 },
+    card: { w: 168, h: 112 },
+    ring: { cx: 450, cy: 320, r: 240 },
+    core: 2.1,
+  },
+  narrow: {
+    view: { w: 660, h: 630 },
+    card: { w: 208, h: 190 },
+    /* THE BINDING CONSTRAINT IS NOT THE CHORD BETWEEN NEIGHBOURS, WHICH IS WHAT
+       THE FIRST ATTEMPT SIZED AGAINST. Two boxes only overlap when they are
+       close on *both* axes, so what matters is the horizontal gap between the
+       top card and the two beside it: r·(cos18° − cos90°) = 0.951r, which has to
+       clear the 208-unit card width. That puts the floor at r ≥ 219 — not the
+       177 the straight-line chord suggests — and 228 leaves a little room. */
+    ring: { cx: 330, cy: 330, r: 228 },
+    core: 1.5,
+  },
+};
 
 /* Five evenly around, starting at the top. */
 const ANGLES = [-90, -18, 54, 126, 198];
+const ORBIT = 16; /* seconds for one full turn — slow enough to read as a cycle */
 
-const at = (deg) => {
+const at = (ring, deg) => {
   const rad = (deg * Math.PI) / 180;
-  return [RING.cx + RING.r * Math.cos(rad), RING.cy + RING.r * Math.sin(rad)];
+  return [ring.cx + ring.r * Math.cos(rad), ring.cy + ring.r * Math.sin(rad)];
 };
 
 /* A full circle as a path, because `mpath` follows a <path> and nothing else.
    Two half-arcs: SVG cannot express a complete ellipse in one arc command, as
    an arc whose start and end coincide is degenerate and simply does not draw. */
-const RING_PATH =
-  `M ${RING.cx} ${RING.cy - RING.r} ` +
-  `A ${RING.r} ${RING.r} 0 1 1 ${RING.cx} ${RING.cy + RING.r} ` +
-  `A ${RING.r} ${RING.r} 0 1 1 ${RING.cx} ${RING.cy - RING.r}`;
+const ringPath = (r) =>
+  `M ${r.cx} ${r.cy - r.r} A ${r.r} ${r.r} 0 1 1 ${r.cx} ${r.cy + r.r} ` +
+  `A ${r.r} ${r.r} 0 1 1 ${r.cx} ${r.cy - r.r}`;
 
 export default function Loop({ nodes }) {
   const still = useStill();
+  const L = LAYOUTS[useLayout()];
   const items = nodes
     .slice(0, ANGLES.length)
     .map((n, i) => ({ ...n, deg: ANGLES[i], i }));
 
   return (
-    <Stage view={VIEW} kind="loop">
+    <Stage view={L.view} kind="loop">
       <svg
         aria-hidden="true"
         className="fig-art"
-        viewBox={`0 0 ${VIEW.w} ${VIEW.h}`}
+        viewBox={`0 0 ${L.view.w} ${L.view.h}`}
         fill="none"
       >
         <defs>
-          <path id="loop-ring" d={RING_PATH} />
+          <path id="loop-ring" d={ringPath(L.ring)} />
           <radialGradient id="loop-glow">
             <stop
               offset="0%"
@@ -72,9 +91,9 @@ export default function Loop({ nodes }) {
         </defs>
 
         <circle
-          cx={RING.cx}
-          cy={RING.cy}
-          r={RING.r * 0.7}
+          cx={L.ring.cx}
+          cy={L.ring.cy}
+          r={L.ring.r * 0.7}
           fill="url(#loop-glow)"
         />
         <use
@@ -90,7 +109,7 @@ export default function Loop({ nodes }) {
             a card. */}
         {ANGLES.map((deg, i) => {
           const mid = deg + 36;
-          const [x, y] = at(mid);
+          const [x, y] = at(L.ring, mid);
           return (
             <path
               key={i}
@@ -112,7 +131,7 @@ export default function Loop({ nodes }) {
         {/* The centre names what the ring is: the same loop, going round again. */}
         <g
           className="fig-core-mark"
-          transform={`translate(${RING.cx} ${RING.cy}) scale(2.1) translate(-12 -12)`}
+          transform={`translate(${L.ring.cx} ${L.ring.cy}) scale(${L.core}) translate(-12 -12)`}
         >
           <path d="M20 11.5a8 8 0 10-1.4 5.6" strokeWidth="1.5" />
           <path d="M20.4 4.6v5.2h-5.2" strokeWidth="1.5" />
@@ -120,15 +139,15 @@ export default function Loop({ nodes }) {
       </svg>
 
       {items.map((n) => {
-        const [x, y] = at(n.deg);
+        const [x, y] = at(L.ring, n.deg);
         return (
           <Node
             key={n.label}
             i={n.i}
-            view={VIEW}
+            view={L.view}
             label={n.label}
             icon={n.icon}
-            box={[x - CARD.w / 2, y - CARD.h / 2, CARD.w, CARD.h]}
+            box={[x - L.card.w / 2, y - L.card.h / 2, L.card.w, L.card.h]}
           />
         );
       })}
