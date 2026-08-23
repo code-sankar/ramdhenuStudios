@@ -39,13 +39,21 @@ import { contact } from "../data/site";
  * trigger, Down opens onto the first item, Up/Down move, and focus leaving the
  * control closes it.
  *
- * BELOW md IT IS A PLAIN LIST inside the drawer. A three-column panel in a
+ * BELOW lg IT IS A PLAIN LIST inside the drawer. A three-column panel in a
  * 360px column is not a menu, it is a scroll trap.
+ *
+ * IT IS RENDERED TWICE — services and industries — SO NOTHING HERE MAY NAME A
+ * SERVICE. `kind` supplies the word the read column labels an item with, and
+ * `listLabel` names the bullets under it: what a service *includes* needs no
+ * heading, whereas three service names under an industry need to be told apart
+ * from the industry itself.
  */
 export default function NavMenu({
   label,
   items,
   footer,
+  kind,
+  listLabel,
   currentPath,
   active = false,
   onNavigate,
@@ -62,6 +70,15 @@ export default function NavMenu({
   /* Which rail item the read-column is describing. Defaults to the first. */
   const [focusIndex, setFocusIndex] = useState(0);
   const shown = items[focusIndex] ?? items[0];
+
+  /* TWO COLUMNS WHEN THE LINES ARE PHRASES, ONE WRAPPING ROW WHEN THEY ARE
+     NAMES. A service's bullets are sentences — the shortest of them is 21
+     characters — and they fill a two-column grid. An industry's are three
+     service names, none longer than 15, and in that same grid one of them ends
+     up marooned 300px to the right of the others with a hole underneath. The
+     rule reads the content rather than taking a flag, so a longer line added
+     later moves the list back to columns on its own. */
+  const namesNotPhrases = shown?.includes?.every((item) => item.length <= 18);
 
   const wrapRef = useRef(null);
   const triggerRef = useRef(null);
@@ -161,16 +178,24 @@ export default function NavMenu({
       onKeyDown={onPanelKeyDown}
       className={[
         "menu-panel w-full",
-        /* From md up it detaches into a wide centred panel. The min() keeps it
-           inside a 1024px laptop, where a fixed width centred on a right-hand
-           trigger would hang off the edge. */
-        "md:absolute md:top-[calc(100%+14px)] md:left-1/2 md:z-20",
-        "md:w-[min(880px,calc(100vw-40px))] md:-translate-x-1/2",
+        /* From lg up it detaches into a wide sheet centred ON THE HEADER, not
+           on its own trigger — the wrapper below is deliberately not positioned
+           at this breakpoint, so the fixed header is the containing block and
+           `100%` is the bar's own height.
+
+           CENTRED ON THE TRIGGER IT HUNG 52px OFF THE LEFT EDGE. An 880px panel
+           needs 440px of room either side of whatever it is centred on, and the
+           first trigger in a seven-item row does not have it. Centring on the
+           bar cannot go off-screen at any width, and at 880 the panel is most
+           of the bar anyway — it reads as a sheet dropping out of the header
+           rather than as a tooltip on one word. */
+        "lg:absolute lg:top-[calc(100%+14px)] lg:left-1/2 lg:z-20",
+        "lg:w-[min(880px,calc(100vw-40px))] lg:-translate-x-1/2",
       ].join(" ")}
     >
-      <div className="md:grid md:grid-cols-[minmax(0,260px)_minmax(0,1fr)]">
+      <div className="lg:grid lg:grid-cols-[minmax(0,260px)_minmax(0,1fr)]">
         {/* ── The rail ── */}
-        <ul className="m-0 list-none p-0 md:border-r md:border-char-900/8">
+        <ul className="m-0 list-none p-0 lg:border-r lg:border-char-900/8">
           {items.map((item, i) => (
             <li key={item.label}>
               <Link
@@ -181,7 +206,7 @@ export default function NavMenu({
                 onMouseEnter={() => setFocusIndex(i)}
                 onFocus={() => setFocusIndex(i)}
                 onClick={dismiss}
-                className="menu-rail-item no-underline max-md:min-h-[44px]"
+                className="menu-rail-item no-underline max-lg:min-h-[44px]"
               >
                 <span className="w-6 flex-none font-display text-[11.5px] tracking-[0.08em] text-coral-700">
                   {item.num}
@@ -195,10 +220,10 @@ export default function NavMenu({
 
         {/* ── The read. Below md the rail already says everything a 360px
               column has room for, so this is desktop-only. ── */}
-        <div className="hidden flex-col justify-between p-7 md:flex">
+        <div className="hidden flex-col justify-between p-7 lg:flex">
           <div>
             <p className="mb-2 font-display text-[11px] tracking-[0.14em] text-coral-700 uppercase">
-              {shown?.num} — Service
+              {shown?.num} — {kind}
             </p>
             <h3 className="display mb-3 text-[26px] leading-[1.1] text-char-900">
               {shown?.label}
@@ -208,10 +233,21 @@ export default function NavMenu({
             </p>
 
             {/* What the column is actually for. The reference puts a photo
-                here; four lines of what the service includes is more use to
-                someone deciding which of six to click. */}
+                here; four lines of what the item covers is more use to someone
+                deciding which of six to click. */}
+            {listLabel && shown?.includes?.length > 0 && (
+              <p className="mt-5 mb-1.5 font-display text-[10.5px] tracking-[0.12em] text-char-700/70 uppercase">
+                {listLabel}
+              </p>
+            )}
             {shown?.includes?.length > 0 && (
-              <ul className="mt-5 grid list-none grid-cols-2 gap-x-5 gap-y-1.5 p-0">
+              <ul
+                className={[
+                  "list-none gap-x-5 gap-y-1.5 p-0",
+                  namesNotPhrases ? "flex flex-wrap" : "grid grid-cols-2",
+                  listLabel ? "mt-0" : "mt-5",
+                ].join(" ")}
+              >
                 {shown.includes.map((item) => (
                   <li
                     key={item}
@@ -240,7 +276,7 @@ export default function NavMenu({
       </div>
 
       {/* ── The charcoal foot ── */}
-      <div className="menu-foot flex flex-wrap items-center justify-between gap-3 px-7 py-4 max-md:px-5">
+      <div className="menu-foot flex flex-wrap items-center justify-between gap-3 px-7 py-4 max-lg:px-5">
         <p className="m-0 text-[13.5px] leading-snug">
           Need something built for your business specifically?
         </p>
@@ -258,7 +294,8 @@ export default function NavMenu({
   return (
     <div
       ref={wrapRef}
-      className="max-md:w-full md:relative"
+      /* No `lg:relative` — see the panel above: it centres on the header. */
+      className="max-lg:w-full"
       onMouseEnter={onEnter}
       onMouseLeave={onLeave}
       onBlur={onBlur}
@@ -274,7 +311,7 @@ export default function NavMenu({
         onKeyDown={onTriggerKeyDown}
         /* No `text-inherit`: it is a utility, so it would beat `.nav-link`'s
            colour and leave this trigger a different shade from its siblings. */
-        className="nav-link flex cursor-pointer items-center gap-1.5 border-0 bg-transparent max-md:min-h-[44px] max-md:w-full max-md:text-[19px]"
+        className="nav-link flex cursor-pointer items-center gap-1.5 border-0 bg-transparent max-lg:min-h-[44px] max-lg:w-full max-lg:text-[19px]"
       >
         {label}
         <Icon
@@ -287,10 +324,10 @@ export default function NavMenu({
       <AnimatePresence initial={false}>
         {open &&
           (reduced ? (
-            <div className="max-md:mt-2">{panel}</div>
+            <div className="max-lg:mt-2">{panel}</div>
           ) : (
             <motion.div
-              className="max-md:mt-2"
+              className="max-lg:mt-2"
               initial={{ opacity: 0, y: -10 }}
               animate={{ opacity: 1, y: 0 }}
               exit={{ opacity: 0, y: -8 }}
