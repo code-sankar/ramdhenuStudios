@@ -18,7 +18,7 @@
 import { industries } from "./industries.js";
 import { services, serviceBySlug } from "./services.js";
 import { work } from "./work.js";
-import { brand, contact, liveSocials, siteUrl } from "./site.js";
+import { brand, contact, indexable, liveSocials, siteUrl } from "./site.js";
 
 /** Trailing slash throughout — it is what the canonical URLs and sitemap use. */
 export const servicePath = (slug) => `/services/${slug}/`;
@@ -410,7 +410,16 @@ export const headTags = (meta) => {
 
   meta_("name", "description", meta.description);
   meta_("name", "author", brand.name);
-  meta_("name", "robots", meta.robots);
+  /* A NON-PRODUCTION BUILD IS NEVER INDEXABLE, whatever the route says. Every
+     Vercel branch and pull request gets its own public URL, and left alone
+     those get crawled — a dozen copies of the same six service pages on a
+     dozen hostnames, competing with the real ones. It is applied here rather
+     than at each route so there is no route that can forget, and it applies to
+     the head <Seo> writes on navigation as well as the one the build stamps
+     into the file. robots.txt disallows the same builds wholesale; the two
+     answer different questions, and a page already in the index needs the tag
+     to leave it. */
+  meta_("name", "robots", indexable ? meta.robots : "noindex, nofollow");
 
   if (meta.canonical) push("link", { rel: "canonical", href: meta.canonical });
 
@@ -419,6 +428,7 @@ export const headTags = (meta) => {
   const ogDescription = og.description ?? meta.description;
 
   meta_("property", "og:type", "website");
+  meta_("property", "og:locale", "en_IN");
   meta_("property", "og:url", meta.canonical);
   meta_("property", "og:site_name", brand.name);
   meta_("property", "og:title", ogTitle);

@@ -30,6 +30,7 @@ const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..");
 const dist = path.join(root, "dist");
 
 const { staticRoutes, headTags, absoluteUrl } = await import(path.join(root, "src/data/seo.js"));
+const { indexable, siteUrl } = await import(path.join(root, "src/data/site.js"));
 
 const template = (() => {
   const file = path.join(dist, "index.html");
@@ -115,4 +116,28 @@ ${listed
 `,
 );
 console.log(`  dist/sitemap.xml (${listed.length} urls)`);
-console.log(`\n${routes.length} routes written.`);
+
+/**
+ * robots.txt, WRITTEN HERE RATHER THAN KEPT IN public/.
+ *
+ * It used to be a static file naming the domain in plain text, one copy of a
+ * value that also lives in the canonical of every page — and the two would
+ * have parted company the first time the site was deployed anywhere else. A
+ * `Sitemap:` line pointing at a hostname that is not this one is worse than no
+ * line: it sends the crawler somewhere else entirely.
+ *
+ * A NON-PRODUCTION BUILD DISALLOWS EVERYTHING. Preview deployments are public
+ * URLs, and an indexed preview is a second copy of the whole site competing
+ * with the real one. The head carries `noindex` on those builds too — this
+ * stops the crawl, that clears anything already indexed, and neither does the
+ * other's job.
+ */
+fs.writeFileSync(
+  path.join(dist, "robots.txt"),
+  indexable
+    ? `User-agent: *\nAllow: /\n\nSitemap: ${absoluteUrl("/sitemap.xml")}\n`
+    : `# Non-production deployment — not for indexing.\nUser-agent: *\nDisallow: /\n`,
+);
+console.log(`  dist/robots.txt (${indexable ? "indexable" : "noindex — non-production"})`);
+
+console.log(`\n${routes.length} routes written for ${siteUrl}`);
