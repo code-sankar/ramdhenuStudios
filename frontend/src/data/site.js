@@ -10,15 +10,35 @@
  * │  1. `contact`        real phone, WhatsApp number, email, studio address  │
  * │  2. `socials`        the LinkedIn URL — Instagram and Facebook are live  │
  * │  3. `enquiry`        set `endpoint` if the host handles form POSTs       │
- * │  4. `siteUrl`        the live domain — used by SEO tags + structured data │
+ * │  4. `VITE_SITE_URL`  the live domain, set in the host's environment —    │
+ * │                      canonicals, OG tags, structured data and the        │
+ * │                      sitemap all derive from it (see site-url.js)        │
  * │  5. work.js          drop `placeholder` on each project as it goes live  │
  * │  6. testimonials.js  drop `placeholder` on each quote you have rights to │
  * │  7. legal.js         have the privacy policy and terms reviewed          │
  * └─────────────────────────────────────────────────────────────────────────┘
  */
+import { resolveIndexable, resolveSiteUrl } from "./site-url.js";
 
-/** ⚠ PLACEHOLDER — the live domain. Used for canonical URL and structured data. */
-export const siteUrl = "https://ramdhenu.studio";
+/**
+ * The live domain, and whether this build may be indexed — both resolved from
+ * the environment. See site-url.js for the order of precedence and for why a
+ * hard-coded domain is the one placeholder that cannot survive a deploy.
+ *
+ * Read twice, from two runtimes, and they must agree: the browser gets the
+ * value Vite baked in (vite.config.js resolves it and defines it), and the
+ * prerender script — a separate Node process — resolves it from `process.env`
+ * with the same function. The `import.meta.env` branch is what the bundle
+ * takes; the `process.env` branch is what Node takes, and each is undefined in
+ * the other's world.
+ */
+const env =
+  (typeof import.meta !== "undefined" && import.meta.env) ||
+  (typeof process !== "undefined" && process.env) ||
+  {};
+
+export const siteUrl = resolveSiteUrl(env);
+export const indexable = resolveIndexable(env);
 
 export const brand = {
   name: "Ramdhenu",

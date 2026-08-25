@@ -239,7 +239,7 @@ checklist lives at the top of `src/data/site.js`.
 |---|---|---|
 | Contact details | `site.js` → `contact` | Real phone, WhatsApp number, email, studio address |
 | Social profiles | `site.js` → `socials` | Instagram and Facebook are live; LinkedIn is still `#`. Anything left on `#` is dropped from the hero, rendered as an inert mark in the footer, and left out of the structured data's `sameAs` — a profile is only ever claimed once it exists |
-| Live domain | `site.js` → `siteUrl` | Canonical URLs, OG tags, structured data and the sitemap all derive from it; `robots.txt` names it too |
+| Live domain | `VITE_SITE_URL` in the host's environment | Canonical URLs, OG tags, structured data, the sitemap and robots.txt all derive from it. Unset, a Vercel deployment uses its own URL — see [Deploying](#deploying) |
 | Example projects | `work.js` → each project's `placeholder` | Real permissioned work, then drop that project's flag — one at a time |
 | Placeholder quotes | `testimonials.js` → each quote's `placeholder` | A real name, role and permission, then drop that quote's flag |
 | Analytics | `analytics.js` → `provider`, `siteId` | Off until set; turning it on rewrites the privacy policy's tracking line |
@@ -388,9 +388,88 @@ surface the Google Business service sells to clients. Each service page carries
 The FAQ section renders its own `FAQPage` block from the questions on the page,
 so that one cannot drift either.
 
-`public/` holds `robots.txt` and the share card; `sitemap.xml` is generated into
-`dist/` at build time. **The domain is set once**, in `src/data/site.js` →
-`siteUrl` — everything above derives from it.
+`sitemap.xml` and `robots.txt` are both generated into `dist/` at build time.
+Neither is a file anyone edits: a `Sitemap:` line naming a hostname by hand is
+one copy of a value that also lives in the canonical of every page, and the two
+part company the first time the site is deployed somewhere else.
+
+### The domain comes from the environment
+
+Everything above — canonicals, `og:url`, the absolute URLs in the structured
+data, the sitemap, the `Sitemap:` line — derives from one value, and that value
+is resolved from the environment by `src/data/site-url.js`:
+
+| | |
+|---|---|
+| `VITE_SITE_URL` | the custom domain, set explicitly. Always wins |
+| Vercel's production URL | a production deployment with no custom domain set yet |
+| Vercel's deployment URL | a preview, so its canonicals point at itself |
+| `https://ramdhenu.studio` | local builds, and anything not on Vercel |
+
+**Two processes have to agree on the answer**, which is why it is a function
+rather than four `||`s at the point of use. `vite build` bakes it into the
+bundle the browser runs; `generate-static-routes.mjs` is a separate Node
+process that writes the same head into the HTML. `VERCEL_ENV` and `VERCEL_URL`
+are not `VITE_` variables and never reach a bundle on their own, so
+`vite.config.js` resolves both values and `define`s them — otherwise a crawler
+would read one canonical out of the file and a visitor would get a different
+one written over it on the first client-side navigation.
+
+### Nothing but production is indexable
+
+Every Vercel branch and pull request gets its own public URL, and left alone
+those get crawled — a dozen copies of the same six service pages on a dozen
+hostnames, competing with the real ones. That is the usual way a site with good
+SEO ends up ranking its own staging build.
+
+So a non-production build is marked twice: `noindex, nofollow` in every page's
+head, applied in `headTags` where no route can forget it, and `Disallow: /` in
+robots.txt. The two answer different questions — robots.txt stops the crawl,
+the meta tag gets a page already in the index back out of it, and neither does
+the other's job.
+
+## Deploying
+
+The app is in `frontend/`, so the repo root carries a `vercel.json` that points
+Vercel at it. Import the repository and the defaults are correct — there is no
+root directory, build command or output directory to set by hand.
+
+| | |
+|---|---|
+| Install | `cd frontend && npm ci` |
+| Build | `cd frontend && npm run build` — Vite, then the route generator |
+| Output | `frontend/dist` |
+| Node | `>=20.19`, pinned in `package.json` → `engines` |
+
+**Set `VITE_SITE_URL` to the real domain** once one is attached, as a
+Production environment variable. Until then a production deployment falls back
+to the `*.vercel.app` URL, which is right rather than merely harmless: the
+canonicals point at the site that is actually serving them.
+
+`trailingSlash: true` is not cosmetic. Every canonical this site emits ends in
+a slash, and the route generator writes `services/<slug>/index.html`; without
+it, `/services/website-design-development` and the same path with a slash are
+two URLs serving one page, which is the definition of duplicate content. With
+it, the first 308s to the second.
+
+Deep links need no rewrite rule. Every route is a real file on disk, and
+anything unknown falls through to `404.html` — which returns a genuine 404
+*and* boots the app, so the visitor gets the branded not-found page rather than
+the host's.
+
+Static assets are served `immutable` for a year; Vite fingerprints everything
+under `/assets`, and the fonts under `/fonts` are named by family, weight and
+subset. HTML and the sitemap are `must-revalidate`, so a deploy is visible on
+the next request rather than whenever a cache decides.
+
+**There is no Content-Security-Policy header, and that is a decision.** The
+boot splash is an inline `<script>` and an inline `<style>` in `index.html` —
+both by necessity, since it has to paint before the bundle parses — so any CSP
+that let the site run would need `'unsafe-inline'` for scripts and styles,
+which is most of what a CSP is for. A policy that permits the thing it exists
+to prevent is worse than none: it reads as protection in an audit and provides
+none. `X-Content-Type-Options`, `X-Frame-Options`, `Referrer-Policy` and
+`Permissions-Policy` are set, and all four do their whole job.
 
 ## Industry pages
 
