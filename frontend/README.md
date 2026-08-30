@@ -464,16 +464,38 @@ the other's job.
 
 ## Deploying
 
-The app is in `frontend/`, so the repo root carries a `vercel.json` that points
-Vercel at it. Import the repository and the defaults are correct — there is no
-root directory, build command or output directory to set by hand.
+The app is in `frontend/` and the repo root is otherwise empty, so **the Vercel
+project's Root Directory must be set to `frontend`** — the one setting this
+deploy needs. Vercel then runs every command from inside `frontend/`, and
+`vercel.json` at the repo root is picked up as the fallback config because there
+is none in the root directory.
 
 | | |
 |---|---|
-| Install | `cd frontend && npm ci` |
-| Build | `cd frontend && npm run build` — Vite, then the route generator |
-| Output | `frontend/dist` |
+| Root Directory | `frontend` (Vercel dashboard → Settings → General) |
+| Install | `npm ci` |
+| Build | `npm run build` — Vite, then the route generator |
+| Output | `dist` |
 | Node | `>=20.19`, pinned in `package.json` → `engines` |
+
+**EVERY PATH IN `vercel.json` IS RELATIVE TO `frontend/`, NOT TO THE REPO ROOT,
+and getting that wrong is silent until it is fatal.** The first version of this
+file read `cd frontend && npm ci` with an output of `frontend/dist`, written on
+the assumption that Vercel runs from the repository root. It does not when a
+Root Directory is set: the hop gets applied twice, and the build dies at
+`cd: frontend: No such file or directory` before a single line of the app is
+compiled — so the deploy that fails is not a broken site, it is the previous
+site still being served. The tell in the log is Vercel reporting the `engines`
+field, which only exists in `frontend/package.json`: if Vercel is reading that
+as *the* package.json, `frontend/` is already the working directory and nothing
+here may name it again.
+
+The `headers` blocks are unaffected — their `source` patterns are request paths,
+not filesystem paths.
+
+Vercel warns that `"node": ">=20.19"` will follow new Node majors as they are
+released. That is deliberate for contributors, who only need the floor Vite 8
+requires; pin it to `22.x` if a future major ever breaks the build.
 
 **Set `VITE_SITE_URL` to the real domain** once one is attached, as a
 Production environment variable. Until then a production deployment falls back
