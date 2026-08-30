@@ -117,9 +117,10 @@ src/
     Icon.jsx         the Lucide glyphs actually used, inline
     Reveal.jsx       one short scroll entrance, reused everywhere
     BubbleField.jsx  the hero's drift of soap bubbles — 50 of them, CSS only
-    figures/         one diagram per service page — six different shapes
+    figures/         one diagram per service page, plus the home page's bow
     ParticleMark.jsx the monogram as a body of rising bubbles (currently unused)
     Orbit.jsx        the six disciplines drawn as one system, on one centre
+    Span.jsx         what happens after you get in touch, drawn end to end
     ui/SectionIndex  the numbered spec-sheet index each section opens with
     EnquiryForm.jsx  the conversion point — validation + WhatsApp/POST delivery
     Dialog.jsx       the system's modal, made keyboard-safe
@@ -130,7 +131,7 @@ src/
 Routing lives in `src/App.jsx`: `/` → `HomePage`, `/services/:slug` → `ServicePage`,
 `/industries/:slug` → `IndustryPage`, `/work` → `WorkPage`, `/work/:slug` →
 `ProjectPage`, anything else → `NotFoundPage`. Sections follow the artboard:
-**Hero → About → Services → Orbit → Testimonials → FAQ → Contact.**
+**Hero → About → Services → Orbit → Testimonials → FAQ → Span → Contact.**
 
 The hero's background is `BubbleField`: fifty soap bubbles drifting gently over
 the coral, each one built from seven stacked radial gradients — rim, specular,
@@ -156,11 +157,11 @@ is the loosest that passed a measurement taken at the pixels glyphs actually
 paint, sampled across the drift cycle at seven viewports. Lighten it and the
 12px rail goes under AA. The numbers are in `coral.css` §2.1.
 
-`src/components/figures/` holds one diagram per service page, and they are
-deliberately six different diagrams rather than one diagram with six sets of
-nouns:
+`src/components/figures/` holds one diagram per service page and one for the
+home page's closing section, and they are deliberately seven different diagrams
+rather than one diagram with seven sets of nouns:
 
-| figure | shape | claim | service |
+| figure | shape | claim | page |
 |---|---|---|---|
 | `Anatomy` | hub, orthogonal, inward | these six ship together or nothing runs | websites |
 | `Pipeline` | a line that ends | the camera is one stage of four | photo & video |
@@ -168,6 +169,7 @@ nouns:
 | `Funnel` | narrowing tiers | most of the spend falls away | paid ads |
 | `Catchment` | a pin and its radius | you, and everyone searching near you | Google Business |
 | `Radiate` | spokes, outward | one decision, six surfaces | branding |
+| `Arc` | a bow, converging then spread | you can see the far end from here | home (`Span`) |
 
 A hub says "these belong together"; a funnel says "most of this is lost"; a ring
 says "this never finishes". Those are different claims and the services make
@@ -217,6 +219,38 @@ sails straight past `<animateMotion>` — so every figure gates it in JS via
 instead of dropping it. **And the section numbers and band colours are
 positional**, derived from the sections that actually render: hard-coded numbers
 were one missing project away from printing 01, 02, 04, 05 on a live page.
+
+`Span` is the last section before the form, and `Arc` is its figure. The FAQ
+above it answers the objections a visitor can put into words; this answers the
+one they cannot, which is what the far end of an engagement even looks like —
+four named stages, the free ones marked, and the point where money starts drawn
+rather than described. Three things about it are worth knowing.
+
+**It is a bow because of the name.** Ramdhenu is Assamese for rainbow, and this
+is the one place on the site where that is allowed to mean something: one beam
+arrives at the near foot, bends, and lands on the far side as four separate
+points rather than one. That divergence is the same argument the rest of the
+site makes in words — one brief in, six disciplines out — and it is drawn into
+the geometry rather than performed by the travellers, so it survives with the
+motion switched off.
+
+**The stroke changes at the summit, and that is arithmetic.** The bow is dashed
+while the engagement costs nothing and solid afterwards, and the switch sits at
+the midpoint between the last free stage and the first paid one. With two of
+four stages free that midpoint is exactly the crest — the one point on a bow the
+eye goes to unprompted turns out to be the one point in the engagement worth
+marking. It is why `STOPS` spaces the middle two stages to leave 119 units of
+daylight at the top: the summit has to be seen through the gap, and the
+dimension's extension line has to come down through it.
+
+**The free run is dimensioned, landscape only.** A bow encloses a lot of nothing
+on a laptop, and what goes in it is the convention this whole design system is
+built on — a measured span, ticked at both ends, with its value set where a
+dimension's value goes. Both ends of it read from the same `free` flags in
+`span.js` that put the "no charge" marks on the key below, so the drawing and
+the caption cannot disagree about what is free. Portrait has no such gap and no
+width to spend, so it does without and loses nothing the dashes were not
+already saying.
 
 `Orbit` is the one section that is not a list of anything. The services grid
 above it can say what the six disciplines are but not why they belong in one
