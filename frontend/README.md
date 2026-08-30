@@ -476,7 +476,7 @@ is none in the root directory.
 | Install | `npm ci` |
 | Build | `npm run build` — Vite, then the route generator |
 | Output | `dist` |
-| Node | `>=20.19`, pinned in `package.json` → `engines` |
+| Node | `22.x`, pinned in `package.json` → `engines` |
 
 **EVERY PATH IN `vercel.json` IS RELATIVE TO `frontend/`, NOT TO THE REPO ROOT,
 and getting that wrong is silent until it is fatal.** The first version of this
@@ -493,9 +493,20 @@ here may name it again.
 The `headers` blocks are unaffected — their `source` patterns are request paths,
 not filesystem paths.
 
-Vercel warns that `"node": ">=20.19"` will follow new Node majors as they are
-released. That is deliberate for contributors, who only need the floor Vite 8
-requires; pin it to `22.x` if a future major ever breaks the build.
+**`engines.node` IS THE BUILD IMAGE, NOT A STATEMENT ABOUT THE CODE**, and it is
+pinned to a major for that reason. It read `>=20.19` — the floor Vite 8 actually
+requires — and Vercel warned, correctly, that an open-ended range follows every
+new Node major as it is released. That is runtime changing under a site that is
+otherwise reproducible, on a deploy nobody is watching, and the breakage would
+surface on whatever push happened to come next rather than on the change that
+caused it. `22.x` is the form Vercel documents, so there is no range resolution
+to guess at either.
+
+The code itself still runs on Node 20.19 and up; only the build image is fixed.
+A contributor on 20.x sees one `EBADENGINE` warning from npm, which is a warning
+and not a failure — `engine-strict` is off, the install completes and the dev
+server runs. Move the pin when the project moves to a new LTS, which is then a
+deliberate one-line change rather than something that happens on its own.
 
 **Set `VITE_SITE_URL` to the real domain** once one is attached, as a
 Production environment variable. Until then a production deployment falls back
