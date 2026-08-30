@@ -848,6 +848,12 @@ figcaption,
 .fig-stage[data-kind="catchment"] {
   max-width: 900px;
 }
+/* The bow is the widest thing in the family and wants to be — it is the only
+   figure whose subject is a distance, and a span reads as a span in proportion
+   to how far it actually goes. */
+.fig-stage[data-kind="arc"] {
+  max-width: 1120px;
+}
 /* The portrait geometries are taller than they are wide, so an unconstrained
    stage on a tablet would run off the bottom of the screen before it ran out of
    width. Capping the width caps the height with it, because the ratio is fixed. */
@@ -855,7 +861,8 @@ figcaption,
   .fig-stage,
   .fig-stage[data-kind="loop"],
   .fig-stage[data-kind="radiate"],
-  .fig-stage[data-kind="catchment"] {
+  .fig-stage[data-kind="catchment"],
+  .fig-stage[data-kind="arc"] {
     max-width: 460px;
   }
 }
@@ -1045,6 +1052,113 @@ figcaption,
   stroke: var(--color-coral-500);
   stroke-width: 1.4;
   fill: none;
+}
+
+/* ── arc: the bow, its ground and its fan ──
+   THE FAN IS ONE STROKE AT FOUR OPACITIES, NOT FOUR COLOURS. A rainbow's bands
+   are the obvious temptation here and the site has exactly one accent, so the
+   dispersion is carried by separation and weight instead. Opacity is set in the
+   markup because it is per-band; everything a band shares is here. */
+.fig-band {
+  stroke: var(--color-coral-500);
+  stroke-width: 1.1;
+  fill: none;
+}
+/* The band the stages sit on. It has to win against its own fan — at the
+   hairline weight the rest of the family uses, four arcs of one colour read as
+   a texture and no single one of them reads as the path. */
+.fig-lead {
+  stroke: color-mix(in srgb, var(--color-coral-500) 78%, transparent);
+  stroke-width: 1.7;
+}
+/* The baseline the bow stands on. Fainter than a wire on purpose — it is the
+   ground the figure happens above, not part of the argument. */
+.fig-ground {
+  stroke: color-mix(in srgb, var(--color-coral-500) 20%, transparent);
+  stroke-width: 1;
+  fill: none;
+}
+/* THE DASHES ARE THE FIGURE'S ONE PIECE OF NOTATION, so they are cut long
+   enough to be read as deliberate. At 7/6 on a hairline the gaps survive
+   `non-scaling-stroke` at every stage width the bow is drawn at; tighter and a
+   1120px stage renders them as a slightly pale solid line. */
+.fig-tentative {
+  stroke-dasharray: 7 6;
+  stroke-linecap: round;
+}
+
+/* Lit rather than washed — see the note in Arc.jsx about why this figure has
+   no radial field of its own. */
+.fig-stage[data-kind="arc"] .fig-art {
+  filter: drop-shadow(
+    0 16px 34px color-mix(in srgb, var(--color-coral-500) 13%, transparent)
+  );
+}
+
+/* The dimension itself. Heavier than the ground it sits above — a measurement
+   is a statement, where the baseline is only the thing the figure stands on —
+   and lighter than any band, so it never competes with the bow it annotates. */
+.fig-measure-line {
+  stroke: color-mix(in srgb, var(--color-coral-500) 38%, transparent);
+  stroke-width: 1;
+  fill: none;
+}
+
+/* The leader from the summit down to the dimension. See Arc.jsx for why it is
+   the faintest thing on the drawing. */
+.fig-extension {
+  stroke: color-mix(in srgb, var(--color-coral-500) 20%, transparent);
+  stroke-width: 1;
+  fill: none;
+}
+
+/* A dimension's value, centred on the span it measures. Lighter and smaller
+   than the two ground labels: it annotates a stretch of the drawing, where
+   those name its two ends. */
+.fig-measure {
+  position: absolute;
+  margin: 0;
+  text-align: center;
+  font-family: var(--font-heading);
+  font-size: 11.5px;
+  line-height: 1.25;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--color-coral-700);
+}
+
+/* The two words on the ground. Not a card, not a `<text>` — the only labels in
+   the figure family that name a place rather than a thing. */
+.fig-foot {
+  position: absolute;
+  margin: 0;
+  font-family: var(--font-heading);
+  font-weight: 600;
+  font-size: 12.5px;
+  line-height: 1.25;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: color-mix(in srgb, var(--color-char-900, var(--color-text)) 62%, transparent);
+  text-wrap: balance;
+}
+/* The near end is one point and the far end is four, so the labels sit under
+   what they name rather than both being centred and one of them lying. */
+.fig-foot[data-end="start"] {
+  text-align: left;
+}
+.fig-foot[data-end="end"] {
+  text-align: right;
+}
+/* Turned ninety degrees with the bow: the portrait geometry stands the ground
+   line up the left edge, so both ends read left-aligned beside it. */
+@media (max-width: 719px) {
+  .fig-foot {
+    font-size: 11px;
+    letter-spacing: 0.05em;
+  }
+  .fig-foot[data-end="end"] {
+    text-align: left;
+  }
 }
 
 /* THE FIGURES USED TO DISAPPEAR HERE AND THAT WAS THE WRONG CALL. The rule this
