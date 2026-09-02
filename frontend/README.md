@@ -789,19 +789,26 @@ real permissioned work means dropping its flag; the reverse must never happen.
 
 Two fields carry the honesty, and each answers a different question.
 
-**`liveUrl` is still `null` on every entry, including the real ones.** A link to
-a client's site is a claim that we built it *and* that it is live; none of the
-six resolves at a public domain yet. Where the field is null nothing renders —
-no placeholder URL, no "coming soon", no disabled button, so there is no broken
-state to tidy up later.
+**`liveUrl` is set on five of the six.** A link is a claim that we built the
+thing *and* that it is live, so it goes in only when both are true. Where the
+field is null nothing renders — no placeholder URL, no "coming soon", no
+disabled button, so there is no broken state to tidy up later. JusticeGuard is
+the one without, and will stay that way: its brand is invented, so there is no
+site to visit.
 
-**`stage` is what stops silence doing the lying.** A card with a real screenshot
-and no status reads as "launched", so every real entry carries a short one —
-"Built · awaiting launch", "Built · awaiting client content", "Concept build".
+**`stage` is what stops silence doing the lying**, and it is not simply the
+absence of a link. A card with a real screenshot and no status reads as
+"launched", so an entry that is not carries a short one. Two of the five lost
+theirs when they went live, because "Built · awaiting launch" was the whole of
+what they were saying. The other three keep one because each is saying
+something a URL does not answer — a site that is up but still carrying the
+client's sample copy, a product deployed while still in development, a build
+whose branding is not yet in place. **Drop a `stage` when it stops being true,
+not when a link appears beside it.**
+
 It renders as a labelled line on the card and as a banner on the case study, in
 the same position the "Sample" banner uses, for the same reason: a status a
-reader has to scroll to has already been read as the absence of one. Drop
-`stage` and fill `liveUrl` in the same edit when a project goes live.
+reader has to scroll to has already been read as the absence of one.
 
 **There is deliberately no `repoUrl`, and it is not an oversight.** The cards
 briefly carried a "View the code" link to each project's public repository, on
