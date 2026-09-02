@@ -31,6 +31,20 @@ export const absoluteUrl = (path = "/") => `${siteUrl}${path}`;
 const shareImage = absoluteUrl("/og-image.png");
 
 /**
+ * A project's own screenshot, made absolute.
+ *
+ * `og:image` AND SCHEMA `image` CANNOT TAKE A RELATIVE PATH — a crawler
+ * resolves neither against the page, so "/work/x.webp" is silently no image at
+ * all and the card falls back to a blank preview. Project screenshots live in
+ * /public and are written root-relative in work.js, which is right for the
+ * <img> on the page and wrong for every consumer here, so the conversion
+ * happens once, at the boundary. An entry pointing at a CDN already carries a
+ * scheme and is passed through untouched.
+ */
+const projectImage = (image) =>
+  !image ? shareImage : /^https?:\/\//.test(image) ? image : absoluteUrl(image);
+
+/**
  * The agency itself, as schema.org sees it. The service pages reference it as
  * their provider, so the two never disagree about the phone number.
  * ⚠ Keep telephone, email and address in step with src/data/site.js.
@@ -246,7 +260,7 @@ export const workSeo = () => {
   return {
     title: `Our Work in ${contact.region} | ${brand.name}`,
     description:
-      "Websites, photography, social content, campaigns, Google Business profiles and branding built for local businesses in Assam — one example from each of our six disciplines.",
+      "Six web builds from Ramdhenu — a bilingual Assamese café site, a college, a phone-repair shop, a meat storefront, a reputation SaaS platform and a legal concept — with public source on every one.",
     canonical: url,
     og: { image: shareImage },
     jsonLd: [
@@ -255,7 +269,7 @@ export const workSeo = () => {
         "@type": "CollectionPage",
         name: `${brand.name} — Our Work`,
         description:
-          "A look at the work behind each of Ramdhenu's six disciplines.",
+          "Web builds shipped by Ramdhenu, with public source on every one.",
         url,
         about: provider,
       },
@@ -306,7 +320,7 @@ export const projectSeo = (project) => {
     description: project.desc,
     canonical: url,
     robots: project.placeholder ? "noindex, follow" : undefined,
-    og: { image: project.image || shareImage },
+    og: { image: projectImage(project.image) },
     jsonLd: [
       {
         "@context": "https://schema.org",
@@ -315,7 +329,7 @@ export const projectSeo = (project) => {
         description: project.desc,
         url,
         creator: provider,
-        ...(project.image ? { image: project.image } : {}),
+        ...(project.image ? { image: projectImage(project.image) } : {}),
         ...(project.year ? { dateCreated: project.year } : {}),
       },
       {

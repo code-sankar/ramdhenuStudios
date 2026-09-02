@@ -119,6 +119,21 @@ export default function ProjectPage() {
                   is not client work and is not indexed.
                 </p>
               )}
+
+              {/* A REAL PROJECT GETS THE SAME TREATMENT FOR THE OPPOSITE
+                  REASON. The sample banner exists so nobody reads an invented
+                  project as real; this one exists so nobody reads a real build
+                  as launched. Both are the first thing under the title,
+                  because a status a reader has to scroll to has already been
+                  read as the absence of one. */}
+              {!project.placeholder && project.stage && (
+                <p className="mt-6 flex max-w-[52ch] flex-wrap items-baseline gap-2 border border-white/30 p-3 text-[13px] leading-relaxed text-white">
+                  <span className="tag tag-outline border-white/50 text-white">
+                    Status
+                  </span>
+                  {project.stage}
+                </p>
+              )}
             </div>
 
             <div className="flex flex-col gap-4">
@@ -142,6 +157,23 @@ export default function ProjectPage() {
                   className="inline-flex w-fit items-center gap-2.5 rounded-full bg-white px-[26px] py-[13px] font-display text-[15px] text-coral-700 no-underline shadow-sm transition duration-200 hover:-translate-y-px hover:shadow-md"
                 >
                   Visit the live site
+                  <Icon name="arrowRight" size={15} />
+                </a>
+              )}
+
+              {/* Where the live link is not yet true, the source is. On a
+                  studio's own case study it is also the stronger of the two
+                  for a developer reading it — a screenshot shows the surface,
+                  a repository shows the build. */}
+              {project.repoUrl && (
+                <a
+                  href={project.repoUrl}
+                  target="_blank"
+                  rel="noreferrer noopener"
+                  onClick={() => track("Source opened", { project: project.slug })}
+                  className="inline-flex w-fit items-center gap-2.5 border border-white/40 px-[24px] py-[12px] font-display text-[15px] text-white no-underline transition-colors duration-200 hover:bg-white/10"
+                >
+                  View the code
                   <Icon name="arrowRight" size={15} />
                 </a>
               )}

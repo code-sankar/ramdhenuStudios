@@ -11,11 +11,25 @@
  * alongside a rebrand), and duplicating the same project once per service it
  * touched would let the two copies drift the moment one was edited.
  *
- * ⚠️  Every project below is illustrative, supplied for layout — see
- *     `placeholder` on each entry. Replace with real, permissioned work
- *     before launch: swap the image, correct the description to what
- *     actually happened, and drop that entry's `placeholder`. Never before
- *     the client has agreed to be named — see PORTFOLIO-README below.
+ * ── TWO KINDS OF ENTRY, AND THE DIFFERENCE IS LOAD-BEARING ────────────────
+ *
+ * The first six are REAL BUILDS. The code exists, it is public, and each
+ * entry's screenshot is of that project's own home page rendered from its own
+ * repository — not a mockup and not a stock frame. They carry `repoUrl` and a
+ * `stage`, and they are indexed.
+ *
+ * The rest still carry `placeholder: true`: they are invented, they exist so
+ * the disciplines with no real work yet — photography, social, ads, Google
+ * Business, branding — are not blank, and they are labelled "Sample" on the
+ * card, banner-marked on their own page, and `noindex`. Replace one with real
+ * permissioned work and drop its flag; never the other way round.
+ *
+ * ⚠️  `stage` IS THE HONEST HALF OF A REAL ENTRY. None of the six is live at a
+ *     public URL yet, and several carry sample content their client has still
+ *     to settle. Saying so on the card costs nothing and is the difference
+ *     between a portfolio and a claim — "Built · awaiting launch" is true,
+ *     silence would read as "launched". Drop `stage` when a project is live
+ *     and fill in `liveUrl` in the same edit.
  *
  * Nothing here claims a result. Descriptions say what was built, not a
  * number this agency cannot yet stand behind. That rule extends to `brief`,
@@ -30,8 +44,12 @@
  *   approach   [{ heading, body }] — what was done and, more usefully, why
  *   shipped    the deliverables, plainly listed
  *   gallery    [{ src, alt }] — optional, rendered only when it has entries
- *   liveUrl    the client's live site
+ *   liveUrl    the client's live site — null until it genuinely is one
+ *   repoUrl    public source, on the builds where there is some
+ *   stage      short status, on a real project that is not yet launched
  *   year       displayed in the masthead
+ *   image      a root-relative path under /public, or an absolute URL. seo.js
+ *              absolutises it for og:image, which cannot take a relative one.
  *
  * ⚠️  `liveUrl` IS NULL ON EVERY ENTRY BELOW AND THAT IS DELIBERATE. A link to
  *     a client's site is a claim that we built it, and inventing one would be
@@ -47,41 +65,236 @@
 
 export const work = [
   {
-    slug: "m-fitness",
-    placeholder: true,
-    name: "M Fitness",
-    client: "M Fitness",
-    category: "Fitness",
-    year: "2025",
+    slug: "borghar-piyola",
+    name: "Borghar Piyola",
+    client: "Borghar Piyola",
+    category: "Café",
+    year: "2026",
+    stage: "Built · awaiting launch",
     services: ["website-design-development"],
-    tags: ["Web Development", "Fitness", "Landing Page"],
+    tags: ["Web Development", "Café", "Bilingual"],
     motif: "web",
-    image:
-      "https://res.cloudinary.com/dx7b8hfwm/image/upload/v1787157619/Screenshot_2026-08-19_220941_dripzc.png",
+    image: "/work/borghar-piyola.webp",
     liveUrl: null,
-    desc: "A fast, mobile-first website with class schedules, trainer profiles and a booking flow built to turn a scroll into a signed-up member.",
+    repoUrl: "https://github.com/code-sankar/borghar_piyola",
+    desc: "A bilingual site for an Assamese tea and coffee house on the Tionhjalia Bypass, with a gamosa border system generated from counted weave grids rather than drawn by hand.",
     brief:
-      "A gym with a full timetable and no way for anyone to see it without messaging first. Enquiries arrived as WhatsApp questions about class times, one at a time, and every one of them had to be answered by hand.",
+      "A tea and coffee house in Chabua that did not want to look like a café template with Assam-coloured paint on it. The brief ruled out the entire default kit — centred hero, gradient wash, stock photographs of latte art — and asked for something that could not belong to any other house.",
     approach: [
       {
-        heading: "Put the timetable where the questions were",
-        body: "The schedule became the second thing on the page rather than a PDF nobody opened. Most of the enquiries were the same question, so answering it before it was asked was the shortest route to fewer messages and more sign-ups.",
+        heading: "The border is woven, not drawn",
+        body: "A weaver counts one warp thread against one weft, so every motif on a gamosa is built from square cells and its diagonals come out stepped rather than smooth. Each motif is stored the way it would actually be counted — a grid of characters — and turned into an SVG pattern at render. The stepping is correct because the data is correct, not because someone drew it that way.",
       },
       {
-        heading: "Built for a phone on mobile data",
-        body: "Mobile-first, with the trainer photography compressed and lazy-loaded. The site had to open quickly on the walk between the gym and the car park, which is where most people were looking at it.",
+        heading: "The name set as a dictionary entry",
+        body: "Borghar is the principal house of an Assamese homestead; piyola is the cup. Rather than explain that in a paragraph nobody reads, the opening screen sets both as lexicon entries with pronunciation — which does the explaining and the branding in the same block.",
       },
       {
-        heading: "One obvious action on every screen",
-        body: "A trial booking route on every page — form, click-to-call and WhatsApp — with each one tracked separately so it is clear which one people actually use.",
+        heading: "Assamese first, and all the way down",
+        body: "Bilingual navigation, Assamese numerals for the section numbers, and self-hosted typefaces so the Assamese sets properly instead of falling back mid-word on a phone that has never seen the script.",
       },
     ],
     shipped: [
-      "Five-page mobile-first site",
-      "Class timetable and trainer profiles",
-      "Trial booking form with WhatsApp and click-to-call routes",
-      "Google-ready titles, descriptions and structured data",
-      "Analytics with each enquiry route tracked separately",
+      "Bilingual site — Assamese and English throughout",
+      "A generated gamosa border system with six counted motifs",
+      "Original line art — japi, xorai, tekeli, sunga",
+      "Self-hosted typefaces, fetched by a build script",
+      "React 19 and Tailwind v4 on Vite",
+    ],
+    gallery: [],
+  },
+  {
+    slug: "mickey-mobile",
+    name: "Mickey Mobile",
+    client: "Mickey Mobile",
+    category: "Retail",
+    year: "2026",
+    stage: "Built · awaiting launch",
+    services: ["website-design-development"],
+    tags: ["Web Development", "Retail", "Web App"],
+    motif: "web",
+    image: "/work/mickey-mobile.webp",
+    liveUrl: null,
+    repoUrl: "https://github.com/code-sankar/mickeyMobile",
+    desc: "A site for a phone shop running sales, repair and accessories from one counter — with a repair estimator and a catalogue whose filters live in the URL.",
+    brief:
+      "A counter in TDA Market, Tinsukia doing three different businesses at once, each of which a visitor arrives with a different question about. Someone with a cracked screen wants a price and a time; someone buying a case wants to browse. A single page of feature blocks serves neither of them.",
+    approach: [
+      {
+        heading: "The estimator answers the question the phone call was for",
+        body: "Pick a device and a fault and the page returns a price range without anybody having to be asked. It is the single most common enquiry a repair counter takes, so it became the thing the site does rather than the thing the site invites you to ring about.",
+      },
+      {
+        heading: "The catalogue's state lives in the URL",
+        body: "Filters write to the query string, so a filtered view can be sent to a customer over WhatsApp and open the same way at their end. A catalogue you cannot link to is a catalogue that gets screenshotted instead.",
+      },
+      {
+        heading: "Four dependencies, and nothing else",
+        body: "No animation library and no UI kit — the movement is CSS keyframes driven by an IntersectionObserver. Every route past the home page is a separate chunk of a few kilobytes fetched on navigation, because this audience is on a mid-range phone on mobile data.",
+      },
+    ],
+    shipped: [
+      "Multi-page site — repairs, shop, accessories, students, reviews, visit",
+      "Interactive repair estimator returning a price range",
+      "URL-driven catalogue, so any filtered view is linkable",
+      "Opening hours computed live from the shop's own schedule",
+      "An Express and MongoDB API for bookings, deployable on its own",
+    ],
+    gallery: [],
+  },
+  {
+    slug: "north-east-academy",
+    name: "North East Academy",
+    client: "North East Academy",
+    category: "Education",
+    year: "2026",
+    stage: "Built · awaiting client content",
+    services: ["website-design-development"],
+    tags: ["Web Development", "Education", "Content System"],
+    motif: "web",
+    image: "/work/north-east-academy.webp",
+    liveUrl: null,
+    repoUrl: "https://github.com/code-sankar/northeast_college",
+    desc: "A ten-page college site — programmes, faculty, notices, admissions and campus life — with every editable field lifted out of the components into one data folder.",
+    brief:
+      "A college in Chabua with no website, and the usual reason behind that: the content which would fill one is held by a dozen different people. The build had to be finishable before any of it arrived, and editable by the office afterwards without a developer in the room.",
+    approach: [
+      {
+        heading: "Content out of the components",
+        body: "Every field the college will ever want to change — programmes, departments, faculty, notices, events, fees, scholarships — lives in one data folder rather than inside a page. Updating a notice is editing one file, not finding it inside JSX.",
+      },
+      {
+        heading: "Drawn, not stocked",
+        body: "The campus is illustrated as vector artwork rather than filled with stock photography, so nothing on the page misrepresents a building somebody might turn up to. Seven scenes, each inside a fixed-aspect wrapper, so real photographs drop in later without the layout moving.",
+      },
+      {
+        heading: "Honest about what is still standing in",
+        body: "Where the institutional copy is sample, the page says so — including a visible note on the faculty directory. A college site that quietly invents a pass rate is worse than one that admits it is waiting for the real one.",
+      },
+    ],
+    shipped: [
+      "Ten pages plus a not-found route, including departments and faculty",
+      "Admissions — steps, eligibility, fees, documents, scholarships, FAQs",
+      "Notice board and events, both driven from data",
+      "Seven hand-drawn campus scenes in place of stock photography",
+      "Validated admission and contact forms, ready for an endpoint",
+    ],
+    gallery: [],
+  },
+  {
+    slug: "kirtify",
+    name: "Kirtify",
+    client: "Kirtify",
+    category: "SaaS",
+    year: "2026",
+    stage: "Product build · in development",
+    services: ["website-design-development"],
+    tags: ["Web Development", "SaaS", "Full Stack"],
+    motif: "web",
+    image: "/work/kirtify.webp",
+    liveUrl: null,
+    repoUrl: "https://github.com/code-sankar/getrankrise",
+    desc: "A full-stack reputation platform for local businesses — review aggregation from Google, Yelp and Facebook, drafted replies, competitor tracking and review campaigns, on a Postgres backend.",
+    brief:
+      "A product rather than a client site. Local businesses lose reviews because replying to them is a job nobody owns, so the build had to cover the whole loop — pull the reviews in, draft the reply, send the request that earns the next one — and be fully clickable long before a single third-party API key existed.",
+    approach: [
+      {
+        heading: "Every integration has an offline path",
+        body: "Google Business Profile, Facebook and Yelp all sit behind mock modes, so a fresh clone runs end to end before the API approvals — which take weeks — have come back. The alternative is a codebase nobody but its author can start.",
+      },
+      {
+        heading: "Migrations, not a schema someone remembers",
+        body: "PostgreSQL through Sequelize with versioned migrations, so the database has a history that can be replayed rather than a current state somebody has to reconstruct from the models.",
+      },
+      {
+        heading: "The boring routes are the product too",
+        body: "Onboarding, team invitations, email verification, password reset, a help centre, terms and privacy. A product is not a dashboard — it is a dashboard plus everything that has to exist before anyone can reach it. Every text colour in the app was taken through a WCAG AA pass.",
+      },
+    ],
+    shipped: [
+      "React dashboard — analytics, campaigns, competitors, settings",
+      "Express API with JWT auth, rate limiting and schema validation",
+      "PostgreSQL via Sequelize, with versioned migrations",
+      "Review sync from Google Business Profile, Yelp and Facebook",
+      "SMS and WhatsApp review campaigns, and subscription billing",
+    ],
+    gallery: [],
+  },
+  {
+    slug: "justiceguard",
+    name: "JusticeGuard",
+    client: "Concept build",
+    category: "Legal",
+    year: "2026",
+    stage: "Concept build",
+    services: ["website-design-development"],
+    tags: ["Web Development", "Legal", "Concept"],
+    motif: "web",
+    image: "/work/justiceguard.webp",
+    liveUrl: null,
+    repoUrl: "https://github.com/code-sankar/LawFirm",
+    desc: "A litigation practice site — seven practice areas, a lawyer directory and search — built as a concept, with an invented brand and invented figures.",
+    brief:
+      "Not client work, and it says so on the page. The brand, the statistics and the contact details are all invented; what is real is the structure. A visitor to a law firm arrives with one specific problem and has to reach the one practice area and the one person who handles it without reading the rest of the site first.",
+    approach: [
+      {
+        heading: "A page per practice area, not a list of them",
+        body: "Criminal defence, family, corporate, intellectual property, litigation, real estate and technology law each get their own page. Someone arriving with a specific problem should land on the answer, not on a homepage paragraph that mentions it in passing.",
+      },
+      {
+        heading: "Search across people as well as practice",
+        body: "The two things a visitor is actually looking for are a problem and a person, so search resolves to both — practice areas and individual advocates — rather than running over page text.",
+      },
+      {
+        heading: "Movement kept to the chrome",
+        body: "Transitions and reveals only. A legal practice is selling composure, and motion that performs undercuts the one thing the page exists to convey.",
+      },
+    ],
+    shipped: [
+      "Seven practice-area pages",
+      "Lawyer profiles with their own detail route",
+      "Search across advocates and practice areas",
+      "Redux Toolkit state and React Router routing",
+      "Responsive dark editorial layout",
+    ],
+    gallery: [],
+  },
+  {
+    slug: "chhimphei-chicken",
+    name: "Chhimphei Chicken",
+    client: "Chhimphei Chicken",
+    category: "E-commerce",
+    year: "2025",
+    stage: "Build in progress",
+    services: ["website-design-development"],
+    tags: ["Web Development", "E-commerce", "Retail"],
+    motif: "web",
+    image: "/work/chhimphei-chicken.webp",
+    liveUrl: null,
+    repoUrl: "https://github.com/code-sankar/e-commerce_meat",
+    desc: "A meat delivery storefront — catalogue, categories, accounts and profile — with a scroll-driven front end built on GSAP and parallax.",
+    brief:
+      "A storefront for a meat business: a catalogue somebody can move through, product cards that add to a basket, and an account that remembers where to deliver. The build is still in progress — the branding is not yet in place and the product photography is standing in.",
+    approach: [
+      {
+        heading: "The shop before the shopfront",
+        body: "Categories, search, product cards and the account came first. A storefront that looks finished and cannot take an order is a brochure with a cart icon on it.",
+      },
+      {
+        heading: "Motion that carries a long scroll",
+        body: "GSAP and layered parallax down the home page, which suits a product that is sold by being photographed rather than described.",
+      },
+      {
+        heading: "The basket is application state",
+        body: "Held in a store rather than in a page, because it has to survive navigation — which is the one thing a cart must do and the thing page state cannot.",
+      },
+    ],
+    shipped: [
+      "Catalogue with categories and search",
+      "Product cards with add-to-basket",
+      "Account creation, sign-in and a profile area",
+      "Scroll-driven home page with GSAP and parallax",
+      "About and contact pages",
     ],
     gallery: [],
   },
