@@ -260,7 +260,7 @@ export const workSeo = () => {
   return {
     title: `Our Work in ${contact.region} | ${brand.name}`,
     description:
-      "Six web builds from Ramdhenu — a bilingual Assamese café site, a college, a phone-repair shop, a meat storefront, a reputation SaaS platform and a legal concept — with public source on every one.",
+      "Six web builds from Ramdhenu — a bilingual Assamese café site, a college, a phone-repair shop, a meat storefront, a reputation SaaS platform and a legal concept, built for local businesses in Assam.",
     canonical: url,
     og: { image: shareImage },
     jsonLd: [
@@ -269,7 +269,7 @@ export const workSeo = () => {
         "@type": "CollectionPage",
         name: `${brand.name} — Our Work`,
         description:
-          "Web builds shipped by Ramdhenu, with public source on every one.",
+          "Web builds shipped by Ramdhenu for local businesses in Assam.",
         url,
         about: provider,
       },
