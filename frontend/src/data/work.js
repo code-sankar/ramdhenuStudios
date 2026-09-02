@@ -24,12 +24,18 @@
  * card, banner-marked on their own page, and `noindex`. Replace one with real
  * permissioned work and drop its flag; never the other way round.
  *
- * ⚠️  `stage` IS THE HONEST HALF OF A REAL ENTRY. None of the six is live at a
- *     public URL yet, and several carry sample content their client has still
- *     to settle. Saying so on the card costs nothing and is the difference
- *     between a portfolio and a claim — "Built · awaiting launch" is true,
- *     silence would read as "launched". Drop `stage` when a project is live
- *     and fill in `liveUrl` in the same edit.
+ * ⚠️  `stage` SAYS WHAT A LIVE LINK CANNOT, which is why a link appearing is
+ *     not on its own a reason to remove one. Five of the six are live and
+ *     carry a `liveUrl`. Two of those needed nothing else, because "not
+ *     launched yet" was the whole of what their `stage` said and they are
+ *     launched. The three that keep one are each saying something a URL does
+ *     not answer: a site that is up but still carrying the client's sample
+ *     copy, a product deployed while it is still in development, a build whose
+ *     branding is not in place. Drop a `stage` when it stops being true — not
+ *     when a link turns up beside it.
+ *
+ *     JusticeGuard has no `liveUrl` and will never get one: the brand is
+ *     invented, so there is no site to visit.
  *
  * Nothing here claims a result. Descriptions say what was built, not a
  * number this agency cannot yet stand behind. That rule extends to `brief`,
@@ -69,12 +75,11 @@ export const work = [
     client: "Borghar Piyola",
     category: "Café",
     year: "2026",
-    stage: "Built · awaiting launch",
     services: ["website-design-development"],
     tags: ["Web Development", "Café", "Bilingual"],
     motif: "web",
     image: "/work/borghar-piyola.webp",
-    liveUrl: null,
+    liveUrl: "https://borghar-piyola.vercel.app/",
     desc: "A bilingual site for an Assamese tea and coffee house on the Tionhjalia Bypass, with a gamosa border system generated from counted weave grids rather than drawn by hand.",
     brief:
       "A tea and coffee house in Chabua that did not want to look like a café template with Assam-coloured paint on it. The brief ruled out the entire default kit — centred hero, gradient wash, stock photographs of latte art — and asked for something that could not belong to any other house.",
@@ -107,12 +112,11 @@ export const work = [
     client: "Mickey Mobile",
     category: "Retail",
     year: "2026",
-    stage: "Built · awaiting launch",
     services: ["website-design-development"],
     tags: ["Web Development", "Retail", "Web App"],
     motif: "web",
     image: "/work/mickey-mobile.webp",
-    liveUrl: null,
+    liveUrl: "https://mickey-mobile.vercel.app/",
     desc: "A site for a phone shop running sales, repair and accessories from one counter — with a repair estimator and a catalogue whose filters live in the URL.",
     brief:
       "A counter in TDA Market, Tinsukia doing three different businesses at once, each of which a visitor arrives with a different question about. Someone with a cracked screen wants a price and a time; someone buying a case wants to browse. A single page of feature blocks serves neither of them.",
@@ -150,7 +154,7 @@ export const work = [
     tags: ["Web Development", "Education", "Content System"],
     motif: "web",
     image: "/work/north-east-academy.webp",
-    liveUrl: null,
+    liveUrl: "https://northeast-college.vercel.app/",
     desc: "A ten-page college site — programmes, faculty, notices, admissions and campus life — with every editable field lifted out of the components into one data folder.",
     brief:
       "A college in Chabua with no website, and the usual reason behind that: the content which would fill one is held by a dozen different people. The build had to be finishable before any of it arrived, and editable by the office afterwards without a developer in the room.",
@@ -188,7 +192,7 @@ export const work = [
     tags: ["Web Development", "SaaS", "Full Stack"],
     motif: "web",
     image: "/work/kirtify.webp",
-    liveUrl: null,
+    liveUrl: "https://getrankrise.vercel.app/",
     desc: "A full-stack reputation platform for local businesses — review aggregation from Google, Yelp and Facebook, drafted replies, competitor tracking and review campaigns, on a Postgres backend.",
     brief:
       "A product rather than a client site. Local businesses lose reviews because replying to them is a job nobody owns, so the build had to cover the whole loop — pull the reviews in, draft the reply, send the request that earns the next one — and be fully clickable long before a single third-party API key existed.",
@@ -264,7 +268,7 @@ export const work = [
     tags: ["Web Development", "E-commerce", "Retail"],
     motif: "web",
     image: "/work/chhimphei-chicken.webp",
-    liveUrl: null,
+    liveUrl: "https://e-commerce-meat-theta.vercel.app/",
     desc: "A meat delivery storefront — catalogue, categories, accounts and profile — with a scroll-driven front end built on GSAP and parallax.",
     brief:
       "A storefront for a meat business: a catalogue somebody can move through, product cards that add to a basket, and an account that remembers where to deliver. The build is still in progress — the branding is not yet in place and the product photography is standing in.",
