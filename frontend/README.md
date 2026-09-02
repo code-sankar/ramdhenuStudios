@@ -274,7 +274,8 @@ checklist lives at the top of `src/data/site.js`.
 | Contact details | `site.js` → `contact` | Real phone, WhatsApp number, email, studio address |
 | Social profiles | `site.js` → `socials` | Instagram and Facebook are live; LinkedIn is still `#`. Anything left on `#` is dropped from the hero, rendered as an inert mark in the footer, and left out of the structured data's `sameAs` — a profile is only ever claimed once it exists |
 | Live domain | `VITE_SITE_URL` in the host's environment | Canonical URLs, OG tags, structured data, the sitemap and robots.txt all derive from it. Unset, a Vercel deployment uses its own URL — see [Deploying](#deploying) |
-| Example projects | `work.js` → each project's `placeholder` | Real permissioned work, then drop that project's flag — one at a time |
+| Example projects | `work.js` → each project's `placeholder` | Real permissioned work, then drop that project's flag — one at a time. Five remain, covering the disciplines with no real work yet |
+| Project status | `work.js` → each real project's `stage` | Drop `stage` and fill `liveUrl` in the same edit, once a build is actually live |
 | Placeholder quotes | `testimonials.js` → each quote's `placeholder` | A real name, role and permission, then drop that quote's flag |
 | Analytics | `analytics.js` → `provider`, `siteId` | Off until set; turning it on rewrites the privacy policy's tracking line |
 | Lead storage | `site.js` → `enquiry.endpoint` | Until set, enquiries go to WhatsApp and nothing is stored |
@@ -767,15 +768,60 @@ answer something. There is deliberately **no results section**: an outcome
 nobody has agreed to be quoted on is a claim, and this site does not make claims
 it cannot source.
 
-### Live links
+### Real builds, samples, and telling them apart
 
-`liveUrl` on a work entry renders a "Visit site" link on the card and a "Visit
-the live site" button on the case study. **It is `null` on every entry today and
-that is deliberate.** A link to a client's site is a claim that we built it, so
-there is no placeholder URL, no "coming soon" and no disabled button — where the
-field is null nothing renders at all, so there is no broken state to tidy up
-later. Fill it in with a real URL for a real project the client has agreed to be
-named for, and the link appears in both places at once.
+The catalog holds two kinds of entry and the difference is the point of the
+file.
+
+**The first six are real builds.** Borghar Piyola, Mickey Mobile, North East
+Academy, Kirtify, JusticeGuard and Chhimphei Chicken are working codebases with
+public source, and each card's screenshot is that project's own home page
+rendered from its own repository — built, served and captured, not mocked up
+and not a stock frame. They are indexed and they appear in the sitemap.
+
+**The rest still carry `placeholder: true`** and exist so the five disciplines
+with no published work yet — photography, social, ads, Google Business,
+branding — are not blank columns. They are marked "Sample" on the card,
+banner-marked at the top of their own page, and `noindex`. Replacing one with
+real permissioned work means dropping its flag; the reverse must never happen.
+
+### `stage`, `liveUrl` and `repoUrl`
+
+Three fields carry the honesty, and each answers a different question.
+
+**`liveUrl` is still `null` on every entry, including the real ones.** A link to
+a client's site is a claim that we built it *and* that it is live; none of the
+six resolves at a public domain yet. Where the field is null nothing renders —
+no placeholder URL, no "coming soon", no disabled button, so there is no broken
+state to tidy up later.
+
+**`stage` is what stops silence doing the lying.** A card with a real screenshot
+and no status reads as "launched", so every real entry carries a short one —
+"Built · awaiting launch", "Built · awaiting client content", "Concept build".
+It renders as a labelled line on the card and as a banner on the case study, in
+the same position the "Sample" banner uses, for the same reason: a status a
+reader has to scroll to has already been read as the absence of one. Drop
+`stage` and fill `liveUrl` in the same edit when a project goes live.
+
+**`repoUrl` is the one claim on the card anybody can check.** Until a project is
+live there is no link that proves it exists; a public repository is that proof,
+and for a studio selling development it is better evidence than a screenshot.
+
+### Screenshots
+
+`public/work/<slug>.webp`, 1400×1050 — the 4:3 the card and the case-study
+plate are both built for, so nothing is cropped or letterboxed. They are
+captured by building each project and photographing its own home page, which is
+why they are worth having: a mockup proves nothing, and a real frame of a real
+build is the only image on this site that is evidence. WebP at quality 0.82 puts
+all six at 384 KB together — the same six as PNG were 4.4 MB, which is most of a
+page-weight budget spent on a grid nobody has scrolled to yet.
+
+`image` is written root-relative (`/work/x.webp`), which is right for the `<img>`
+and **wrong for `og:image`, which cannot resolve a relative path** — a crawler
+resolves it against nothing and the share card comes out blank. `seo.js`
+absolutises it once, at that boundary; an entry pointing at a CDN already has a
+scheme and passes through untouched.
 
 ### Filtering
 
@@ -804,7 +850,7 @@ is the one kind that cannot be shortened to nothing: a card crossing a column in
 
 Same placeholder discipline as everywhere else on the site: each project
 carries its own `placeholder`, the card marks itself "Sample" individually,
-and a summary note appears above the grid only while at least one entry still
+and a summary note appears below the grid only while at least one entry still
 needs replacing.
 
 ## The footer
