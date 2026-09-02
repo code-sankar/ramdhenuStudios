@@ -775,7 +775,7 @@ file.
 
 **The first six are real builds.** Borghar Piyola, Mickey Mobile, North East
 Academy, Kirtify, JusticeGuard and Chhimphei Chicken are working codebases with
-public source, and each card's screenshot is that project's own home page
+working codebases, and each card's screenshot is that project's own home page
 rendered from its own repository — built, served and captured, not mocked up
 and not a stock frame. They are indexed and they appear in the sitemap.
 
@@ -785,9 +785,9 @@ branding — are not blank columns. They are marked "Sample" on the card,
 banner-marked at the top of their own page, and `noindex`. Replacing one with
 real permissioned work means dropping its flag; the reverse must never happen.
 
-### `stage`, `liveUrl` and `repoUrl`
+### `stage` and `liveUrl`
 
-Three fields carry the honesty, and each answers a different question.
+Two fields carry the honesty, and each answers a different question.
 
 **`liveUrl` is still `null` on every entry, including the real ones.** A link to
 a client's site is a claim that we built it *and* that it is live; none of the
@@ -803,9 +803,20 @@ the same position the "Sample" banner uses, for the same reason: a status a
 reader has to scroll to has already been read as the absence of one. Drop
 `stage` and fill `liveUrl` in the same edit when a project goes live.
 
-**`repoUrl` is the one claim on the card anybody can check.** Until a project is
-live there is no link that proves it exists; a public repository is that proof,
-and for a studio selling development it is better evidence than a screenshot.
+**There is deliberately no `repoUrl`, and it is not an oversight.** The cards
+briefly carried a "View the code" link to each project's public repository, on
+the reasoning that until a project is live a repository is the only proof it
+exists — and for a studio selling development, better evidence than a
+screenshot. That reasoning was about *this studio's* credibility and ignored
+whose code it is. A client's build is the client's, a portfolio is a sales
+surface rather than a source browser, and the visitor this page is written for
+is a local business owner who will not read a repository and may reasonably
+wonder why theirs would be published next. So the link came out, and the
+external link on a card is the live site or nothing.
+
+Do not reintroduce it. If a project ever wants its source shown, that is a
+decision per client and per repository, not a field the catalog fills in by
+default.
 
 ### Screenshots
 

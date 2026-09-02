@@ -160,23 +160,6 @@ export default function ProjectPage() {
                   <Icon name="arrowRight" size={15} />
                 </a>
               )}
-
-              {/* Where the live link is not yet true, the source is. On a
-                  studio's own case study it is also the stronger of the two
-                  for a developer reading it — a screenshot shows the surface,
-                  a repository shows the build. */}
-              {project.repoUrl && (
-                <a
-                  href={project.repoUrl}
-                  target="_blank"
-                  rel="noreferrer noopener"
-                  onClick={() => track("Source opened", { project: project.slug })}
-                  className="inline-flex w-fit items-center gap-2.5 border border-white/40 px-[24px] py-[12px] font-display text-[15px] text-white no-underline transition-colors duration-200 hover:bg-white/10"
-                >
-                  View the code
-                  <Icon name="arrowRight" size={15} />
-                </a>
-              )}
             </div>
           </div>
         </div>

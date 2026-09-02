@@ -15,8 +15,8 @@
  *
  * The first six are REAL BUILDS. The code exists, it is public, and each
  * entry's screenshot is of that project's own home page rendered from its own
- * repository — not a mockup and not a stock frame. They carry `repoUrl` and a
- * `stage`, and they are indexed.
+ * repository — not a mockup and not a stock frame. They carry a `stage`, and
+ * they are indexed.
  *
  * The rest still carry `placeholder: true`: they are invented, they exist so
  * the disciplines with no real work yet — photography, social, ads, Google
@@ -45,7 +45,6 @@
  *   shipped    the deliverables, plainly listed
  *   gallery    [{ src, alt }] — optional, rendered only when it has entries
  *   liveUrl    the client's live site — null until it genuinely is one
- *   repoUrl    public source, on the builds where there is some
  *   stage      short status, on a real project that is not yet launched
  *   year       displayed in the masthead
  *   image      a root-relative path under /public, or an absolute URL. seo.js
@@ -76,7 +75,6 @@ export const work = [
     motif: "web",
     image: "/work/borghar-piyola.webp",
     liveUrl: null,
-    repoUrl: "https://github.com/code-sankar/borghar_piyola",
     desc: "A bilingual site for an Assamese tea and coffee house on the Tionhjalia Bypass, with a gamosa border system generated from counted weave grids rather than drawn by hand.",
     brief:
       "A tea and coffee house in Chabua that did not want to look like a café template with Assam-coloured paint on it. The brief ruled out the entire default kit — centred hero, gradient wash, stock photographs of latte art — and asked for something that could not belong to any other house.",
@@ -115,7 +113,6 @@ export const work = [
     motif: "web",
     image: "/work/mickey-mobile.webp",
     liveUrl: null,
-    repoUrl: "https://github.com/code-sankar/mickeyMobile",
     desc: "A site for a phone shop running sales, repair and accessories from one counter — with a repair estimator and a catalogue whose filters live in the URL.",
     brief:
       "A counter in TDA Market, Tinsukia doing three different businesses at once, each of which a visitor arrives with a different question about. Someone with a cracked screen wants a price and a time; someone buying a case wants to browse. A single page of feature blocks serves neither of them.",
@@ -154,7 +151,6 @@ export const work = [
     motif: "web",
     image: "/work/north-east-academy.webp",
     liveUrl: null,
-    repoUrl: "https://github.com/code-sankar/northeast_college",
     desc: "A ten-page college site — programmes, faculty, notices, admissions and campus life — with every editable field lifted out of the components into one data folder.",
     brief:
       "A college in Chabua with no website, and the usual reason behind that: the content which would fill one is held by a dozen different people. The build had to be finishable before any of it arrived, and editable by the office afterwards without a developer in the room.",
@@ -193,7 +189,6 @@ export const work = [
     motif: "web",
     image: "/work/kirtify.webp",
     liveUrl: null,
-    repoUrl: "https://github.com/code-sankar/getrankrise",
     desc: "A full-stack reputation platform for local businesses — review aggregation from Google, Yelp and Facebook, drafted replies, competitor tracking and review campaigns, on a Postgres backend.",
     brief:
       "A product rather than a client site. Local businesses lose reviews because replying to them is a job nobody owns, so the build had to cover the whole loop — pull the reviews in, draft the reply, send the request that earns the next one — and be fully clickable long before a single third-party API key existed.",
@@ -232,7 +227,6 @@ export const work = [
     motif: "web",
     image: "/work/justiceguard.webp",
     liveUrl: null,
-    repoUrl: "https://github.com/code-sankar/LawFirm",
     desc: "A litigation practice site — seven practice areas, a lawyer directory and search — built as a concept, with an invented brand and invented figures.",
     brief:
       "Not client work, and it says so on the page. The brand, the statistics and the contact details are all invented; what is real is the structure. A visitor to a law firm arrives with one specific problem and has to reach the one practice area and the one person who handles it without reading the rest of the site first.",
@@ -271,7 +265,6 @@ export const work = [
     motif: "web",
     image: "/work/chhimphei-chicken.webp",
     liveUrl: null,
-    repoUrl: "https://github.com/code-sankar/e-commerce_meat",
     desc: "A meat delivery storefront — catalogue, categories, accounts and profile — with a scroll-driven front end built on GSAP and parallax.",
     brief:
       "A storefront for a meat business: a catalogue somebody can move through, product cards that add to a basket, and an account that remembers where to deliver. The build is still in progress — the branding is not yet in place and the product photography is standing in.",

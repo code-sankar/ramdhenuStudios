@@ -87,10 +87,9 @@ export default function WorkPage() {
 
             <p className="text-[16.5px] leading-[1.6] text-white">
               Six builds we have shipped — a bilingual café site, a college, a
-              repair shop, a storefront, a SaaS platform and a legal concept —
-              with the source public on every one. The disciplines we have not
-              published real work in yet are shown with a marked example rather
-              than left blank.
+              repair shop, a storefront, a SaaS platform and a legal concept.
+              The disciplines we have not published real work in yet are shown
+              with a marked example rather than left blank.
             </p>
           </div>
 
@@ -287,25 +286,6 @@ export default function WorkPage() {
                           className="linkish inline-flex items-center gap-1.5 text-[14px]"
                         >
                           Visit site
-                          <Icon name="arrowRight" size={14} />
-                        </a>
-                      )}
-                      {/* THE SOURCE IS THE ONE CLAIM ON THIS CARD ANYBODY CAN
-                          CHECK. Until a project is live there is no link that
-                          proves it was built; a public repository is that
-                          proof, and for a studio selling development it is
-                          better evidence than a screenshot. */}
-                      {project.repoUrl && (
-                        <a
-                          href={project.repoUrl}
-                          target="_blank"
-                          rel="noreferrer noopener"
-                          onClick={() =>
-                            track("Source opened", { project: project.slug })
-                          }
-                          className="linkish inline-flex items-center gap-1.5 text-[14px]"
-                        >
-                          View the code
                           <Icon name="arrowRight" size={14} />
                         </a>
                       )}
