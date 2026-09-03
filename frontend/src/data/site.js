@@ -49,10 +49,14 @@ export const brand = {
     "Ramdhenu is a digital agency for local businesses that want more than a website — strategy, visuals and campaigns, working as one.",
 };
 
-/** ⚠ PLACEHOLDER — every value here is a stand-in. */
+/**
+ * ⚠ The email is the studio's real, live address — it is the one value here
+ * that has been confirmed. Everything below it still wants checking against
+ * what the team actually answers.
+ */
 export const contact = {
-  email: "hello@ramdhenu.studio",
-  emailHref: "mailto:hello@ramdhenu.studio",
+  email: "ramdhenustudios@zohomail.in",
+  emailHref: "mailto:ramdhenustudios@zohomail.in",
   /* ONE NUMBER PER FIELD. This was a single string reading
      "+91 6002830014 || +91 9395805628", which rendered the "||" literally on
      the page and — worse — went into schema.org `telephone` in seo.js, where

@@ -132,7 +132,13 @@ export default function Footer() {
                 Email
               </dt>
               <dd className="m-0">
-                <a href={contact.emailHref} className="footer-link">
+                {/* Three columns from 640px up leave ~179px each, and the address is
+                    wider than that. `wrap-anywhere` rather than `break-words`: the
+                    link is inline-block, so it shrink-to-fits its own max-content
+                    width, and only `anywhere` lowers the min-content width the
+                    shrink-to-fit is floored at. `break-words` breaks the text but
+                    leaves the box too wide, which is the same overflow. */}
+                <a href={contact.emailHref} className="footer-link wrap-anywhere">
                   {contact.email}
                 </a>
               </dd>
