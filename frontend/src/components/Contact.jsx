@@ -76,6 +76,9 @@ export default function Contact() {
   );
 }
 
+/* `break-words`: the channel grid drops to two ~150px columns on a phone,
+   which is narrower than the email address. Without a break opportunity a
+   single unbroken word simply overflows, and the section clips it. */
 function Channel({ label, value, href, onClick }) {
   return (
     <li className="flex flex-col gap-[3px]">
@@ -84,12 +87,12 @@ function Channel({ label, value, href, onClick }) {
         <a
           href={href}
           onClick={onClick}
-          className="inline-block text-[15px] on-steel no-underline hover:text-white/75 hover:underline max-md:py-1.5"
+          className="inline-block text-[15px] break-words on-steel no-underline hover:text-white/75 hover:underline max-md:py-1.5"
         >
           {value}
         </a>
       ) : (
-        <span className="text-[15px] on-steel">{value}</span>
+        <span className="text-[15px] break-words on-steel">{value}</span>
       )}
     </li>
   );
