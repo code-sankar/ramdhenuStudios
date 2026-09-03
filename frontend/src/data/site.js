@@ -44,7 +44,7 @@ export const brand = {
   name: "Ramdhenu",
   wordmark: "RAMDHENU",
   tagline: "A step towards digital presence",
-  since: "Since 2024",
+  since: "Since 2025",
   description:
     "Ramdhenu is a digital agency for local businesses that want more than a website — strategy, visuals and campaigns, working as one.",
 };
@@ -181,9 +181,9 @@ export const liveSocials = socials.filter(
  *     YouTube until a visitor presses play. A local still keeps that true.
  */
 export const aboutVideo = {
-  id: "Iy-dJwHVX84",
+  id: "#",
   title: "Ramdhenu — who we are",
-  poster: "https://i.scdn.co/image/ab67616d0000b273d28d2ebdedb220e479743797",
+  poster: "#",
   caption: "A short introduction to the team, how we work, and who we build for.",
 };
 
