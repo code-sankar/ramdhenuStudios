@@ -86,9 +86,10 @@ export default function WorkPage() {
             </div>
 
             <p className="text-[16.5px] leading-[1.6] text-white">
-              One example from each of our six disciplines — websites,
-              photography, social content, campaigns, Google Business profiles
-              and branding, built for local businesses in Assam.
+              Six builds we have shipped — a bilingual café site, a college, a
+              repair shop, a storefront, a SaaS platform and a legal concept.
+              The disciplines we have not published real work in yet are shown
+              with a marked example rather than left blank.
             </p>
           </div>
 
@@ -244,11 +245,23 @@ export default function WorkPage() {
                       {project.desc}
                     </p>
 
-                    {project.placeholder && (
+                    {project.placeholder ? (
                       <p className="text-muted m-0 text-[13px]">
                         <span className="tag tag-outline mr-2">Sample</span>
                         Example project shown for layout.
                       </p>
+                    ) : (
+                      /* A REAL PROJECT SAYS WHERE IT HAS GOT TO. None of them
+                         is live at a public URL yet, and a card that shows a
+                         screenshot and says nothing reads as "launched". One
+                         short line costs nothing and is the whole difference
+                         between a portfolio and a claim. */
+                      project.stage && (
+                        <p className="text-muted m-0 text-[13px]">
+                          <span className="tag tag-outline mr-2">Status</span>
+                          {project.stage}
+                        </p>
+                      )
                     )}
 
                     {/* Raised above the cover so it is separately clickable.
@@ -284,10 +297,11 @@ export default function WorkPage() {
           </ul>
 
           {anyPlaceholder && (
-            <p className="text-muted mt-[clamp(24px,3vw,36px)] max-w-[64ch] text-[13.5px] leading-relaxed">
-              Some work above is shown for layout while we gather permission to
-              publish real client projects — each is marked "Sample" rather than
-              left to look genuine.
+            <p className="text-muted mt-[clamp(24px,3vw,36px)] max-w-[68ch] text-[13.5px] leading-relaxed">
+              The disciplines we have not yet published real work in are shown
+              with an example instead of left blank — each is marked "Sample"
+              rather than left to look genuine. Everything else above is a real
+              build, and its status says where it has got to.
             </p>
           )}
         </div>

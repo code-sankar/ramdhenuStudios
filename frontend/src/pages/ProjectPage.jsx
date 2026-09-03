@@ -119,6 +119,21 @@ export default function ProjectPage() {
                   is not client work and is not indexed.
                 </p>
               )}
+
+              {/* A REAL PROJECT GETS THE SAME TREATMENT FOR THE OPPOSITE
+                  REASON. The sample banner exists so nobody reads an invented
+                  project as real; this one exists so nobody reads a real build
+                  as launched. Both are the first thing under the title,
+                  because a status a reader has to scroll to has already been
+                  read as the absence of one. */}
+              {!project.placeholder && project.stage && (
+                <p className="mt-6 flex max-w-[52ch] flex-wrap items-baseline gap-2 border border-white/30 p-3 text-[13px] leading-relaxed text-white">
+                  <span className="tag tag-outline border-white/50 text-white">
+                    Status
+                  </span>
+                  {project.stage}
+                </p>
+              )}
             </div>
 
             <div className="flex flex-col gap-4">

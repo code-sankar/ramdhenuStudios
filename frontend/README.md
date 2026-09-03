@@ -274,7 +274,8 @@ checklist lives at the top of `src/data/site.js`.
 | Contact details | `site.js` → `contact` | Real phone, WhatsApp number, email, studio address |
 | Social profiles | `site.js` → `socials` | Instagram and Facebook are live; LinkedIn is still `#`. Anything left on `#` is dropped from the hero, rendered as an inert mark in the footer, and left out of the structured data's `sameAs` — a profile is only ever claimed once it exists |
 | Live domain | `VITE_SITE_URL` in the host's environment | Canonical URLs, OG tags, structured data, the sitemap and robots.txt all derive from it. Unset, a Vercel deployment uses its own URL — see [Deploying](#deploying) |
-| Example projects | `work.js` → each project's `placeholder` | Real permissioned work, then drop that project's flag — one at a time |
+| Example projects | `work.js` → each project's `placeholder` | Real permissioned work, then drop that project's flag — one at a time. Five remain, covering the disciplines with no real work yet |
+| Project status | `work.js` → each real project's `stage` | Drop `stage` and fill `liveUrl` in the same edit, once a build is actually live |
 | Placeholder quotes | `testimonials.js` → each quote's `placeholder` | A real name, role and permission, then drop that quote's flag |
 | Analytics | `analytics.js` → `provider`, `siteId` | Off until set; turning it on rewrites the privacy policy's tracking line |
 | Lead storage | `site.js` → `enquiry.endpoint` | Until set, enquiries go to WhatsApp and nothing is stored |
@@ -464,16 +465,49 @@ the other's job.
 
 ## Deploying
 
-The app is in `frontend/`, so the repo root carries a `vercel.json` that points
-Vercel at it. Import the repository and the defaults are correct — there is no
-root directory, build command or output directory to set by hand.
+The app is in `frontend/` and the repo root is otherwise empty, so **the Vercel
+project's Root Directory must be set to `frontend`** — the one setting this
+deploy needs. Vercel then runs every command from inside `frontend/`, and
+`vercel.json` at the repo root is picked up as the fallback config because there
+is none in the root directory.
 
 | | |
 |---|---|
-| Install | `cd frontend && npm ci` |
-| Build | `cd frontend && npm run build` — Vite, then the route generator |
-| Output | `frontend/dist` |
-| Node | `>=20.19`, pinned in `package.json` → `engines` |
+| Root Directory | `frontend` (Vercel dashboard → Settings → General) |
+| Install | `npm ci` |
+| Build | `npm run build` — Vite, then the route generator |
+| Output | `dist` |
+| Node | `22.x`, pinned in `package.json` → `engines` |
+
+**EVERY PATH IN `vercel.json` IS RELATIVE TO `frontend/`, NOT TO THE REPO ROOT,
+and getting that wrong is silent until it is fatal.** The first version of this
+file read `cd frontend && npm ci` with an output of `frontend/dist`, written on
+the assumption that Vercel runs from the repository root. It does not when a
+Root Directory is set: the hop gets applied twice, and the build dies at
+`cd: frontend: No such file or directory` before a single line of the app is
+compiled — so the deploy that fails is not a broken site, it is the previous
+site still being served. The tell in the log is Vercel reporting the `engines`
+field, which only exists in `frontend/package.json`: if Vercel is reading that
+as *the* package.json, `frontend/` is already the working directory and nothing
+here may name it again.
+
+The `headers` blocks are unaffected — their `source` patterns are request paths,
+not filesystem paths.
+
+**`engines.node` IS THE BUILD IMAGE, NOT A STATEMENT ABOUT THE CODE**, and it is
+pinned to a major for that reason. It read `>=20.19` — the floor Vite 8 actually
+requires — and Vercel warned, correctly, that an open-ended range follows every
+new Node major as it is released. That is runtime changing under a site that is
+otherwise reproducible, on a deploy nobody is watching, and the breakage would
+surface on whatever push happened to come next rather than on the change that
+caused it. `22.x` is the form Vercel documents, so there is no range resolution
+to guess at either.
+
+The code itself still runs on Node 20.19 and up; only the build image is fixed.
+A contributor on 20.x sees one `EBADENGINE` warning from npm, which is a warning
+and not a failure — `engine-strict` is off, the install completes and the dev
+server runs. Move the pin when the project moves to a new LTS, which is then a
+deliberate one-line change rather than something that happens on its own.
 
 **Set `VITE_SITE_URL` to the real domain** once one is attached, as a
 Production environment variable. Until then a production deployment falls back
@@ -734,15 +768,78 @@ answer something. There is deliberately **no results section**: an outcome
 nobody has agreed to be quoted on is a claim, and this site does not make claims
 it cannot source.
 
-### Live links
+### Real builds, samples, and telling them apart
 
-`liveUrl` on a work entry renders a "Visit site" link on the card and a "Visit
-the live site" button on the case study. **It is `null` on every entry today and
-that is deliberate.** A link to a client's site is a claim that we built it, so
-there is no placeholder URL, no "coming soon" and no disabled button — where the
-field is null nothing renders at all, so there is no broken state to tidy up
-later. Fill it in with a real URL for a real project the client has agreed to be
-named for, and the link appears in both places at once.
+The catalog holds two kinds of entry and the difference is the point of the
+file.
+
+**The first six are real builds.** Borghar Piyola, Mickey Mobile, North East
+Academy, Kirtify, JusticeGuard and Chhimphei Chicken are working codebases with
+working codebases, and each card's screenshot is that project's own home page
+rendered from its own repository — built, served and captured, not mocked up
+and not a stock frame. They are indexed and they appear in the sitemap.
+
+**The rest still carry `placeholder: true`** and exist so the five disciplines
+with no published work yet — photography, social, ads, Google Business,
+branding — are not blank columns. They are marked "Sample" on the card,
+banner-marked at the top of their own page, and `noindex`. Replacing one with
+real permissioned work means dropping its flag; the reverse must never happen.
+
+### `stage` and `liveUrl`
+
+Two fields carry the honesty, and each answers a different question.
+
+**`liveUrl` is set on five of the six.** A link is a claim that we built the
+thing *and* that it is live, so it goes in only when both are true. Where the
+field is null nothing renders — no placeholder URL, no "coming soon", no
+disabled button, so there is no broken state to tidy up later. JusticeGuard is
+the one without, and will stay that way: its brand is invented, so there is no
+site to visit.
+
+**`stage` is what stops silence doing the lying**, and it is not simply the
+absence of a link. A card with a real screenshot and no status reads as
+"launched", so an entry that is not carries a short one. Two of the five lost
+theirs when they went live, because "Built · awaiting launch" was the whole of
+what they were saying. The other three keep one because each is saying
+something a URL does not answer — a site that is up but still carrying the
+client's sample copy, a product deployed while still in development, a build
+whose branding is not yet in place. **Drop a `stage` when it stops being true,
+not when a link appears beside it.**
+
+It renders as a labelled line on the card and as a banner on the case study, in
+the same position the "Sample" banner uses, for the same reason: a status a
+reader has to scroll to has already been read as the absence of one.
+
+**There is deliberately no `repoUrl`, and it is not an oversight.** The cards
+briefly carried a "View the code" link to each project's public repository, on
+the reasoning that until a project is live a repository is the only proof it
+exists — and for a studio selling development, better evidence than a
+screenshot. That reasoning was about *this studio's* credibility and ignored
+whose code it is. A client's build is the client's, a portfolio is a sales
+surface rather than a source browser, and the visitor this page is written for
+is a local business owner who will not read a repository and may reasonably
+wonder why theirs would be published next. So the link came out, and the
+external link on a card is the live site or nothing.
+
+Do not reintroduce it. If a project ever wants its source shown, that is a
+decision per client and per repository, not a field the catalog fills in by
+default.
+
+### Screenshots
+
+`public/work/<slug>.webp`, 1400×1050 — the 4:3 the card and the case-study
+plate are both built for, so nothing is cropped or letterboxed. They are
+captured by building each project and photographing its own home page, which is
+why they are worth having: a mockup proves nothing, and a real frame of a real
+build is the only image on this site that is evidence. WebP at quality 0.82 puts
+all six at 384 KB together — the same six as PNG were 4.4 MB, which is most of a
+page-weight budget spent on a grid nobody has scrolled to yet.
+
+`image` is written root-relative (`/work/x.webp`), which is right for the `<img>`
+and **wrong for `og:image`, which cannot resolve a relative path** — a crawler
+resolves it against nothing and the share card comes out blank. `seo.js`
+absolutises it once, at that boundary; an entry pointing at a CDN already has a
+scheme and passes through untouched.
 
 ### Filtering
 
@@ -771,7 +868,7 @@ is the one kind that cannot be shortened to nothing: a card crossing a column in
 
 Same placeholder discipline as everywhere else on the site: each project
 carries its own `placeholder`, the card marks itself "Sample" individually,
-and a summary note appears above the grid only while at least one entry still
+and a summary note appears below the grid only while at least one entry still
 needs replacing.
 
 ## The footer
