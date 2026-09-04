@@ -45,14 +45,36 @@ const projectImage = (image) =>
   !image ? shareImage : /^https?:\/\//.test(image) ? image : absoluteUrl(image);
 
 /**
+ * ONE IDENTIFIER FOR THE BUSINESS, AND ONE FOR THE SITE.
+ *
+ * Every page carries a full copy of the business node. Without an `@id` a
+ * crawler has no way to know those 25 copies are the same organisation rather
+ * than 25 similar ones, so the signal that should accumulate on one entity is
+ * spread thin across all of them. A stable `@id` is what merges them — and it
+ * has to be an absolute URL on this domain, which is why these are functions:
+ * `siteUrl` is resolved from the environment, so it is not known at module
+ * load in every consumer.
+ */
+export const organizationId = () => absoluteUrl("/#organization");
+export const websiteId = () => absoluteUrl("/#website");
+
+/**
  * The agency itself, as schema.org sees it. The service pages reference it as
  * their provider, so the two never disagree about the phone number.
  * ⚠ Keep telephone, email and address in step with src/data/site.js.
  */
 const provider = {
   "@type": "ProfessionalService",
+  "@id": organizationId(),
   name: brand.name,
+  /* The variants people actually search for, tied to this one entity rather
+     than left to look like different businesses. See brand.alternateNames. */
+  alternateName: brand.alternateNames,
   url: absoluteUrl("/"),
+  /* Distinct from `image`: `image` is the social share card, `logo` is the
+     mark a search engine puts next to the business. Generated into /public by
+     scripts/generate-brand-assets.mjs, so it is a real, crawlable URL. */
+  logo: absoluteUrl("/logo.png"),
   telephone: contact.phone,
   email: contact.email,
   address: {
@@ -93,6 +115,30 @@ export const homeSeo = () => ({
     imageAlt: `${brand.name} Studios — ${brand.tagline.toLowerCase()}`,
   },
   jsonLd: [
+    /**
+     * THE SITE, AS DISTINCT FROM THE BUSINESS THAT RUNS IT.
+     *
+     * This is the node a search engine reads to decide what to call the site
+     * in a result — the line above the URL. Left undeclared it guesses, from
+     * the <title>, the domain, or whatever anchor text it has found, and for a
+     * studio whose name is also an ordinary Assamese word that guess is worth
+     * removing. Declared once, on the home page, because it describes the
+     * whole site rather than this page; `publisher` points at the business by
+     * `@id` so the two nodes are joined rather than competing.
+     *
+     * No `potentialAction`/SearchAction: the site has no search of its own,
+     * and claiming one that does not exist is invalid markup, not a bonus.
+     */
+    {
+      "@context": "https://schema.org",
+      "@type": "WebSite",
+      "@id": websiteId(),
+      name: brand.name,
+      alternateName: brand.alternateNames,
+      url: absoluteUrl("/"),
+      inLanguage: "en-IN",
+      publisher: { "@id": organizationId() },
+    },
     {
       "@context": "https://schema.org",
       ...provider,

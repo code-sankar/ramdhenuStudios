@@ -67,6 +67,12 @@ const STEEL = "#1d2d3d";
 write("src/assets/logo-mark.png",   await render(MARK,   256, 256, null, 0));
 write("src/assets/logo-lockup.png", await render(LOCKUP, 1000, 400, null, 0));
 
+/* The logo a search engine shows beside the business, referenced as `logo` in
+   the structured data (see src/data/seo.js). On the steel tile rather than
+   transparent: the artwork is white, and a transparent PNG dropped onto the
+   white background of a search result is an empty rectangle. */
+write("public/logo.png", await render(LOCKUP, 1000, 400, STEEL, 0.12));
+
 // Icons — opaque steel tile, so the mark never vanishes on a light tab bar.
 write("public/favicon-32.png",       await render(MARK, 32,  32,  STEEL, 0.16));
 write("public/favicon-192.png",      await render(MARK, 192, 192, STEEL, 0.16));

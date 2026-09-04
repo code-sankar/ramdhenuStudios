@@ -42,6 +42,17 @@ export const indexable = resolveIndexable(env);
 
 export const brand = {
   name: "Ramdhenu",
+  /**
+   * THE OTHER NAMES THIS STUDIO IS SEARCHED BY.
+   *
+   * "Ramdhenu" alone is a common Assamese word, so the studio is also written
+   * — by us and by everyone else — as Ramdhenu Studios: it is the GitHub
+   * organisation, the Instagram handle and the local part of the email. These
+   * go into the structured data as `alternateName`, which is how a search
+   * engine is told that the variants are one business rather than several.
+   * Anything a customer might reasonably type belongs here.
+   */
+  alternateNames: ["Ramdhenu Studios", "Ramdhenu Studio", "RamdhenuStudios"],
   wordmark: "RAMDHENU",
   tagline: "A step towards digital presence",
   since: "Since 2025",
